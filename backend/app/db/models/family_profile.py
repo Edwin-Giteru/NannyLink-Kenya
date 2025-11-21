@@ -1,0 +1,30 @@
+from __future__ import annotations
+import uuid
+from typing import TYPE_CHECKING
+from sqlalchemy import String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID
+from app.db.base import Base
+
+
+if TYPE_CHECKING:
+    from .user import User
+    from .job_post import JobPost
+
+
+
+
+class FamilyProfile(Base):
+    __tablename__ = "family_profile"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+
+    household_location: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    household_details: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # relationships
+    user: Mapped["User"] = relationship("User", back_populates="family_profile", foreign_keys=[user_id])
+
+
+    job_posts: Mapped[list["JobPost"]] = relationship("JobPost", back_populates="family_profile", cascade="all, delete-orphan")
+
