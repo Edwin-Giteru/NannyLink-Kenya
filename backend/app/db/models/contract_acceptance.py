@@ -2,10 +2,10 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
-from sqlalchemy import Boolean, DateTime
+from sqlalchemy import Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.db.base import Base
+from app.db.models.session.base import Base
 
 
 if TYPE_CHECKING:
@@ -18,8 +18,7 @@ if TYPE_CHECKING:
 class ContractAcceptance(Base):
     __tablename__ = "contract_acceptance"
 
-    # contract_id acts as PK and FK to contract.id to ensure one-to-one
-    contract_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    contract_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("contract.id"), primary_key=True)
 
 
     family_accepted: Mapped[bool | None] = mapped_column(Boolean, default=False)
@@ -31,7 +30,7 @@ class ContractAcceptance(Base):
 
 
     # Track which user recorded the acceptance action (many-to-one required in schema)
-    acting_user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    acting_user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
 
 
     contract: Mapped["Contract"] = relationship("Contract", back_populates="acceptance", foreign_keys=[contract_id])

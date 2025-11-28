@@ -1,0 +1,77 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env/
+.env.*.local
+.env.* 
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+*.whl
+
+# Distribution artifacts
+*.pyinstaller/
+__pycache__/
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+*.pid.lock
+*.seed
+
+# Testing / coverage
+.pytest_cache/
+coverage/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Type checkers / caches
+.mypy_cache/
+.pyre/
+.pyright/
+.pytype/
+
+# IDEs / editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets / credentials
+secrets.*
+credentials.json
+*.pem
+*.key
+*.crt
+
+# Databases
+*.sqlite3
+*.db
+*.db-journal
+
+# Docker (local overrides)
+docker-compose.override.yml
+
+# Misc
+instance/
+.cache/
+.history/

@@ -2,10 +2,10 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
-from sqlalchemy import DateTime, String, Numeric
+from sqlalchemy import DateTime, String, Numeric, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.db.base import Base
+from app.db.models.session.base import Base
 
 
 if TYPE_CHECKING:
@@ -20,8 +20,8 @@ class Payment(Base):
 
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    match_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    match_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("match.id"), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
 
 
     amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)

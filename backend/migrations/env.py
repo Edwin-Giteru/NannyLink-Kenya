@@ -24,7 +24,7 @@ if DATABASE_URL:
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from app.db.base import Base  
+from app.db.models.session.base import Base  
 target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:

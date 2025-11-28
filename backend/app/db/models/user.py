@@ -2,10 +2,10 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 from datetime import datetime
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.db.base import Base
+from app.db.models.session.base import Base
 
 
 if TYPE_CHECKING:
@@ -24,10 +24,10 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     phone: Mapped[str] = mapped_column(String(50), unique=True, nullable=True)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
 
 
-    role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user_role.id"), nullable=False, default=uuid.UUID("00000000-0000-0000-0000-000000000001"))
 
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

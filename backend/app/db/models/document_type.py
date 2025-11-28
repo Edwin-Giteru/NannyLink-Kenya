@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.db.base import Base
+from app.db.models.session.base import Base
 
 
 if TYPE_CHECKING:

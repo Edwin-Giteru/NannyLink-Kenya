@@ -1,46 +1,53 @@
 from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
-from sqlalchemy import String, Integer, Text
+from sqlalchemy import String, Integer, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.db.base import Base
-
+from app.db.models.session.base import Base
 
 if TYPE_CHECKING:
     from .user import User
     from .vetting_document import VettingDocument
     from .application import Application
     from .job_post import JobPost
-    from .match import Match
-
-
 
 
 class NannyProfile(Base):
     __tablename__ = "nanny_profile"
 
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("user.id"), nullable=False
+    )
 
-
-    years_experience: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    skills: Mapped[str | None] = mapped_column(Text, nullable=True)
-    preferred_location: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    availability: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    vetting_status: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    profile_photo_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
-
+    years_experience: Mapped[int | None] = mapped_column(Integer)
+    skills: Mapped[str | None] = mapped_column(Text)
+    preferred_location: Mapped[str | None] = mapped_column(String(255))
+    availability: Mapped[str | None] = mapped_column(String(255))
+    vetting_status: Mapped[str | None] = mapped_column(String(50))
+    profile_photo_url: Mapped[str | None] = mapped_column(String(1024))
 
     # relationships
-    user: Mapped["User"] = relationship("User", back_populates="nanny_profile", foreign_keys=[user_id])
+    user: Mapped["User"] = relationship("User", back_populates="nanny_profile")
 
-
-    vetting_documents: Mapped[list["VettingDocument"]] = relationship("VettingDocument", back_populates="nanny", cascade="all, delete-orphan")
-
-
-    applications: Mapped[list["Application"]] = relationship("Application", back_populates="nanny", cascade="all, delete-orphan")
-
-
-    matches: Mapped[list["Match"]] = relationship("Match", back_populates="selected_nanny")
+    vetting_documents: Mapped[list["VettingDocument"]] = relationship(
+        "VettingDocument",
+        back_populates="nanny",
+        cascade="all, delete-orphan"
+    )
+    applications: Mapped[list["Application"]] = relationship(
+        "Application", back_populates="nanny", cascade="all, delete-orphan"
+    )
+    applied_jobs: Mapped[list["JobPost"]] = relationship(
+        "JobPost",
+        secondary="application",
+        viewonly=True
+    )
+    matches: Mapped[list["Match"]] = relationship(
+        "Match",
+        back_populates="selected_nanny"
+    )
