@@ -3,11 +3,18 @@ import uuid
 from typing import Optional
 from datetime import datetime
 
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+    class Config:
+        orm_mode = True
+
 class UserBase(BaseModel):
     email: EmailStr
     phone: str
     password: str
-
+    role: str
     class Config:
         orm_mode = True
 
@@ -26,7 +33,7 @@ class UserResponse(BaseModel):
     id: uuid.UUID
     email: EmailStr
     phone: Optional[str] = None
-    role_id: uuid.UUID
+    role: str
     created_at: datetime
     updated_at: datetime
 

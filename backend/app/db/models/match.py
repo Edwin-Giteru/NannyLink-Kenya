@@ -32,12 +32,6 @@ class Match(Base):
     # relationships
     selected_nanny: Mapped["NannyProfile"] = relationship("NannyProfile", back_populates="matches", foreign_keys=[selected_nanny_id])
     status: Mapped["MatchStatus"] = relationship("MatchStatus", back_populates="matches", foreign_keys=[status_id])
-
-
     payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="match")
-
-    job_post: Mapped["JobPost"] = relationship(
-        "JobPost",
-        back_populates="match"
-    )
+    job_post: Mapped["JobPost"] = relationship("JobPost",  back_populates="match")
     contract: Mapped["Contract | None"] = relationship("Contract", uselist=False, back_populates="match")

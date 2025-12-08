@@ -4,6 +4,11 @@ import hashlib
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 from app.config.settings import settings
+from fastapi import Depends, HTTPException, status, Request
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from app.db.session import get_session
+from app.db.models.user import User
 
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
@@ -36,11 +41,53 @@ def decode_access_token(token: str) -> Dict:
         return payload
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
+    
+def create_refresh_token(data: dict, expires_delta: timedelta):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + expires_delta
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+async def get_current_user(request: Request, db: AsyncSession = Depends(get_session)) -> User:
+    """
+    Extracts and validates the current user from the Authorization header.
+    Works with Swagger padlock (Authorize -> Bearer <token>).
+    """
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict:
-    payload = decode_access_token(token)
-    username: str = payload.get("sub")
-    if username is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
-    return {"username": username}
+    # 1. Get Authorization header
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization header missing or invalid",
+        )
+
+    token = auth_header.split(" ")[1]
+
+    try:
+        payload = decode_access_token(token)
+        email = payload.get("sub")  
+        if not email:
+            raise HTTPException(status_code=401, detail="email isn't available in the token")
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        )
+
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token payload invalid",
+        )
+
+    result = await db.execute(select(User).where(User.email == email))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    return user
+

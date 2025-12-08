@@ -1,5 +1,4 @@
 from app.db.models.user import User
-from app.db.models.user_role import UserRole
 from app.db.models.session.base import Base
 from app.db.models.application import Application
 from app.db.models.nanny_profile import NannyProfile
