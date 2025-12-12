@@ -1,14 +1,12 @@
 from fastapi import FastAPI
-from app.modules.Auth.auth_controller import router as auth_router
-from app.modules.Nanny.nanny_controller import router as nanny_router
+from app.modules import router
 from fastapi.security import OAuth2PasswordBearer
 
 outh2scheme = OAuth2PasswordBearer(tokenUrl="Auth/login")
 
 app = FastAPI()
 
-app.include_router(auth_router)
-app.include_router(nanny_router)
+app.include_router(router)
 
 @app.get("/")
 async def root():
@@ -29,7 +27,7 @@ def custom_openapi():
     openapi_schema = get_openapi(
         title="My API",
         version="1.0.0",
-        description="DUKA YETU JWT Bearer token authentication",
+        description="NANNY LINK JWT Bearer token authentication",
         routes=app.routes,
     )
 

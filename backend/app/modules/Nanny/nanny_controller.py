@@ -1,7 +1,7 @@
 from app.db.session import SessionDep
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.modules.Nanny.nanny_service import NannyService
-from app.modules.Nanny.nanny_schema import NannyCreate, NannyResponse
+from app.modules.Nanny.nanny_schema import NannyCreate, NannyResponse, NannyUpdate
 from app.utils.security import get_current_user
 from app.db.models.user import User
 import uuid
@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter(tags=["Nanny"], prefix="/nannies")
 
-@router.post("/", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/nanny", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
 async def create_nanny(
     nanny_create: NannyCreate,
     db: SessionDep,
@@ -25,6 +25,52 @@ async def create_nanny(
     result = await nanny_service.create_nanny(nanny_create, current_user.id)
 
     if not result.success:
-        raise HTTPException(status_code=result.status_code, detail=result.error)
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
 
+    return result.data
+
+@router.patch("/nanny{nanny_id}")
+async def update_nanny(
+    nanny_update: NannyUpdate,
+    db: SessionDep,
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "nanny":
+        raise HTTPException(
+            status_code=403,
+            detail="Only users with the role of a nanny can perform this action"
+        )
+
+    service = NannyService(db)
+    result = await service.update_nanny(nanny_update, current_user.id)
+
+    if not result.success:
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
+    return result.data
+
+@router.get("/nanny{nanny_id}")
+async def get_a_nanny(
+    db: SessionDep,
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "nanny":
+        raise HTTPException(
+            status_code=403,
+            detail="Only users with the role of a nanny can perform this action"
+        )
+    
+    service = NannyService(db)
+    result = await service.get_nanny(current_user.id)
+
+    if not result.success:
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
     return result.data
