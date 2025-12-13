@@ -21,7 +21,6 @@ class NannyRepository:
         new_nanny = NannyProfile(**nanny_create.model_dump(), user_id=user_id)
         return await self.save(new_nanny)
     
-    # Get nanny by user_id
     async def get_nanny_by_user_id(self, user_id: uuid.UUID) -> NannyProfile | None:
         stmt = select(NannyProfile).where(NannyProfile.user_id == user_id)
         result = await self.db.execute(stmt)

@@ -1,28 +1,28 @@
 from app.db.session import SessionDep
 from fastapi import APIRouter, Depends, HTTPException, status
-from app.modules.Nanny.nanny_service import NannyService
-from app.modules.Nanny.nanny_schema import NannyCreate, NannyResponse, NannyUpdate
+from app.modules.Family.service import FamilyService
+from app.modules.Family.schema import FamilyCreate, FamilyUpdate, FamilyResponse
 from app.utils.security import get_current_user
 from app.db.models.user import User
 import uuid
 from fastapi.responses import JSONResponse
 
-router = APIRouter(tags=["Nanny"], prefix="/Nanny")
+router = APIRouter(tags=["Family"], prefix="/Family")
 
-@router.post("/", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
-async def create_nanny(
-    nanny_create: NannyCreate,
+@router.post("/", response_model=FamilyResponse, status_code=status.HTTP_201_CREATED)
+async def create_family(
+    family: FamilyCreate,
     db: SessionDep,
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "nanny":
+    if current_user.role != "family":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only users with the nanny role can create nanny profiles."
+            detail="Only users with the family role can create nanny profiles."
         )
 
-    nanny_service = NannyService(db)
-    result = await nanny_service.create_nanny(nanny_create, current_user.id)
+    service = FamilyService(db)
+    result = await service.create_family(family, current_user.id)
 
     if not result.success:
         raise HTTPException(
@@ -32,20 +32,20 @@ async def create_nanny(
 
     return result.data
 
-@router.patch("/{nanny_id}")
-async def update_nanny(
-    nanny_update: NannyUpdate,
+@router.patch("/{user_id}")
+async def update_family(
+    family: FamilyUpdate,
     db: SessionDep,
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "nanny":
+    if current_user.role != "family":
         raise HTTPException(
             status_code=403,
-            detail="Only users with the role of a nanny can perform this action"
+            detail="Only users with the role of a familly can perform this action"
         )
 
-    service = NannyService(db)
-    result = await service.update_nanny(nanny_update, current_user.id)
+    service = FamilyService(db)
+    result = await service.update_family(family, current_user.id)
 
     if not result.success:
         raise HTTPException(
@@ -54,19 +54,19 @@ async def update_nanny(
         )
     return result.data
 
-@router.get("/{nanny_id}")
-async def get_a_nanny(
+@router.get("/{user_id}")
+async def get_a_family(
     db: SessionDep,
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "nanny":
+    if current_user.role != "family":
         raise HTTPException(
             status_code=403,
-            detail="Only users with the role of a nanny can perform this action"
+            detail="Only users with the role of a family can perform this action"
         )
     
-    service = NannyService(db)
-    result = await service.get_nanny(current_user.id)
+    service = FamilyService(db)
+    result = await service.get_family(current_user.id)
 
     if not result.success:
         raise HTTPException(
