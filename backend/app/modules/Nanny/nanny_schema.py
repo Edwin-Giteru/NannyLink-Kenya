@@ -9,7 +9,7 @@ class NannySchema(BaseModel):
     years_experience: int | None
     skills: str 
     preferred_location: str | None = Field(None, max_length=255)
-    availability: NannyAvailability = Field(..., description="Nanny availability status", example=NannyAvailability.FULL_TIME)
+    availability: NannyAvailability = Field(..., description="Nanny availability status", example=[NannyAvailability.FULL_TIME])
     profile_photo_url: str | None = Field(None, max_length=1024)
 
     class Config:

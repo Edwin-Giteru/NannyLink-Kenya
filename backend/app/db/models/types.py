@@ -17,3 +17,7 @@ class NannyAvailability(str, Enum):
     WEEKENDS = "weekends"
     EVENINGS = "evenings"
 
+class JobStatus(str, Enum):
+    OPEN = "open"
+    FILLED = "filled"
+    

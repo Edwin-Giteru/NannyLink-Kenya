@@ -2,10 +2,12 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 from datetime import datetime
-from sqlalchemy import String, Text, Integer, DateTime, ForeignKey
+from sqlalchemy import String, Text, Integer, DateTime, ForeignKey, Enum, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.models.session.base import Base
+from app.db.models.types import NannyAvailability as AvailabilityEnum
+from app.db.models.types import JobStatus as JobEnum
 
 
 if TYPE_CHECKING:
@@ -23,11 +25,13 @@ class JobPost(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("family_profile.id"), nullable=False)
     title: Mapped[str] = mapped_column(String(255))
-    childcare_needs: Mapped[str | None] = mapped_column(Text)
-    hours: Mapped[str | None] = mapped_column(String(100))
+    care_needs: Mapped[str | None] = mapped_column(Text)
+    availability: Mapped[AvailabilityEnum] = mapped_column(Enum(AvailabilityEnum), nullable=False)
     duties: Mapped[str | None] = mapped_column(Text)
     location: Mapped[str | None] = mapped_column(String(255))
+    salary: Mapped[float] = mapped_column(Numeric(10, 2))
     required_experience: Mapped[int | None] = mapped_column(Integer)
+    status: Mapped[JobEnum] = mapped_column(Enum(JobEnum), default=JobEnum.OPEN)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
