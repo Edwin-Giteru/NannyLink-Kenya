@@ -34,7 +34,7 @@ class JobResponse(JobBase):
             AvailabilityEnum.WEEKENDS: 20
         }
 
-        weekly_hours = hourly_map.get(self.availability, 40)
+        weekly_hours = hourly_map.get(self.availability, 50)
         monthly_hours = weekly_hours * 4
 
         return  round( self.salary / monthly_hours, 2 )

@@ -13,8 +13,6 @@ if TYPE_CHECKING:
     from .nanny_profile import NannyProfile
 
 
-
-
 class Application(Base):
     __tablename__ = "application"
 

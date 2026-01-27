@@ -21,3 +21,10 @@ class JobStatus(str, Enum):
     OPEN = "open"
     FILLED = "filled"
     
+class MatchStatus(str, Enum):
+    AWAITING_PAYMENT = "awaiting_payment"    
+    FINALIZED = "finalized"
+    CANCELLED = "cancelled"
+
+    def __str__(self):
+        return self.value

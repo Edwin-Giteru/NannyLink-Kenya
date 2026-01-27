@@ -7,7 +7,6 @@ from app.db.models.document_type import DocumentType
 from app.db.models.job_post import JobPost
 from app.db.models.payment import Payment
 from app.db.models.match import Match
-from app.db.models.match_status import MatchStatus
 from app.db.models.vetting_document import VettingDocument
 from app.db.models.contract import Contract
 from app.db.models.contract_acceptance import ContractAcceptance
