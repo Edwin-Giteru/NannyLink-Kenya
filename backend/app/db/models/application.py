@@ -20,6 +20,8 @@ class Application(Base):
     job_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("job_post.id", ondelete="CASCADE"), nullable=False)
     nanny_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("nanny_profile.id", ondelete="CASCADE"), nullable=False)
     applied_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     # relationships
     job_post: Mapped["JobPost"] = relationship("JobPost", back_populates="applications")

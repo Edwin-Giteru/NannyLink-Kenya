@@ -23,8 +23,14 @@ class JobStatus(str, Enum):
     
 class MatchStatus(str, Enum):
     AWAITING_PAYMENT = "awaiting_payment"    
-    FINALIZED = "finalized"
+    PARTIALLY_PAID = "partially_paid"
+    COMPLETED = "completed"
     CANCELLED = "cancelled"
+
+class PaymentStatus(str, Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
     def __str__(self):
         return self.value

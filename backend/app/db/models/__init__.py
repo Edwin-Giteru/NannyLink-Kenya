@@ -10,4 +10,5 @@ from app.db.models.match import Match
 from app.db.models.vetting_document import VettingDocument
 from app.db.models.contract import Contract
 from app.db.models.contract_acceptance import ContractAcceptance
+from app.db.models.types import MatchStatus, PaymentStatus
 

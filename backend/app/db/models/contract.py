@@ -26,3 +26,5 @@ class Contract(Base):
 
     match: Mapped["Match"] = relationship("Match", back_populates="contract", foreign_keys=[match_id])
     acceptance: Mapped["ContractAcceptance | None"] = relationship("ContractAcceptance", uselist=False, back_populates="contract", cascade="all, delete-orphan")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

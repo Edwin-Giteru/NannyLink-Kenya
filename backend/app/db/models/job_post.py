@@ -33,6 +33,7 @@ class JobPost(Base):
     required_experience: Mapped[int | None] = mapped_column(Integer)
     status: Mapped[JobEnum] = mapped_column(Enum(JobEnum), default=JobEnum.OPEN)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
     match: Mapped["Match | None"] = relationship("Match",  back_populates="job_post", uselist=False) 

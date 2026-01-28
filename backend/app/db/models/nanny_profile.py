@@ -1,11 +1,12 @@
 from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
-from sqlalchemy import String, Integer, Text, ForeignKey
+from sqlalchemy import String, Integer, Text, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.models.session.base import Base
 from sqlalchemy import Enum
+from datetime import datetime
 from app.db.models.types import VettingStatus, NannyAvailability
 if TYPE_CHECKING:
     from .user import User
@@ -28,6 +29,8 @@ class NannyProfile(Base):
     availability: Mapped[str | None] = mapped_column(Enum(NannyAvailability), nullable=False, default=NannyAvailability.FULL_TIME)
     vetting_status: Mapped[str | None] = mapped_column(Enum(VettingStatus), nullable=False, default=VettingStatus.PENDING)
     profile_photo_url: Mapped[str | None] = mapped_column(String(1024))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # relationships
     user: Mapped["User"] = relationship("User", back_populates="nanny_profile")
