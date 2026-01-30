@@ -19,8 +19,6 @@ outh2scheme = OAuth2PasswordBearer(tokenUrl="Auth/login")
 
 app = FastAPI()
 
-app.include_router(router)
-
 from fastapi.openapi.utils import get_openapi
 
 def custom_openapi():
@@ -110,6 +108,8 @@ async def keep_alive_ping(url: str):
             logger.warning(f"Keep-alive ping to {ping_url} failed: {e}")
         await asyncio.sleep(KEEP_ALIVE_INTERVAL)
         
+app.include_router(router)
+
 @app.post("/stkcallback")
 async def daraja_callback(request: Request, db: SessionDep):
     try:
