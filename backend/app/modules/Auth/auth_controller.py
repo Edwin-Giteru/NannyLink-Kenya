@@ -16,10 +16,10 @@ async def register_nanny(
         result = await auth_service.register_nanny(user)
         
         if not result.success:
-            return JSONResponse(
+            raise HTTPException(
                 status_code=result.status_code,
-                content=result.to_dict()
-            )        
+                detail=result.error
+            )
         return result.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -35,9 +35,9 @@ async def register_family(
         result = await auth_service.register_family(user)
         
         if not result.success:
-            return JSONResponse(
+            raise HTTPException(
                 status_code=result.status_code,
-                content=result.to_dict()
+                detail=result.error
             )        
         return result.data
     except Exception as e:
@@ -54,10 +54,11 @@ async def login(
         result = await auth_service.login_user(login_request)
         
         if not result.success:
-            return JSONResponse(
+            raise HTTPException(
                 status_code=result.status_code,
-                content=result.to_dict()
+                detail=result.error
             )        
+        
         return result.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
