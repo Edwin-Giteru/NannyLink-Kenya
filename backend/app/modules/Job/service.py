@@ -73,3 +73,16 @@ class JobService:
                 f"Failed to update the job with id: {job_id} due to this error: {str(e)}",
                 status_code=500
             )
+    
+    async def get_jobs(self) -> Result:
+        try:
+            jobs = await self.job_repo.get_jobs()
+            return Result.ok(
+                data=jobs,
+                status_code=200
+            )
+        except Exception as e:
+            return Result.fail(
+                f"Failed to get jobs due to this error: {str(e)}",
+                status_code=500
+            )

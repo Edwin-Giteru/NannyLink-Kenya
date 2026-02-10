@@ -5,6 +5,7 @@ import uuid
 class FamilyProf(BaseModel):
     household_location: str = Field(..., max_length=255)
     household_details: str
+    name: str = Field(..., max_length=255)
 
 
 class FamilyCreate(FamilyProf):
@@ -13,6 +14,7 @@ class FamilyCreate(FamilyProf):
 class FamilyUpdate(BaseModel):
     household_location: str = Field(None, max_length=1024)
     household_address: str = Field(None, max_length=1024)
+    name: str = Field(None, max_length=255)
     
 class FamilyResponse(FamilyProf):
     id: uuid.UUID

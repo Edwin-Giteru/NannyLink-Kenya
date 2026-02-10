@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Board</title>
+    <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">NannyLink</div>
+            <nav>
+                <a href="#" class="active">🏠 Job Board</a>
+                <a href="profile.html">👤 My Profile</a>
+                <a href="#" id="logoutBtn">🚪 Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Here are the top picks for you!</h1>
+                <div class="user-info" id="nannyName"><strong>Welcome</strong></div>
+            </header>
+
+            <div id="jobGrid" class="job-grid">
+                <div class="loader">Loading jobs...</div>
+            </div>
+        </main>
+    </div>
+
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modalBody">
+                </div>
+            <button id="applyButton" class="apply-btn">Submit Application</button>
+        </div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/nannyDashboard.js"></script>
+</body>
+</html>

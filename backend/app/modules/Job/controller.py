@@ -114,3 +114,19 @@ async def update_job(
         )
     
     return result.data
+
+@router.get("/", response_model=list[JobResponse])
+async def get_jobs(
+    db: SessionDep
+):
+    service = JobService(db)
+
+    result = await service.get_jobs()
+
+    if not result.success:
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
+    
+    return result.data

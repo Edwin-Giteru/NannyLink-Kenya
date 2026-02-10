@@ -31,3 +31,8 @@ class JobRepository:
         stmt = select(JobPost).where(JobPost.family_id==family_id, JobPost.id == job_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_jobs(self) -> list[JobPost]:
+        stmt = select(JobPost)
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
