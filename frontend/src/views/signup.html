@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" 
+      content="default-src 'self'; 
+               connect-src 'self' http://127.0.0.1:8000 http://127.0.0.1:5500; 
+               script-src 'self' 'unsafe-inline'; 
+               style-src 'self' 'unsafe-inline';">
   <title>Sign Up</title>
   <link rel="stylesheet" href="../../assets/styles/auth.css">
 </head>
@@ -10,18 +15,29 @@
   <div class="auth-container">
     <h2>Create Account</h2>
 
-    <form id="signupForm">
-      <input type="email" id="email" placeholder="Email" required />
+    <form id="signupForm">    
+    <input type="email" id="email" placeholder="Email" required />
+    
+    <div class="password-wrapper">
       <input type="password" id="password" placeholder="Password" required />
+      <span id="togglePassword" class="toggle-icon">👁️</span>
+    </div>
+    
+    <div class="strength-meter">
+      <div id="strengthBar" class="bar"></div>
+    </div>
+    <small id="strengthText"></small>
 
-      <select id="role" required>
-        <option value="">Select Role</option>
-        <option value="family">Family</option>
-        <option value="nanny">Nanny</option>
-      </select>
+    <input type="tel" id="phone" placeholder="Phone Number" required />
 
-      <button type="submit">Sign Up</button>
-    </form>
+    <select id="role" required>
+      <option value="">Select Role</option>
+      <option value="family">Family</option>
+      <option value="nanny">Nanny</option>
+    </select>
+
+    <button type="submit">Sign Up</button>
+  </form>
 
     <p>
       Already have an account?

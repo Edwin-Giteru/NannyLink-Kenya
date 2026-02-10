@@ -19,6 +19,7 @@ class NannyProfile(Base):
     __tablename__ = "nanny_profile"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
     national_id_number: Mapped[str | None] = mapped_column(String(50), unique=True)
     national_id_photo_url: Mapped[str | None] = mapped_column(String(1024))

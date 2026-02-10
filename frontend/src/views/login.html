@@ -3,12 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
+  <meta http-equiv="Content-Security-Policy" 
+      content="default-src 'self'; 
+               connect-src 'self' http://127.0.0.1:8000 http://127.0.0.1:5500; 
+               script-src 'self' 'unsafe-inline'; 
+               style-src 'self' 'unsafe-inline';">
   <link rel="stylesheet" href="../../assets/styles/auth.css">
 </head>
 <body>
 
   <div class="auth-container">
-    <h2>NannyLink Login</h2>
+    <h2>Login</h2>
 
     <form id="loginForm">
       <input type="email" id="email" placeholder="Email" required />
@@ -22,6 +27,6 @@
     </p>
   </div>
 
-  <script type="module" src="../assets/scripts/authController.js"></script>
+  <script type="module" src="../../assets/scripts/authController.js"></script>
 </body>
 </html>

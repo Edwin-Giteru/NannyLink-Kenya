@@ -11,11 +11,11 @@ class NannyRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
     
-    async def save(self, nannny: NannyProfile) -> NannyProfile:
-        self.db.add(nannny)
+    async def save(self, nanny: NannyProfile) -> NannyProfile:
+        self.db.add(nanny)
         await self.db.flush()
-        await self.db.refresh(nannny)
-        return nannny
+        await self.db.refresh(nanny)
+        return nanny
     
     async def create_nanny(self, nanny_create: NannyCreate, user_id: uuid.UUID) -> NannyProfile:
         new_nanny = NannyProfile(**nanny_create.model_dump(), user_id=user_id)

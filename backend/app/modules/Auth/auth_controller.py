@@ -45,20 +45,28 @@ async def register_family(
     
 
 @router.post("/login")
-async def login(
-    login_request: LoginRequest,
-    db: SessionDep
-):
+async def login(login_request: LoginRequest, db: SessionDep):
     try:
         auth_service = AuthService(db)
         result = await auth_service.login_user(login_request)
         
         if not result.success:
             raise HTTPException(
-                status_code=result.status_code,
+                status_code=result.status_code, 
                 detail=result.error
-            )        
+            )
         
-        return result.data
+        # If we get here, result.success is True
+        response = JSONResponse(content={
+            "id": result.data["id"],
+            "email": result.data["email"],
+            "role": result.data["role"],
+            "access_token": result.data["access_token"],
+            "token_type": "bearer"           
+        })
+
+        return response
+    except HTTPException as he:
+        raise he
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

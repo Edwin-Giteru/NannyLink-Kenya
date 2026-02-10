@@ -7,15 +7,15 @@ from app.db.models.user import User
 import uuid
 from fastapi.responses import JSONResponse
 
-router = APIRouter(tags=["Nanny"], prefix="/Nanny")
+router = APIRouter(tags=["Nanny"], prefix="/Nanny", redirect_slashes=False)
 
-@router.post("/", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
 async def create_nanny(
     nanny_create: NannyCreate,
     db: SessionDep,
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "nanny":
+    if current_user.role.upper() != "NANNY":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only users with the nanny role can create nanny profiles."

@@ -5,6 +5,7 @@ import uuid
 class NannySchema(BaseModel):
     national_id_number: str = Field(..., max_length=50)
     national_id_photo_url: str = Field(..., max_length=1024)
+    name: str = Field(..., max_length=255)
     address: str = Field(..., max_length=255)
     years_experience: int | None
     skills: str 
@@ -31,6 +32,7 @@ class NannyCreate(NannySchema):
     pass
 
 class NannyUpdate(BaseModel):
+    name: str | None = Field(None, max_length=255)
     national_id_photo_url: str | None = Field(None, max_length=1024)
     address: str | None = Field(None, max_length=255)
     years_experience: int | None

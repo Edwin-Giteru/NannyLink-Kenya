@@ -11,11 +11,34 @@ body {
   justify-content: center;
   align-items: center;
 }
+/* 1. Make the wrapper the reference point */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
 
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px; 
+  margin-top: 12px;   
+}
+
+.toggle-icon {
+  position: absolute;
+  right: 12px;
+  top: calc(50% + 6px); 
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 2;
+  user-select: none;
+}
 /* Auth container */
 .auth-container {
-  width: 75vw;              /* 75% of the page */
-  max-width: 450px;         /* prevents it from being too wide */
+  width: 80vw;            
+  max-width: 500px;      
   background: #ffffff;
   padding: 30px;
   border-radius: 10px;
@@ -87,4 +110,107 @@ p a {
 
 p a:hover {
   text-decoration: underline;
+}
+
+:root {
+  --primary-purple: #6a1b9a;
+  --hover-purple: #8e24aa;
+  --bg-soft: #f3e5f5;
+  --white: #ffffff;
+  --border: #e1bee7;
+}
+
+body {
+  background-color: var(--light-gray);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.profile-container {
+  background: var(--white);
+  max-width: 600px;
+  width: 100%;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(106, 27, 154, 0.1);
+}
+
+h2 {
+  color: var(--primary-purple);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+h3 {
+  font-size: 1.1rem;
+  color: var(--primary-purple);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 5px;
+  margin-top: 25px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-sizing: border-box; /* Ensures padding doesn't break width */
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary-purple);
+  box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.1);
+}
+
+textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+button {
+  width: 100%;
+  background-color: var(--primary-purple);
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 20px;
+}
+
+button:hover {
+  background-color: var(--hover-purple);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Responsive Tweak */
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 20px;
+  }
 }

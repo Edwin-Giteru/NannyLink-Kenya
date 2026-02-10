@@ -20,6 +20,7 @@ class FamilyProfile(Base):
     __tablename__ = "family_profile"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
     household_location: Mapped[str | None] = mapped_column(String(255), nullable=True)
     household_details: Mapped[str | None] = mapped_column(Text, nullable=True)

@@ -38,7 +38,7 @@ class AuthService:
             )
         hashed_pass = hash_password(user.password)
         user.password = hashed_pass
-        user.role = UserRole.NANNY.value
+        user.role = UserRole.NANNY
         
         new_user = await self.auth_repo.create_user(user)
         await self.db.commit()
@@ -66,7 +66,7 @@ class AuthService:
                 )
             hashed_pass = hash_password(user.password)
             user.password = hashed_pass
-            user.role = UserRole.FAMILY.value
+            user.role = UserRole.FAMILY
             
             new_user = await self.auth_repo.create_user(user)
             await self.db.commit()
@@ -90,21 +90,12 @@ class AuthService:
         refresh_token = create_refresh_token(
             data={"sub": user.email}, expires_delta=timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
         )
-        response = JSONResponse(content={ 
-            "id": str(user.id),
-            "email": user.email,
-            "role": user.role,
-           "access_token": access_token,
-            "token_type": "bearer"
-        })
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=False,
-            samesite="Lax",
-            max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS,
-            expires=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
-            )
-       
-        return Result.ok(data=response, status_code=200)
+        user_data = {
+        "id": str(user.id),
+        "email": user.email,
+        "role": user.role,
+        "access_token": access_token,
+        "refresh_token": refresh_token, # Send this so router can set cookie
+        "token_type": "bearer"
+    }
+        return Result.ok(data=user_data, status_code=200)

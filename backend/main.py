@@ -17,8 +17,6 @@ logger = logging.getLogger(__name__)
 
 outh2scheme = OAuth2PasswordBearer(tokenUrl="Auth/login")
 
-app = FastAPI()
-
 from fastapi.openapi.utils import get_openapi
 
 def custom_openapi():
@@ -47,18 +45,6 @@ def custom_openapi():
 
 APPLICATION_PORT = int(os.getenv("APPLICATION_PORT", 8000))
 KEEP_ALIVE_INTERVAL = 240 
-
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://nannylink-kenya.onrender.com"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # during development
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):    
@@ -94,6 +80,21 @@ app = FastAPI(
         UUID: str 
     }
 )
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://nannylink-kenya.onrender.com",
+    "http://127.0.0.1:5500"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.include_router(router)
+
 app.router.lifespan_context = lifespan 
 
 async def keep_alive_ping(url: str):
@@ -108,7 +109,6 @@ async def keep_alive_ping(url: str):
             logger.warning(f"Keep-alive ping to {ping_url} failed: {e}")
         await asyncio.sleep(KEEP_ALIVE_INTERVAL)
         
-app.include_router(router)
 
 @app.post("/stkcallback")
 async def daraja_callback(request: Request, db: SessionDep):
