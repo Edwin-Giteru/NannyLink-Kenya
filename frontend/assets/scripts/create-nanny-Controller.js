@@ -14,7 +14,6 @@ if (profileForm) {
       return;
     }
 
-    // 2. Gather and Clean Data
     const yearsExp = document.getElementById("years_experience").value;
     
     const profileData = {
@@ -22,11 +21,10 @@ if (profileForm) {
       national_id_number: document.getElementById("national_id_number").value.trim(),
       national_id_photo_url: document.getElementById("national_id_photo_url").value.trim(),
       address: document.getElementById("address").value.trim(),
-      // CRITICAL: Ensure this is a number for Pydantic
       years_experience: yearsExp ? parseInt(yearsExp, 10) : 0, 
       skills: document.getElementById("skills").value.trim(),
       preferred_location: document.getElementById("preferred_location").value.trim() || null,
-      availability: document.getElementById("availability").value, // Matches Enum string
+      availability: document.getElementById("availability").value, 
       profile_photo_url: document.getElementById("profile_photo_url").value.trim() || null
     };
 
@@ -37,7 +35,6 @@ if (profileForm) {
       alert("Profile created successfully!");
       window.location.href = "dashboard.html";
     } else {
-      // Logic to handle 422 (Validation) or 403 (Forbidden) errors
       alert("Submission Error: " + (result.message || "Please check all fields."));
     }
   });

@@ -14,19 +14,48 @@
             <nav>
                 <a href="#" class="active">🏠 Job Board</a>
                 <a href="profile.html">👤 My Profile</a>
-                <a href="#" id="logoutBtn">🚪 Logout</a>
+                <a href="#" id="logoutBtn">🚪Logout</a>
             </nav>
         </aside>
 
         <main class="main-content">
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="search-icon">🔍︎</span>
+                    <input type="text" id="jobSearchInput" placeholder="Search for jobs based on their titles..." />
+                </div>
+            </div>
             <header class="top-bar">
                 <h1>Here are the top picks for you!</h1>
                 <div class="user-info" id="nannyName"><strong>Welcome</strong></div>
             </header>
-
+                 <section class="stats-ribbon">
+            <div class="stat-card">
+                <span class="stat-icon">💼</span>
+                <div class="stat-info">
+                    <h4 id="totalJobs">0</h4>
+                    <p>New Jobs</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">⭐</span>
+                <div class="stat-info">
+                    <h4>Top Pick</h4>
+                    <p id="topCategory">Nanny</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">✅</span>
+                <div class="stat-info">
+                    <h4>Verified</h4>
+                    <p>Profile 100%</p>
+                </div>
+            </div>
+        </section>
             <div id="jobGrid" class="job-grid">
                 <div class="loader">Loading jobs...</div>
             </div>
+           
         </main>
     </div>
 
