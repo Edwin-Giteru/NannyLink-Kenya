@@ -5,6 +5,7 @@ from app.modules.Nanny.nanny_schema import NannyCreate, NannyUpdate
 from typing import List
 import uuid
 from app.db.models.user import User
+from app.db.models.application import Application
 
 
 class NannyRepository:
@@ -33,5 +34,10 @@ class NannyRepository:
     
     async def get_nannies(self) -> list[NannyProfile]:
         stmt = select(NannyProfile)
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
+    
+    async def get_applications_for_nanny(self, nanny_id: uuid.UUID) -> List[Application]:
+        stmt = select(Application).where(Application.nanny_id == nanny_id)
         result = await self.db.execute(stmt)
         return result.scalars().all()

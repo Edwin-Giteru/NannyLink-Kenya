@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function openModal(job) {
         const modalBody = document.getElementById("modalBody");
         modalBody.innerHTML = `
-            <div class="modal-header-accent" style="background: var(--primary-purple); color: white; margin: -30px -30px 20px -30px; padding: 30px; border-radius: 12px 12px 0 0;">
+            <div class="modal-header-accent" style="background: #6d4830; color: white; margin: -30px -30px 20px -30px; padding: 30px; border-radius: 12px 12px 0 0;">
                 <h2 style="margin:0;">${job.title}</h2>
                 <p style="margin: 5px 0 0 0; opacity: 0.8;">📍 ${job.location} • Ksh ${job.salary}</p>
             </div>

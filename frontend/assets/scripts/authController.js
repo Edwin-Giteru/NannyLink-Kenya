@@ -23,7 +23,7 @@ if (loginForm) {
       const role = result.role.toLowerCase(); 
     
       if (role === "nanny") {
-          window.location.href = "../../src/views/create-nanny-profile.html"; 
+          window.location.href = "../../src/views/nannydashboard.html"; 
       } else if (role === "family") {
           window.location.href = "../family/dashboard.html";
       } else if (role === "admin") {

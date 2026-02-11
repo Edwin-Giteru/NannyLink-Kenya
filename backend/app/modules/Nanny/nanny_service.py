@@ -82,3 +82,22 @@ class NannyService:
                 status_code=500
             )
     
+    async def get_applications_for_nanny(self, user_id: uuid.UUID) -> Result:
+        try:
+            nanny = await self.nanny_repo.get_nanny_by_user_id(user_id)
+            if not nanny:
+                return Result.fail(
+                    f"Nanny with user_id: {user_id} doesnot exist",
+                    status_code=404
+                )
+            
+            applications = await self.nanny_repo.get_applications_for_nanny(nanny.id)
+            return Result.ok(
+                data=applications,
+                status_code=200
+            )
+        except Exception as e:
+            return Result.fail(
+                f"Failed to load applications for nanny with this error: {str(e)}",
+                status_code=500
+            )

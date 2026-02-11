@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
+    <link rel="stylesheet" href="../../assets/styles/profile.css">
+</head>
+<body>
+    <div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">NannyLink</div>
+        <nav>
+            <a href="nanny-dashboard.html">🏠 Job Board</a>
+            <a href="#" class="active">👤 My Profile</a>
+            <a href="#" id="logoutBtn">🚪 Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <h1>Account Settings</h1>
+        </header>
+
+        <section class="profile-section">
+            <div class="profile-card">
+                <h3>Personal Information</h3>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="profileName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="profileLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Years of Experience</label>
+                        <input type="number" id="profileExp" required>
+                    </div>
+                    <button type="submit" class="save-btn">Update Profile</button>
+                </form>
+                <hr>
+                <button id="deleteAccountBtn" class="delete-btn">Delete Account</button>
+            </div>
+
+            <div class="applications-card">
+                <h3>My Job Applications</h3>
+                <div id="applicationsList" class="app-list">
+                    <p>Loading applications...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h2>Are you absolutely sure?</h2>
+        <p>This action is permanent and cannot be undone.</p>
+        <div class="modal-actions">
+            <button id="confirmDelete" class="confirm-del-btn">Yes, Delete My Account</button>
+            <button id="cancelDelete" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+    <script type="module" src="../../assets/scripts/nannyProfileController.js"></script>
+</body>
+</html>
