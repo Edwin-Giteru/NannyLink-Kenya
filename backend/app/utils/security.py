@@ -34,7 +34,6 @@ def create_access_token(data: Dict[str, str], expires_delta: Optional[timedelta]
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-
 def decode_access_token(token: str) -> Dict:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -49,12 +48,6 @@ def create_refresh_token(data: dict, expires_delta: timedelta):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 async def get_current_user(request: Request, db: AsyncSession = Depends(get_session)) -> User:
-    """
-    Extracts and validates the current user from the Authorization header.
-    Works with Swagger padlock (Authorize -> Bearer <token>).
-    """
-
-    # 1. Get Authorization header
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(
@@ -66,23 +59,19 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_sess
 
     try:
         payload = decode_access_token(token)
-        email = payload.get("sub")  
-        if not email:
-            raise HTTPException(status_code=401, detail="email isn't available in the token")
+        user_id = payload.get("sub")  
+        if not user_id:
+            raise HTTPException(status_code=401, detail="User ID not found in token")
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
         )
 
-    if not email:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token payload invalid",
-        )
-
-    result = await db.execute(select(User).where(User.email == email))
+    # Change query to filter by ID instead of email
+    result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalars().first()
+    
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -90,4 +79,3 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_sess
         )
 
     return user
-

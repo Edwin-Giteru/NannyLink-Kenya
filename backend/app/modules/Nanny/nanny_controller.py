@@ -75,7 +75,8 @@ async def get_a_nanny(
         )
     return result.data
 
-@router.get("/applications")
+
+@router.get("/applications{nanny_id}")
 async def get_applications_for_nanny(   
     db: SessionDep,
     current_user: User = Depends(get_current_user)
@@ -95,3 +96,24 @@ async def get_applications_for_nanny(
             detail=result.error
         )
     return result.data
+
+@router.delete("")
+async def delete_nanny(
+    db: SessionDep,
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "nanny":
+        raise HTTPException(
+            status_code=403,
+            detail="Only users with the role of a nanny can perform this action"
+        )
+    
+    service = NannyService(db)
+    result = await service.delete_nanny(current_user.id)
+
+    if not result.success:
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
+    return JSONResponse(content={"message": "Nanny profile deleted successfully"}, status_code=200)

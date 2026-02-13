@@ -41,3 +41,8 @@ class NannyRepository:
         stmt = select(Application).where(Application.nanny_id == nanny_id)
         result = await self.db.execute(stmt)
         return result.scalars().all()
+    
+    async def delete_nanny(self, nanny: NannyProfile):
+        await self.db.delete(nanny)
+        await self.db.flush()
+    

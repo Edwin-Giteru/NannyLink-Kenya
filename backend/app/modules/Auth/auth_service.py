@@ -77,25 +77,36 @@ class AuthService:
                 status_code=201
             )
     
+ 
     async def login_user(self, form_data: LoginRequest) -> Result:
         user = await self.auth_repo.get_user_by_email(form_data.email)
         if not user:
-            return Result.fail("User with the email doesnot exist", status_code=401)
-        if  not verify_password(form_data.password, user.password):
+            return Result.fail("User with this email does not exist", status_code=401)
+        
+        if not verify_password(form_data.password, user.password):
             return Result.fail("Invalid credentials", status_code=400)
 
+        token_payload = {
+            "sub": str(user.id), 
+            "role": user.role.value if hasattr(user.role, 'value') else str(user.role)
+        }
+
         access_token = create_access_token(
-            data={"sub": user.email}, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            data=token_payload, 
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         )
+        
         refresh_token = create_refresh_token(
-            data={"sub": user.email}, expires_delta=timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+            data=token_payload, 
+            expires_delta=timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
         )
+
         user_data = {
-        "id": str(user.id),
-        "email": user.email,
-        "role": user.role,
-        "access_token": access_token,
-        "refresh_token": refresh_token, # Send this so router can set cookie
-        "token_type": "bearer"
-    }
+            "id": str(user.id),
+            "email": user.email,
+            "role": user.role,
+            "access_token": access_token,
+            "refresh_token": refresh_token, 
+            "token_type": "bearer"
+        }
         return Result.ok(data=user_data, status_code=200)

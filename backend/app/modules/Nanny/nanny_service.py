@@ -101,3 +101,26 @@ class NannyService:
                 f"Failed to load applications for nanny with this error: {str(e)}",
                 status_code=500
             )
+    
+    async def delete_nanny(self, user_id: uuid.UUID) -> Result:
+        try:
+            nanny = await self.nanny_repo.get_nanny_by_user_id(user_id)
+            if not nanny:
+                return Result.fail(
+                    f"Nanny with user_id: {user_id} doesnot exist",
+                    status_code=404
+                )
+            
+            await self.nanny_repo.delete_nanny(nanny)
+            await self.db.commit()
+
+            return Result.ok(
+                data=None,
+                status_code=204
+            )
+        except Exception as e:
+            await self.db.rollback()
+            return Result.fail(
+                f"Failed to delete nanny with this error: {str(e)}",
+                status_code=500
+            )

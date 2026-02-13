@@ -9,62 +9,107 @@
 </head>
 <body>
     <div class="dashboard-container">
-    <aside class="sidebar">
-        <div class="logo">NannyLink</div>
-        <nav>
-            <a href="nanny-dashboard.html">🏠 Job Board</a>
-            <a href="#" class="active">👤 My Profile</a>
-            <a href="#" id="logoutBtn">🚪 Logout</a>
-        </nav>
-    </aside>
+        <aside class="sidebar">
+            <div class="logo">NannyLink</div>
+            <nav>
+                <a href="nanny-dashboard.html">🏠 Job Board</a>
+                <a href="#" class="active">👤 My Profile</a>
+                <a href="#" id="logoutBtn">🚪 Logout</a>
+            </nav>
+        </aside>
 
-    <main class="main-content">
-        <header class="top-bar">
-            <h1>Account Settings</h1>
-        </header>
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="breadcrumb">Home / Profile</div>
+                <h1>My Profile</h1>
+                <p class="subtitle">Manage your professional identity and applications</p>
+            </header>
 
-        <section class="profile-section">
-            <div class="profile-card">
-                <h3>Personal Information</h3>
-                <form id="profileForm">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="profileName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Location</label>
-                        <input type="text" id="profileLocation" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Years of Experience</label>
-                        <input type="number" id="profileExp" required>
-                    </div>
-                    <button type="submit" class="save-btn">Update Profile</button>
-                </form>
-                <hr>
-                <button id="deleteAccountBtn" class="delete-btn">Delete Account</button>
+            <div class="profile-tabs">
+                <button class="tab-btn active" data-tab="profile">Profile</button>
+                <button class="tab-btn" data-tab="applications">Applications</button>
+                <button class="tab-btn" data-tab="security">Security</button>
             </div>
 
-            <div class="applications-card">
-                <h3>My Job Applications</h3>
-                <div id="applicationsList" class="app-list">
-                    <p>Loading applications...</p>
-                </div>
-            </div>
-        </section>
-    </main>
-</div>
+            <div class="tab-content-wrapper">
+                <section id="profile" class="tab-pane active">
+                    <div class="profile-header-card">
+                        <div class="avatar-wrapper">
+                            <div class="initials-fallback" id="profileInitials">?</div>
+                            <img src="" id="profilePhoto" class="avatar-img" alt="Profile" style="display: none;">
+                        </div>
+                        <div class="user-meta">
+                            <h2 id="displayFullName">Loading...</h2>
+                            <div id="vettingBadge" class="status-pill status-pending">Checking Status</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3><i class="icon-user"></i> Professional Details</h3>
+                            <div class="read-only-field">
+                                <label>Years of Experience</label>
+                                <p id="infoExperience">-</p>
+                            </div>
+                            <div class="read-only-field">
+                                <label>Skills</label>
+                                <p id="infoSkills">-</p>
+                            </div>
+                            <div class="read-only-field">
+                                <label>Availability</label>
+                                <p id="infoAvailability">-</p>
+                            </div>
+                        </div>
 
-<div id="deleteModal" class="modal">
-    <div class="modal-content">
-        <h2>Are you absolutely sure?</h2>
-        <p>This action is permanent and cannot be undone.</p>
-        <div class="modal-actions">
-            <button id="confirmDelete" class="confirm-del-btn">Yes, Delete My Account</button>
-            <button id="cancelDelete" class="cancel-btn">Cancel</button>
-        </div>
+                        <div class="info-card">
+                            <h3><i class="icon-map"></i> Location & ID</h3>
+                            <div class="read-only-field">
+                                <label>Address</label>
+                                <p id="infoAddress">-</p>
+                            </div>
+                            <div class="read-only-field">
+                                <label>Preferred Location</label>
+                                <p id="infoPreferredLocation">-</p>
+                            </div>
+                            <div class="read-only-field">
+                                <label>National ID (Masked)</label>
+                                <p id="infoIDNumber">****</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="applications" class="tab-pane">
+                    <div class="table-card">
+                        <h3>Application History</h3>
+                        <div id="applicationsList">
+                            <p class="loading-state">Fetching history...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="security" class="tab-pane">
+                    <div class="security-grid">
+                        <div class="info-card">
+                            <h3>Update Profile</h3>
+                            <form id="editProfileForm">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="editName" placeholder="Enter your name">
+                                </div>
+                                <button type="submit" class="save-btn">Save Changes</button>
+                            </form>
+                        </div>
+                        <div class="info-card danger-zone">
+                            <h3>Account Actions</h3>
+                            <p>Deleting your account is permanent and cannot be undone.</p>
+                            <button id="deleteAccountBtn" class="delete-btn-outline">Delete Account</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
-</div>
     <script type="module" src="../../assets/scripts/nannyProfileController.js"></script>
 </body>
 </html>

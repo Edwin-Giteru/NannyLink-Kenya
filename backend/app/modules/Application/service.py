@@ -19,11 +19,11 @@ class ApplicationService:
                     f"Nanny with id {nanny_id} does not exist.",
                     status_code=404
                 )
-            if nanny.vetting_status != "approved":
-                return Result.fail(
-                    f"Nanny with id {nanny_id} is not approved for applications.",
-                    status_code=403
-                )
+            # if nanny.vetting_status != "approved":
+            #     return Result.fail(
+            #         f"Nanny with id {nanny_id} is not approved for applications.",
+            #         status_code=403
+            #     )
 
             new_application = await self.application_repo.create_application(job_id, nanny_id)
 

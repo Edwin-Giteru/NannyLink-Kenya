@@ -7,7 +7,7 @@ from app.modules.Nanny.nanny_repo import NannyRepository
 
 router = APIRouter(tags=["Application"])
 
-@router.post("/apply/{job_id}/nanny/{nanny_id}", status_code=201)
+@router.post("/apply/{job_id}", status_code=201)
 async def apply_to_job(
     job_id: str,
     db: SessionDep,

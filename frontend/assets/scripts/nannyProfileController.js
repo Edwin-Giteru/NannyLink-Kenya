@@ -1,71 +1,139 @@
 import * as ProfileService from "../../src/service/nannyProfileService.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
-    const profileForm = document.getElementById("profileForm");
-    const appList = document.getElementById("applicationsList");
-    const deleteModal = document.getElementById("deleteModal");
-
-    async function loadData() {
-        const profileRes = await ProfileService.getNannyProfile();
-        const appsRes = await ProfileService.getMyApplications();
-
-        if (profileRes.success) {
-            document.getElementById("profileName").value = profileRes.data.full_name;
-            document.getElementById("profileLocation").value = profileRes.data.location;
-            document.getElementById("profileExp").value = profileRes.data.experience;
-        }
-
-        if (appsRes.success) {
-            renderApplications(appsRes.data);
-        }
+/**
+ * Helper function to safely update text content of an element
+ * prevents "undefined" from showing up in the UI
+ */
+function safeSetText(id, text, fallback = "Not provided") {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = text || fallback;
     }
+}
 
-    function renderApplications(apps) {
-        if (apps.length === 0) {
-            appList.innerHTML = "<p>No applications submitted yet.</p>";
-            return;
-        }
+document.addEventListener("DOMContentLoaded", () => {
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const panes = document.querySelectorAll(".tab-pane");
 
-        appList.innerHTML = apps.map(app => `
-            <div class="app-item">
-                <div class="app-info">
-                    <strong>${app.job_title}</strong>
-                    <span>Applied on: ${new Date(app.created_at).toLocaleDateString()}</span>
-                </div>
-                <span class="status-pill status-${app.status.toLowerCase()}">${app.status}</span>
-            </div>
-        `).join('');
-    }
-
-    // Handle Update
-    profileForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = profileForm.querySelector('button');
-        btn.disabled = true;
-        btn.innerText = "Saving...";
-
-        const updateData = {
-            full_name: document.getElementById("profileName").value,
-            location: document.getElementById("profileLocation").value,
-            experience: document.getElementById("profileExp").value
+    // 2. TAB LOGIC
+    tabBtns.forEach(btn => {
+        btn.onclick = () => {
+            const target = btn.dataset.tab;
+            tabBtns.forEach(b => b.classList.remove("active"));
+            panes.forEach(p => p.classList.remove("active"));
+            
+            btn.classList.add("active");
+            const targetPane = document.getElementById(target);
+            if (targetPane) targetPane.classList.add("active");
         };
+    });
 
-        const res = await ProfileService.updateNannyProfile(updateData);
-        alert(res.success ? "Profile updated!" : "Update failed");
-        btn.disabled = false;
-        btn.innerText = "Update Profile";
-    };
+    // 3. LOAD PROFILE DATA
+    async function loadProfile() {
+        try {
+            const res = await ProfileService.getNannyProfile();
+            if (res.success) {
+                const data = res.data;
+                const name = data.name || "Nanny Member";
 
-    // Handle Delete Flow
-    document.getElementById("deleteAccountBtn").onclick = () => deleteModal.style.display = "block";
-    document.getElementById("cancelDelete").onclick = () => deleteModal.style.display = "none";
-    document.getElementById("confirmDelete").onclick = async () => {
-        const res = await ProfileService.deleteNannyAccount();
-        if (res.success) {
-            localStorage.clear();
-            window.location.href = "/login.html";
+                // TEXT UPDATES - Using safeSetText defined above
+                safeSetText("displayFullName", name);
+                safeSetText("displayEmail", data.email, "No email linked");
+                safeSetText("infoExperience", `${data.years_experience || 0} Years`);
+                safeSetText("infoSkills", data.skills, "General Nanny Skills");
+                safeSetText("infoAvailability", data.availability, "Standard Hours");
+                safeSetText("infoAddress", data.address);
+                safeSetText("infoPreferredLocation", data.preferred_location);
+                
+                // MASK NATIONAL ID
+                if (data.national_id_number) {
+                    const masked = `XXXX-XXXX-${data.national_id_number.slice(-4)}`;
+                    safeSetText("infoIDNumber", masked);
+                }
+
+                // AVATAR STABILITY LOGIC
+                const initialsEl = document.getElementById("profileInitials");
+                const photoEl = document.getElementById("profilePhoto");
+
+                if (initialsEl) initialsEl.innerText = name[0].toUpperCase();
+
+                if (data.profile_photo_url && photoEl) {
+                    photoEl.src = data.profile_photo_url;
+                    photoEl.onload = () => {
+                        photoEl.style.display = "block";
+                    };
+                }
+
+                // VETTING STATUS BADGE
+                const badge = document.getElementById("vettingBadge");
+                if (badge) {
+                    const status = data.vetting_status || "Pending";
+                    badge.innerText = status;
+                    badge.className = `status-pill status-${status.toLowerCase()}`;
+                }
+
+                // SECURITY TAB PREFILL
+                const editNameInput = document.getElementById("editName");
+                if (editNameInput) {
+                    editNameInput.value = name;
+                }
+            }
+        } catch (error) {
+            console.error("Profile load failed:", error);
         }
-    };
+    }
 
-    loadData();
+    // 4. LOAD APPLICATIONS (Card Layout)
+    async function loadApplications() {
+        const container = document.getElementById("applicationsList");
+        if (!container) return;
+
+        try {
+            container.innerHTML = `<p class="loading-state">Loading your applications...</p>`;
+            const res = await ProfileService.getMyApplications();
+
+            if (res.success && res.data && res.data.length > 0) {
+                container.innerHTML = res.data.map(app => {
+                    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+                    const formattedDate = new Date(app.created_at).toLocaleDateString('en-GB', dateOptions);
+
+                    return `
+                    <div class="job-card">
+                        <div class="job-main-info">
+                            <h3 class="job-title">${app.job_title || 'Nanny Position'}</h3>
+                            <div class="job-sub-info">
+                                <span class="company-name">Family Client</span>
+                                <span class="job-location">Nairobi (Remote)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-middle-info">
+                            <div class="date-posted">${formattedDate}</div>
+                            <div class="vacancies-count">No of vacancies: 1</div>
+                        </div>
+
+                        <div class="job-action">
+                            <span class="status-pill status-${(app.status || 'pending').toLowerCase()}">
+                                ${app.status || 'Pending'}
+                            </span>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>You haven't applied for any jobs yet.</p>
+                        <a href="nannydashboard.html" class="browse-btn">Browse Jobs</a>
+                    </div>`;
+            }
+        } catch (error) {
+            console.error("Error loading applications:", error);
+            container.innerHTML = `<p class="error-state">Unable to load applications at this time.</p>`;
+        }
+    }
+
+    // INITIALIZE
+    loadProfile();
+    loadApplications();
 });
