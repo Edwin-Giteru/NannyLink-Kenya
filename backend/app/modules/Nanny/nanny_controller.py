@@ -32,7 +32,7 @@ async def create_nanny(
 
     return result.data
 
-@router.patch("/{nanny_id}")
+@router.patch("/")
 async def update_nanny(
     nanny_update: NannyUpdate,
     db: SessionDep,
@@ -76,7 +76,7 @@ async def get_a_nanny(
     return result.data
 
 
-@router.get("/applications{nanny_id}")
+@router.get("/applications/{nanny_id}")
 async def get_applications_for_nanny(   
     db: SessionDep,
     current_user: User = Depends(get_current_user)
@@ -97,7 +97,7 @@ async def get_applications_for_nanny(
         )
     return result.data
 
-@router.delete("")
+@router.delete("/{nanny_id}")
 async def delete_nanny(
     db: SessionDep,
     current_user: User = Depends(get_current_user)

@@ -6,7 +6,7 @@ from typing import List
 import uuid
 from app.db.models.user import User
 from app.db.models.application import Application
-
+from sqlalchemy.orm import joinedload
 
 class NannyRepository:
     def __init__(self, db: AsyncSession):
@@ -38,7 +38,10 @@ class NannyRepository:
         return result.scalars().all()
     
     async def get_applications_for_nanny(self, nanny_id: uuid.UUID) -> List[Application]:
-        stmt = select(Application).where(Application.nanny_id == nanny_id)
+        stmt = (select(Application)
+                .options(joinedload(Application.job_post))
+                .where(Application.nanny_id == nanny_id)
+            )
         result = await self.db.execute(stmt)
         return result.scalars().all()
     
