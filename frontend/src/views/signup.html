@@ -2,11 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self'; 
-               connect-src 'self' http://127.0.0.1:8000 http://127.0.0.1:5500; 
-               script-src 'self' 'unsafe-inline'; 
-               style-src 'self' 'unsafe-inline';">
   <title>Sign Up</title>
   <link rel="stylesheet" href="../../assets/styles/auth.css">
 </head>
@@ -37,14 +32,18 @@
     </select>
 
     <button type="submit">Sign Up</button>
-  </form>
-
+  
+    </form> 
     <p>
       Already have an account?
       <a href="login.html">Login</a>
     </p>
+  <div id="customAlertModal" class="alert-toast">
+      <div class="alert-content">
+          <span id="alertIcon"></span>
+          <span id="alertMessage"></span>
+      </div>
   </div>
-
   <script type="module" src="../../assets/scripts/authController.js"></script>
 </body>
 </html>

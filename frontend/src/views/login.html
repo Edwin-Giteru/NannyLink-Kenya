@@ -3,11 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
-  <meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self'; 
-               connect-src 'self' http://127.0.0.1:8000 http://127.0.0.1:5500; 
-               script-src 'self' 'unsafe-inline'; 
-               style-src 'self' 'unsafe-inline';">
   <link rel="stylesheet" href="../../assets/styles/auth.css">
 </head>
 <body>
@@ -25,8 +20,12 @@
       Don't have an account?
       <a href="signup.html">Sign up</a>
     </p>
-  </div>
-
+  <div id="customAlertModal" class="alert-toast">
+    <div class="alert-content">
+        <span id="alertIcon"></span>
+        <span id="alertMessage"></span>
+    </div>
+</div>
   <script type="module" src="../../assets/scripts/authController.js"></script>
 </body>
 </html>

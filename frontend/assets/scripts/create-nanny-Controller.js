@@ -1,4 +1,25 @@
 import { createNannyProfile } from "../../src/service/nanny-creation-service.js";
+
+const showModal = (message, type = "info") => {
+    const modal = document.getElementById("customAlertModal");
+    const msgEl = document.getElementById("alertMessage");
+    const iconEl = document.getElementById("alertIcon");
+
+    msgEl.innerText = message;
+    iconEl.innerText = type === "success" ? "✅" : "⚠️";
+    
+    modal.classList.add("show");
+
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            modal.classList.remove("show");
+            setTimeout(() => {
+                resolve();
+            }, 200); 
+        }, ); 
+    });
+};
+
 console.log("Nanny Profile Controller is ALIVE!");
 const profileForm = document.getElementById("nannyProfileForm");
 
@@ -9,7 +30,7 @@ if (profileForm) {
     // 1. Check for token first
     const token = localStorage.getItem("access_token");
     if (!token) {
-      alert("Authentication error: Please log in again.");
+      await showModal("Authentication error: Please log in again.", "error");
       window.location.href = "../auth/login.html";
       return;
     }
@@ -28,14 +49,14 @@ if (profileForm) {
       profile_photo_url: document.getElementById("profile_photo_url").value.trim() || null
     };
 
-    // 3. Send to Service
     const result = await createNannyProfile(profileData, token);
 
     if (result.success) {
-      alert("Profile created successfully!");
-      window.location.href = "dashboard.html";
+      // Wait for the message to fall and hide before redirecting
+      await showModal("Profile created successfully!", "success");
+      window.location.href = "nannydashboard.html";
     } else {
-      alert("Submission Error: " + (result.message || "Please check all fields."));
+      showModal("Submission Error: " + (result.message || "Please check all fields."), "error");
     }
   });
 }

@@ -1,8 +1,7 @@
-const URL = "http://127.0.0.1:8000"; 
-
+import { API_URL } from "../utils/config.js";
 export const login = async (email, password) => {
   try {
-    const response = await fetch(`${URL}/login`, {
+    const response = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -24,7 +23,7 @@ export async function signup(userData) {
   try {
     const endpoint = userData.role.toLowerCase() === "nanny" ? "nanny" : "family";
     
-    const response = await fetch(`${URL}/${endpoint}`, {
+    const response = await fetch(`${API_URL}/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData)

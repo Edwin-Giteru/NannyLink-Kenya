@@ -1,7 +1,8 @@
+import { API_URL } from "../utils/config.js";
 export async function createNannyProfile(profileData, token) {
   try {
     const token = localStorage.getItem("access_token");
-    const response = await fetch("http://127.0.0.1:8000/Nanny", { 
+    const response = await fetch(`${API_URL}/Nanny`, { 
       method: "POST",
       headers: { 
         "Content-Type": "application/json",

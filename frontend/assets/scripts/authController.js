@@ -1,6 +1,25 @@
 import { login, signup } from "../../src/service/authService.js";
 
-// LOGIN
+const showModal = (message, type = "info") => {
+    const modal = document.getElementById("customAlertModal");
+    const msgEl = document.getElementById("alertMessage");
+    const iconEl = document.getElementById("alertIcon");
+
+    msgEl.innerText = message;
+    iconEl.innerText = type === "success" ? "✅" : "⚠️";
+    
+    modal.classList.add("show");
+
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            modal.classList.remove("show");
+            setTimeout(() => {
+                resolve();
+            }, 200); 
+        }, 1000); 
+    });
+};
+
 console.log("Auth controller loaded");
 
 const loginForm = document.getElementById("loginForm");
@@ -14,12 +33,13 @@ if (loginForm) {
     const result = await login(email, password);
 
     if (result.success) {
-
       localStorage.setItem("access_token", result.access_token);
       localStorage.setItem("user_role", result.role);
       localStorage.setItem("user_id", result.id);
       
-      alert("Login successful");
+      // Wait for notification to finish before redirecting
+      await showModal("Login successful", "success");
+      
       const role = result.role.toLowerCase(); 
     
       if (role === "nanny") {
@@ -32,7 +52,7 @@ if (loginForm) {
           window.location.href = "../../index.html"; 
       }
     } else {
-      alert(result.message || "Login failed");
+      showModal(result.message || "Login failed", "error");
     }
   });
 }
@@ -79,7 +99,7 @@ if (signupForm) {
         e.preventDefault();
 
         if (passwordInput.value.length < 6) {
-            alert("Please use a stronger password.");
+            showModal("Please use a stronger password.", "error");
             return;
         }
 
@@ -93,10 +113,10 @@ if (signupForm) {
         const result = await signup(userData);
 
         if (result.success) {
-            alert("Account created successfully!");
+            await showModal("Account created successfully!", "success");
             window.location.href = "login.html";
         } else {
-            alert(result.message || "Signup failed");
+            showModal(result.message || "Signup failed", "error");
         }
     });
 }
