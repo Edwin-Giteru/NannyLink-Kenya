@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     });
     
-   // --- LOAD PROFILE ---
     async function loadProfile() {
         try {
             const res = await ProfileService.getNannyProfile();
@@ -62,25 +61,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const initialsEl = document.getElementById("profileInitials");
                 const photoEl = document.getElementById("profilePhoto");
-                
-                const cleanName = name.trim();
+
+                const cleanName = (data.name || "Nanny Member").trim();
+                const letter = cleanName.charAt(0).toUpperCase();
+
                 if (initialsEl) {
-                    initialsEl.innerText = cleanName.charAt(0).toUpperCase();
+                    initialsEl.innerText = letter;
+                    initialsEl.style.display = "flex"; 
                 }
 
-                const hasValidPhoto = data.profile_photo_url && 
-                                      data.profile_photo_url.trim() !== "" && 
-                                      data.profile_photo_url !== "null";
+                if (photoEl) {
+                    photoEl.style.display = "none";
+                }
 
-                if (hasValidPhoto && photoEl) {
-                    photoEl.src = data.profile_photo_url;
-                    photoEl.style.display = "block";
-                    if (initialsEl) initialsEl.style.display = "none";
-                } else {
-                    if (photoEl) photoEl.style.display = "none";
-                    if (initialsEl) {
-                        initialsEl.style.display = "flex"; // Force flex to ensure centering
+                if (data.profile_photo_url && data.profile_photo_url.trim() !== "" && data.profile_photo_url !== "null") {
+                    if (photoEl) {
+                        photoEl.src = data.profile_photo_url;
+                        photoEl.style.display = "block";
                     }
+                    if (initialsEl) initialsEl.style.display = "none";
                 }
 
                 const badge = document.getElementById("vettingBadge");
@@ -104,44 +103,72 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     async function loadApplications() {
-        const container = document.getElementById("applicationsList");
-        if (!container) return;
-        try {
-            container.innerHTML = `<p class="loading-state">Loading your applications...</p>`;
-            const res = await ProfileService.getMyApplications();
-            const appsArray = Array.isArray(res.data) ? res.data : (res.data?.applications || []);
+    const container = document.getElementById("applicationsList");
+    if (!container) return;
 
-            if (res.success && appsArray.length > 0) {
-                container.innerHTML = appsArray.map(app => {
-                    const appDate = app.created_at 
-                        ? new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) 
-                        : "Date unknown";
+    try {
+        container.innerHTML = `<p class="loading-state">Loading your applications...</p>`;
+        const res = await ProfileService.getMyApplications();
+        const appsArray = Array.isArray(res.data) ? res.data : (res.data?.applications || []);
 
-                    return `
-                    <div class="job-card" style="margin-bottom: 15px; border: 1px solid #eee; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-                        <div class="job-main-info" style="flex: 1;">
-                            <h3 class="job-title" style="margin:0;">${app.job_post?.title || "Nanny Position"}</h3>
-                            <div class="job-sub-info"><span class="job-location" style="color:#777; font-size:0.85rem;">📍 ${app.job_post?.location || "Nairobi"}</span></div>
-                        </div>
-                        
-                        <div class="job-date" style="flex: 1; text-align: center; color: #666; font-size: 0.9rem;">
-                            <span style="display:block; font-size: 0.7rem; text-transform: uppercase; color: #aaa;">Applied On</span>
-                            <strong>${appDate}</strong>
-                        </div>
+        if (res.success && appsArray.length > 0) {
+            // Create the table skeleton
+            let tableHTML = `
+                <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden;">
+                    <thead>
+                        <tr style="text-align: left; background-color: #f8f9fa; border-bottom: 2px solid #eee;">
+                            <th style="padding: 15px; color: #555; font-weight: 600;">Position</th>
+                            <th style="padding: 15px; color: #555; font-weight: 600; text-align: center;">Applied Date</th>
+                            <th style="padding: 15px; color: #555; font-weight: 600; text-align: right;">Current Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
 
-                        <div class="job-action" style="flex: 1; text-align: right;">
-                            <span class="status-pill status-${(app.status || 'pending').toLowerCase()}">${app.status || 'Applied'}</span>
-                        </div>
-                    </div>`;
-                }).join('');
-            } else {
-                container.innerHTML = `<p>No applications found.</p>`;
-            }
-        } catch (error) {
-            container.innerHTML = `<p class="error-state">Unable to load applications.</p>`;
+            // Map rows
+            const rows = appsArray.map(app => {
+                const appDate = app.created_at 
+                    ? new Date(app.created_at).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      }) 
+                    : "Date unknown";
+
+                const status = (app.status || 'Applied').toLowerCase();
+
+                return `
+                    <tr style="border-bottom: 1px solid #f0f0f0; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
+                        <td style="padding: 15px;">
+                            <div style="font-weight: 600; color: #333;">${app.job_post?.title || "Nanny Position"}</div>
+                            <div style="font-size: 0.85rem; color: #777;">📍 ${app.job_post?.location || "Nairobi"}</div>
+                        </td>
+                        <td style="padding: 15px; text-align: center; color: #666; font-size: 0.9rem;">
+                            ${appDate}
+                        </td>
+                        <td style="padding: 15px; text-align: right;">
+                            <span class="status-pill status-${status}" style="color: orange;display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;">
+                                ${status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tableHTML += rows + `</tbody></table>`;
+            container.innerHTML = tableHTML;
+        } else {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    <p style="font-size: 2rem;">📄</p>
+                    <p>No application history found.</p>
+                </div>`;
         }
+    } catch (error) {
+        console.error("Load applications error:", error);
+        container.innerHTML = `<p class="error-state">Unable to load applications.</p>`;
     }
-
+}
     // --- HANDLE UPDATE ---
     const updateForm = document.getElementById("editProfileForm");
     if (updateForm) {

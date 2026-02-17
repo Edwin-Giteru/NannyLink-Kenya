@@ -3,6 +3,7 @@ from app.db.models.types import NannyAvailability as AvailabilityEnum
 from app.db.models.types import JobStatus as JobEnum
 from uuid import UUID
 from typing import Optional
+from datetime import datetime
 
 class JobBase(BaseModel):
     title: str
@@ -23,6 +24,7 @@ class JobCreate(JobBase):
 class JobResponse(JobBase):
     id: UUID
     status: JobEnum
+    created_at: datetime
 
     @computed_field
     @property

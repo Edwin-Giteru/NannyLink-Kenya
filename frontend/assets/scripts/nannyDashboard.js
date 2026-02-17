@@ -59,43 +59,131 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    function renderJobs(jobs) {
-        jobGrid.innerHTML = ""; 
-        if (jobs.length === 0) {
-            jobGrid.innerHTML = `<div style="text-align: center; padding: 50px; color: #777;"><p style="font-size: 3rem;">🔍</p><p>No jobs match your search.</p></div>`;
-            return;
-        }
-        jobs.forEach(job => {
-            const isHighPay = job.salary > 95000 ? '<span class="tag-urgent">High Pay</span>' : '';
-            const mediumPay = job.salary > 50000 && job.salary <= 95000 ? '<span class="tag-medium">Medium Pay</span>' : '';
-            const isApplied = job.applied === true;
+   function renderJobs(jobs) {
+    // 1. Clear container
+    jobGrid.innerHTML = ""; 
+    
+    // Create a wrapper to control the 90% width and centering
+    const tableWrapper = document.createElement("div");
+    tableWrapper.style.width = "90%";
+    tableWrapper.style.margin = "20px auto"; // Centered within the main-content area
+    tableWrapper.style.overflowX = "auto"; // Allows scrolling on small screens
 
-            const card = document.createElement("div");
-            card.className = "job-card";
-            card.innerHTML = `
-                <div class="job-info">
-                    <h3>${job.title} ${isHighPay} ${mediumPay}</h3>
-                    <div class="job-meta">📍 ${job.location} | Ksh ${job.salary}</div>
-                    <div style="font-size: 0.8rem; color: #777;">
-                        ${job.availability.replace('_', ' ')} • ${job.required_experience} years exp.
-                    </div>
-                </div>
-                <div class="job-action">
-                    <button class="row-apply-btn" id="btn-${job.id}" ${isApplied ? 'disabled style="background: #ccc; cursor: not-allowed;"' : ''}>
-                        ${isApplied ? 'Applied' : 'View & Apply'}
-                    </button>
-                </div>`;
+    // Create Table Element
+    const table = document.createElement("table");
+    table.className = "job-list-table";
+    table.style.width = "100%";
+    table.style.borderCollapse = "collapse";
+    table.style.background = "#fff";
+    table.style.borderRadius = "12px";
+    table.style.boxShadow = "0 4px 12px rgba(0,0,0,0.05)";
 
-            const btn = card.querySelector(".row-apply-btn");
-            if (!isApplied) {
-                btn.onclick = (e) => {
-                    e.stopPropagation();
-                    openModal(job);
-                };
-            }
-            jobGrid.appendChild(card);
-        });
+    // 2. Handle Empty State
+    if (jobs.length === 0) {
+        table.innerHTML = `
+            <tbody>
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 10px 20px; color: #777;">
+                        <p style="font-size: 4rem; margin-bottom: 10px;">🔍</p>
+                        <p style="font-size: 1.2rem;">No jobs match your search criteria.</p>
+                    </td>
+                </tr>
+            </tbody>`;
+        tableWrapper.appendChild(table);
+        jobGrid.appendChild(tableWrapper);
+        return;
     }
+
+    // 3. Create Table Header
+    const thead = document.createElement("thead");
+    thead.innerHTML = `
+        <tr style="text-align: left; background-color: #f8f9fa; border-bottom: 2px solid #eee;">
+            <th style="padding: 20px; color: #555; font-weight: 600;">Job Title</th>
+            <th style="padding: 20px; color: #555; font-weight: 600;">Location & Salary</th>
+            <th style="padding: 20px; color: #555; font-weight: 600;">Experience/Type</th>
+            <th style="padding: 20px; color: #555; font-weight: 600;">Posted Date</th>
+            <th style="padding: 20px; color: #555; font-weight: 600; text-align: right;">Action</th>
+        </tr>`;
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+
+    // 4. Iterate and Build Rows
+    jobs.forEach(job => {
+        const isHighPay = job.salary > 95000 ? '<span class="tag-urgent" style="background:#ffebee; color:#c62828; padding:2px 8px; border-radius:4px; font-size:0.75rem; margin-left:8px;">High Pay</span>' : '';
+        const mediumPay = job.salary > 50000 && job.salary <= 95000 ? '<span class="tag-medium" style="background:#e3f2fd; color:#1565c0; padding:2px 8px; border-radius:4px; font-size:0.75rem; margin-left:8px;">Medium Pay</span>' : '';
+        const isApplied = job.applied === true;
+        
+        // Format Date
+        const dateFormatted = new Date(job.created_at).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+
+        const tr = document.createElement("tr");
+        tr.className = "job-row-item";
+        tr.style.borderBottom = "1px solid #f0f0f0";
+        tr.style.transition = "background 0.2s";
+
+        tr.innerHTML = `
+            <td style="padding: 20px;">
+                <div style="font-weight: 600; color: #333; font-size: 1rem;">${job.title}</div>
+                ${isHighPay} ${mediumPay}
+            </td>
+            <td style="padding: 20px;">
+                <div style="color: #666; font-size: 0.9rem;">📍 ${job.location}</div>
+                <div style="font-weight: 700; color: #2e7d32;">Ksh ${job.salary.toLocaleString()}</div>
+            </td>
+            <td style="padding: 20px; color: #666; font-size: 0.9rem;">
+                <span style="display:block;">⏱️ ${job.availability.replace('_', ' ')}</span>
+                <span style="display:block;">🎓 ${job.required_experience} Years Exp.</span>
+            </td>
+            <td style="padding: 20px; color: #888; font-size: 0.85rem;">
+                ${dateFormatted}
+            </td>
+            <td style="padding: 20px; text-align: right;">
+                <button class="row-apply-btn" id="btn-${job.id}" 
+                    style="${isApplied ? 'background:#ccc; cursor:not-allowed;' : 'background:#6d4830; cursor:pointer;'} color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:600; transition: 0.3s;"
+                    ${isApplied ? 'disabled' : ''}>
+                    ${isApplied ? 'Applied' : 'View & Apply'}
+                </button>
+            </td>`;
+
+        // Click Logic Preservation
+        // ... existing row creation logic ...
+
+        const btn = tr.querySelector(".row-apply-btn");
+
+        if (!isApplied) {
+            // 1. Set the hover effect using JS event listeners
+            btn.onmouseover = () => {
+                btn.style.backgroundColor = "#543725"; // Darker shade of your #6d4830
+                btn.style.transform = "translateY(-1px)";
+                btn.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+            };
+
+            btn.onmouseout = () => {
+                btn.style.backgroundColor = "darkgreen"; // Original color
+                btn.style.transform = "translateY(0)";
+                btn.style.boxShadow = "none";
+            };
+
+            // 2. Preserve your existing modal logic
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                openModal(job);
+            };
+        }
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    tableWrapper.appendChild(table);
+    jobGrid.appendChild(tableWrapper);
+}
+
+
 
     function openModal(job) {
         const modalBody = document.getElementById("modalBody");

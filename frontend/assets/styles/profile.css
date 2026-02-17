@@ -13,16 +13,16 @@
     height: 90px;
     border-radius: 50%;
     position: relative;
-    background: var(--primary-color);
+    background: var(--primary-color); /* Fallback background */
     display: flex;
     align-items: center;
     justify-content: center;
     border: 3px solid white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
+    overflow: hidden; 
 }
 
-.initials-fallback {
+/* .initials-fallback {
     width: 80px;
     height: 80px;
     background-color: #6d4830; 
@@ -34,28 +34,28 @@
     font-weight: bold;
     border-radius: 50%;
     text-transform: uppercase;
-}
+} */
 
 .avatar-img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-}
-
-#profileInitials {
-    width: 80px;  
-    height: 80px;
-    background-color: #6d4830; 
-    color: #ffffff !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-radius: 50%;
-    font-size: 2rem;
-    font-weight: bold;
 }
-/* Layout & Tabs */
+#profileInitials {
+    width: 90px;
+    height: 90px;
+    background-color: #6d4830; /* Your primary brown */
+    color: #ffffff !important;
+    display: flex;             /* Vital for centering */
+    align-items: center;       /* Vertical center */
+    justify-content: center;    /* Horizontal center */
+    border-radius: 50%;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0 auto;            /* Center the circle in its parent */
+}
 .profile-tabs {
     display: flex;
     gap: 30px;
