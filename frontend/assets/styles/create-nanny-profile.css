@@ -1,0 +1,188 @@
+/* --- Global & Layout Reset --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #f8fafc; /* Professional soft gray/blue */
+    color: #334155;
+    line-height: 1.6;
+    padding: 40px 20px;
+}
+
+.profile-onboarding-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    border: 1px solid whitesmoke;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.profile-hero {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.avatar-preview-container {
+    width: 140px;      
+    height: 140px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;  
+    border: 5px solid white;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background-color: #e2e8f0;
+    position: relative;
+}
+
+#avatarPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image fills the circle without stretching */
+}
+
+.profile-hero h1 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.profile-hero p {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+/* --- The Grid & Cards --- */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* TWO CARDS PER ROW */
+    gap: 30px;
+    margin-bottom: 40px;
+}
+.progress-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+.form-card {
+    background: #ffffff;
+    padding: 30px;
+    margin: 25px;
+    gap: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f1f5f9;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.step-num {
+    background: #6d4830; /* Your primary brown */
+    color: white;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 700;
+}
+
+.card-header h3 {
+    font-size: 1.25rem;
+    color: #1e293b;
+}
+
+/* --- Form Elements --- */
+.input-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #475569;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background-color: #fcfcfc;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #6d4830;
+    box-shadow: 0 0 0 4px rgba(109, 72, 48, 0.1);
+}
+
+/* --- Upload Zones --- */
+.upload-zone {
+    border: 2px dashed #cbd5e1;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f8fafc;
+    margin-bottom: 10px;
+}
+
+.upload-zone:hover {
+    border-color: #6d4830;
+    background: #f1f5f9;
+}
+
+/* --- Actions & Buttons --- */
+.form-actions {
+    grid-column: span 2; /* Spans across both columns */
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.primary-btn {
+    background-color: #6d4830;
+    color: white;
+    padding: 16px 60px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    width: fit-content;
+
+    transition: transform 0.2s, background 0.2s;
+}
+
+.primary-btn:hover {
+    background-color: #543725;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 900px) {
+    .profile-grid {
+        grid-template-columns: 1fr; 
+    }
+    .form-actions {
+        grid-column: span 1;
+    }
+}

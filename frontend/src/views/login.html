@@ -1,31 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <link rel="stylesheet" href="../../assets/styles/auth.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Nanny Link</title>
+    <link rel="stylesheet" href="../../assets/styles/auth.css">
 </head>
 <body>
+    <div class="page-wrapper">
+        <div class="split-card">
+            <div class="visual-side">
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="16" r="4"/><circle cx="8" cy="16" r="4"/><circle cx="16" cy="8" r="4"/></svg>
+                    <span>Nanny Link</span>
+                </div>
+                <div class="testimonial">
+                    <blockquote>"Simply all the tools that my family and I need."</blockquote>
+                    <p class="author">Karen Yue</p>
+                    <p class="title">Verified Parent</p>
+                </div>
+            </div>
 
-  <div class="auth-container">
-    <h2>Login</h2>
+            <div class="form-side">
+                <div class="form-container">
+                    <h1>Welcome back to Nanny Link</h1>
+                    <p class="subtitle">Find and manage your childcare effortlessly with our trusted network.</p>
 
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="alex.jordan@gmail.com" required>
+                        </div>
 
-    <p>
-      Don't have an account?
-      <a href="signup.html">Sign up</a>
-    </p>
-  <div id="customAlertModal" class="alert-toast">
-    <div class="alert-content">
-        <span id="alertIcon"></span>
-        <span id="alertMessage"></span>
+                        <div class="input-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="••••••••••••" required>
+                        </div>
+
+                        <a href="#" class="forgot-link">Forgot password?</a>
+
+                        <div class="toggle-row">
+                            <span>Remember sign in details</span>
+                            <label class="switch">
+                                <input type="checkbox" id="remember">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Log in</button>
+                    </form>
+
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+
+                    <button class="btn-google">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+                        Continue with Google
+                    </button>
+
+                    <p class="auth-switch">Don't have an account? <a href="signup.html">Sign up</a></p>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-  <script type="module" src="../../assets/scripts/authController.js"></script>
+
+    <div id="customAlertModal" class="alert-toast">
+        <div class="alert-content">
+            <span id="alertIcon"></span>
+            <span id="alertMessage"></span>
+        </div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/authController.js"></script>
 </body>
 </html>

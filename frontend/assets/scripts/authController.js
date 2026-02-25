@@ -1,7 +1,20 @@
 import { login, signup } from "../../src/service/authService.js";
 
 const showModal = (message, type = "info") => {
-    const modal = document.getElementById("customAlertModal");
+    // Create notification element if it doesn't exist
+    let modal = document.getElementById("customAlertModal");
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = "customAlertModal";
+        modal.className = "alert-toast";
+        modal.innerHTML = `
+            <div class="alert-content">
+                <span id="alertIcon"></span>
+                <span id="alertMessage"></span>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+
     const msgEl = document.getElementById("alertMessage");
     const iconEl = document.getElementById("alertIcon");
 
@@ -15,108 +28,126 @@ const showModal = (message, type = "info") => {
             modal.classList.remove("show");
             setTimeout(() => {
                 resolve();
-            }, 200); 
-        }, 1000); 
+            }, 300); 
+        }, 2500); 
     });
 };
 
-console.log("Auth controller loaded");
+console.log("Nanny Link Auth controller loaded");
 
+// --- LOGIN LOGIC ---
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-    const result = await login(email, password);
+        // Visual feedback for user
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = "Logging in...";
+        submitBtn.disabled = true;
 
-    if (result.success) {
-      localStorage.setItem("access_token", result.access_token);
-      localStorage.setItem("user_role", result.role);
-      localStorage.setItem("user_id", result.id);
-      
-      // Wait for notification to finish before redirecting
-      await showModal("Login successful", "success");
-      
-      const role = result.role.toLowerCase(); 
-    
-      if (role === "nanny") {
-          window.location.href = "../../src/views/nannydashboard.html"; 
-      } else if (role === "family") {
-          window.location.href = "../family/dashboard.html";
-      } else if (role === "admin") {
-          window.location.href = "../admin/dashboard.html";
-      } else {
-          window.location.href = "../../index.html"; 
-      }
-    } else {
-      showModal(result.message || "Login failed", "error");
-    }
-  });
+        try {
+            const result = await login(email, password);
+
+            if (result.success) {
+                localStorage.setItem("access_token", result.access_token);
+                localStorage.setItem("user_role", result.role);
+                localStorage.setItem("user_id", result.id);
+                
+                await showModal("Welcome back to Nanny Link!", "success");
+                
+                const role = result.role.toLowerCase(); 
+                if (role === "nanny") {
+                    window.location.href = "../../src/views/nannydashboard.html"; 
+                } else if (role === "family") {
+                    window.location.href = "../family/dashboard.html";
+                } else if (role === "admin") {
+                    window.location.href = "../admin/dashboard.html";
+                } else {
+                    window.location.href = "../../index.html"; 
+                }
+            } else {
+                showModal(result.message || "Invalid email or password", "error");
+            }
+        } catch (err) {
+            showModal("Server error. Please try again later.", "error");
+        } finally {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+        }
+    });
 }
 
-// SIGNUP
+// --- SIGNUP LOGIC ---
 const signupForm = document.getElementById("signupForm");
 const passwordInput = document.getElementById("password");
-const togglePassword = document.getElementById("togglePassword");
-const strengthBar = document.getElementById("strengthBar");
-const strengthText = document.getElementById("strengthText");
 
-if (passwordInput) {
-    togglePassword.addEventListener("click", () => {
-        const isPassword = passwordInput.getAttribute("type") === "password";
-        passwordInput.setAttribute("type", isPassword ? "text" : "password");
-        togglePassword.textContent = isPassword ? "👁" : "👁️";
-    });
-
+if (signupForm) {
+    // Password Strength Meter Logic for Signup
     passwordInput.addEventListener("input", () => {
         const val = passwordInput.value;
         let strength = "";
         let text = "";
+        
+        // Find or create strength elements if they aren't in HTML
+        let strengthBar = document.getElementById("strengthBar");
+        let strengthText = document.getElementById("strengthText");
 
         if (val.length > 0) {
             if (val.length < 6) {
                 strength = "weak";
-                text = "Too weak (min 6 chars)";
+                text = "Min 6 characters";
             } else if (val.match(/[A-Z]/) && val.match(/[0-9]/) && val.match(/[^A-Za-z0-9]/)) {
                 strength = "strong";
                 text = "Strong password!";
             } else {
                 strength = "medium";
-                text = "Medium strength (add caps,numbers and symbols to make it stronger)";
+                text = "Medium: add numbers/symbols";
             }
         }
 
-        strengthBar.className = "bar " + strength;
-        strengthText.textContent = text;
+        if (strengthBar) strengthBar.className = "bar " + strength;
+        if (strengthText) strengthText.textContent = text;
     });
-}
 
-if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        const confirmPassword = document.getElementById("confirm-password").value;
+
         if (passwordInput.value.length < 6) {
-            showModal("Please use a stronger password.", "error");
+            showModal("Password must be at least 6 characters.", "error");
+            return;
+        }
+
+        if (passwordInput.value !== confirmPassword) {
+            showModal("Passwords do not match.", "error");
             return;
         }
 
         const userData = {
+            fullname: document.getElementById("fullname").value,
             email: document.getElementById("email").value,
-            phone: document.getElementById("phone").value,
-            password: passwordInput.value,
-            role: document.getElementById("role").value
+            password: passwordInput.value
         };
+
+        const submitBtn = signupForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Creating account...";
 
         const result = await signup(userData);
 
         if (result.success) {
-            await showModal("Account created successfully!", "success");
+            await showModal("Nanny Link account created!", "success");
             window.location.href = "login.html";
         } else {
             showModal(result.message || "Signup failed", "error");
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Sign up";
         }
     });
 }

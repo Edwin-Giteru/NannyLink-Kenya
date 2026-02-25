@@ -1,49 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sign Up</title>
-  <link rel="stylesheet" href="../../assets/styles/auth.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Nanny Link</title>
+    <link rel="stylesheet" href="../../assets/styles/auth.css">
 </head>
 <body>
+    <div class="page-wrapper">
+        <div class="split-card">
+            <div class="visual-side">
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="16" r="4"/><circle cx="8" cy="16" r="4"/><circle cx="16" cy="8" r="4"/></svg>
+                    <span>Nanny Link</span>
+                </div>
+                <div class="testimonial">
+                    <blockquote>"Connecting with a reliable nanny has never been easier."</blockquote>
+                    <p class="author">James Chen</p>
+                    <p class="title">Nanny Link Member</p>
+                </div>
+            </div>
 
-  <div class="auth-container">
-    <h2>Create Account</h2>
+            <div class="form-side">
+                <div class="form-container">
+                    <h1>Join Nanny Link</h1>
+                    <p class="subtitle">Create your account to start browsing profiles today.</p>
 
-    <form id="signupForm">    
-    <input type="email" id="email" placeholder="Email" required />
-    
-    <div class="password-wrapper">
-      <input type="password" id="password" placeholder="Password" required />
-      <span id="togglePassword" class="toggle-icon">👁️</span>
+                    <form id="signupForm">
+                        <div class="input-group">
+                            <label for="fullname">Full Name</label>
+                            <input type="text" id="fullname" placeholder="Alex Jordan" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="alex.jordan@gmail.com" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="+1 (555) 000-0000" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="role">I am a:</label>
+                            <select id="role" required>
+                                <option value="">Select Role</option>
+                                <option value="family">Family</option>
+                                <option value="nanny">Nanny</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group password-wrapper">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="••••••••••••" required>
+                            <span id="togglePassword" class="toggle-icon">👁️</span>
+                        </div>
+
+                        <div class="strength-meter">
+                            <div id="strengthBar" class="bar"></div>
+                        </div>
+                        <small id="strengthText"></small>
+
+                        <div class="input-group">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" placeholder="••••••••••••" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Sign up</button>
+                    </form>
+
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+
+                    <button class="btn-google">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+                        Continue with Google
+                    </button>
+
+                    <p class="auth-switch">Already have an account? <a href="login.html">Login</a></p>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div class="strength-meter">
-      <div id="strengthBar" class="bar"></div>
+
+    <div id="customAlertModal" class="alert-toast">
+        <div class="alert-content">
+            <span id="alertIcon"></span>
+            <span id="alertMessage"></span>
+        </div>
     </div>
-    <small id="strengthText"></small>
 
-    <input type="tel" id="phone" placeholder="Phone Number" required />
-
-    <select id="role" required>
-      <option value="">Select Role</option>
-      <option value="family">Family</option>
-      <option value="nanny">Nanny</option>
-    </select>
-
-    <button type="submit">Sign Up</button>
-  
-    </form> 
-    <p>
-      Already have an account?
-      <a href="login.html">Login</a>
-    </p>
-  <div id="customAlertModal" class="alert-toast">
-      <div class="alert-content">
-          <span id="alertIcon"></span>
-          <span id="alertMessage"></span>
-      </div>
-  </div>
-  <script type="module" src="../../assets/scripts/authController.js"></script>
+    <script type="module" src="../../assets/scripts/authController.js"></script>
 </body>
 </html>

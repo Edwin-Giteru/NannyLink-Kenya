@@ -3,74 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Board</title>
+    <title>NannyLink | Professional Job Board</title>
     <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="dashboard-body">
 
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="logo">NannyLink</div>
-            <nav>
-                <a href="#" class="active">🏠 Job Board</a>
-                <a href="profile.html">👤 My Profile</a>
-                <a href="#" id="logoutBtn">🚪Logout</a>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar" aria-expanded="true">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <span class="logo-icon">NL</span>
+                    <span class="logo-text">NannyLink</span>
+                </div>
+                <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active"><span class="icon">🏠</span><span class="label">Job Board</span></a>
+                <a href="#" class="nav-item"><span class="icon">👤</span><span class="label">My Profile</span></a>
+                <a href="#" id="logoutBtn" class="nav-item logout"><span class="icon">🚪</span><span class="label">Logout</span></a>
             </nav>
         </aside>
 
         <main class="main-content">
-            <div class="search-container">
-                <div class="search-box">
-                    <span class="search-icon">🔍︎</span>
-                    <input type="text" id="jobSearchInput" placeholder="Search for jobs based on their titles..." />
+            <section class="hero-section">
+                <div class="content-container">
+                    <div class="hero-flex">
+                        <div class="hero-text">
+                            <h1>Find the most exciting <br><span class="accent">childcare jobs</span></h1>
+                            <div class="search-container">
+                                <div class="input-wrapper">
+                                    <span class="input-icon">🔍</span>
+                                    <input type="text" id="keywordSearch" placeholder="Job Title or keyword">
+                                </div>
+                                <div class="input-divider"></div>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">📍</span>
+                                    <select id="locationDropdown">
+                                        <option value="">All Locations</option>
+                                    </select>
+                                </div>
+                                <button id="findJobBtn" class="btn-search">Find Job</button>
+                            </div>
+                        </div>
+                        <div class="hero-visual">
+                            <div class="stripe-bg"></div>
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=688&auto=format&fit=crop" alt="Nanny" class="hero-img-fit">
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <header class="top-bar">
-                <h1>Here are the top picks for you!</h1>
-                <div class="user-info" id="nannyName"><strong>Welcome</strong></div>
-            </header>
-                 <section class="stats-ribbon">
-            <div class="stat-card">
-                <span class="stat-icon">💼</span>
-                <div class="stat-info">
-                    <h4 id="totalJobs">0</h4>
-                    <p>New Jobs</p>
+            </section>
+
+            <section class="categories-section">
+                <div class="content-container">
+                    <p class="section-badge">FEATURED OPPORTUNITIES</p>
+                    <h2 class="section-title">Browse Top Categories</h2>
+                    <div class="category-grid">
+                        <button class="category-card" data-category="full_time">
+                            <span class="cat-icon">👶</span>
+                            <span class="cat-label">Full-Time Nanny</span>
+                            <span class="cat-count">(0) Jobs</span>
+                        </button>
+                        <button class="category-card" data-category="part_time">
+                            <span class="cat-icon">⏰</span>
+                            <span class="cat-label">Part-Time</span>
+                            <span class="cat-count">(0) Jobs</span>
+                        </button>
+                        <button class="category-card" data-category="weekends">
+                            <span class="cat-icon">🏠</span>
+                            <span class="cat-label">Live-In</span>
+                            <span class="cat-count">(0) Jobs</span>
+                        </button>
+                        <button class="category-card" data-category="evenings">
+                            <span class="cat-icon">🎓</span>
+                            <span class="cat-label">Tutor / Governess</span>
+                            <span class="cat-count">(0) Jobs</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon">⭐</span>
-                <div class="stat-info">
-                    <h4>Top Pick</h4>
-                    <p id="topCategory">Nanny</p>
+            </section>
+
+            <section class="results-section" id="resultsArea">
+                <div class="content-container">
+                    <div class="results-toolbar">
+                        <h3 id="statusHeading">Available Jobs</h3>
+                        <div id="filterChips" class="filter-chips"></div>
+                    </div>
+                    <div id="jobFeed" class="job-list-container"></div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon">✅</span>
-                <div class="stat-info">
-                    <h4>Verified</h4>
-                    <p>Profile 100%</p>
-                </div>
-            </div>
-        </section>
-            <div id="jobGrid" class="job-grid">
-                <div class="loader">Loading jobs...</div>
-            </div>
-           
+            </section>
         </main>
     </div>
 
-    <div id="jobModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
+    <div id="jobModal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true">
+            <button class="modal-close" id="closeModal">&times;</button>
             <div id="modalBody">
                 </div>
-            <button id="applyButton" class="apply-btn">Submit Application</button>
-        </div>
-    </div>
-    <div id="customAlertModal" class="alert-toast">
-        <div class="alert-content">
-            <span id="alertIcon"></span>
-            <span id="alertMessage"></span>
         </div>
     </div>
 

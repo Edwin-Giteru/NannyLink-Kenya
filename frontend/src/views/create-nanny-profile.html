@@ -3,68 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">   
-    <title>Create Nanny Profile </title>
+    <title>Create Nanny Profile | NannyLink</title>
     <link rel="stylesheet" href="../../assets/styles/auth.css">
+    <link rel="stylesheet" href="../../assets/styles/create-nanny-profile.css">
 </head>
 <body>
-   <div class="profile-container">
-  <h2>Complete Your Profile</h2>
-  <!-- <p style="text-align: center; color: #666;">Complete your details to start matching with families.</p> -->
+    <div class="profile-onboarding-wrapper">
+    <header class="profile-hero">
+        <div class="avatar-preview-container">
+            <img id="avatarPreview" src="../../assets/images/default-avatar.png" alt="Preview">
+            <div class="upload-badge"></div>
+        </div>
+        <h1>Complete Your Profile</h1>
+        <p>Tell families about yourself to get matched with the perfect job faster.</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="profileProgress"></div>
+        </div>
+    </header>
 
-  <form id="nannyProfileForm">
-    <div class="section">
-      <h3>Personal Information</h3>
-      <label for="name">Full Name</label>
-      <input type="text" id="name" placeholder="Enter your official name" required />
-      
-      <label for="profile_photo_url">Profile Picture URL</label>
-      <input type="url" id="profile_photo_url" placeholder="https://..." />
-    </div>
+    <form id="nannyProfileForm" class="profile-grid">
+        <div class="form-card">
+            <div class="card-header">
+                <span class="step-num">1</span>
+                <h3>Personal Information</h3>
+            </div>
+            <div class="upload-zone" id="photoDropZone">
+                <label for="profile_photo">Profile Picture</label>
+                <input type="file" id="profile_photo" accept="image/*" hidden />
+                <div class="upload-placeholder" id="photoPlaceholder">
+                    <p>Click or drag to upload photo</p>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input type="text" id="name" placeholder="Official name as per ID" required />
+            </div>
+        </div>
 
-    <div class="section">
-      <h3>Vetting & Identity</h3>
-      <label for="national_id_number">ID Number</label>
-      <input type="text" id="national_id_number" placeholder="ID Number" required />
-      
-      <label for="national_id_photo_url">National ID Photo URL</label>
-      <input type="url" id="national_id_photo_url" placeholder="https://..." required />
-    </div>
+        <div class="form-card">
+            <div class="card-header">
+                <span class="step-num">2</span>
+                <h3>Vetting & Identity</h3>
+            </div>
+            <div class="input-group">
+                <label for="national_id_number">ID Number <span class="required">*</span></label>
+                <input type="text" id="national_id_number" placeholder="Enter National ID" required />
+            </div>
+            <div class="upload-zone" id="idDropZone">
+                <label for="id_photo">National ID Photo <span class="required">*</span></label>
+                <input type="file" id="id_photo" accept="image/*" hidden />
+                <div class="upload-placeholder" id="idPhotoName">
+                    <p>Upload a clear photo of your ID</p>
+                </div>
+            </div>
+            <small class="hint">We use this only for verification to keep children safe.</small>
+        </div>
 
-    <div class="section">
-      <h3>Experience & Availability</h3>
-      <label for="years_experience">Years of Experience</label>
-      <input type="number" id="years_experience" min="0" required />
-      
-      <label for="availability">Availability Status:</label>
-      <select id="availability" required>
-        <option value="full_time">Full Time</option>
-        <option value="part_time">Part Time</option>
-        <option value="weekends">Weekends</option>
-        <option value="evenings">Evenings</option>
-      </select>
+        <div class="form-card">
+            <div class="card-header">
+                <span class="step-num">3</span>
+                <h3>Professional Details</h3>
+            </div>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Years of Experience</label>
+                    <input type="number" id="years_experience" min="0" value="0">
+                </div>
+                <div class="input-group">
+                    <label>Availability</label>
+                    <select id="availability">
+                        <option value="full_time">Full Time</option>
+                        <option value="part_time">Part Time</option>
+                        <option value="weekends">Weekends</option>
+                        <option value="evenings">Evenings</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Skills & Specialties</label>
+                <textarea id="skills" placeholder="e.g., First Aid, Cooking, Tutoring..."></textarea>
+            </div>
+        </div>
 
-      <label for="skills">Skills</label>
-      <textarea id="skills" placeholder="List your skills..."></textarea>
-    </div>
+        <div class="form-card">
+            <div class="card-header">
+                <span class="step-num">4</span>
+                <h3>Work Location</h3>
+            </div>
+            <div class="input-group">
+                <label>Residential Address</label>
+                <input type="text" id="address" placeholder="e.g. Westlands, Nairobi" required>
+            </div>
+            <div class="input-group">
+                <label>Preferred Work Areas</label>
+                <input type="text" id="preferred_location" placeholder="Where would you like to work?">
+            </div>
+        </div>
 
-    <div class="section">
-      <h3>Location</h3>
-      <label for="address">Residential Address</label>
-      <input type="text" id="address" required />
-      
-      <label for="preferred_location">Preferred Work Location</label>
-      <input type="text" id="preferred_location" />
-    </div>
-
-    <button type="submit">Create Profile</button>
-  </form>
-  </div>
+        <div class="form-actions">
+            <button type="submit" id="submitBtn" class="primary-btn">
+                <span class="btn-text">Create My Profile</span>
+                <div class="loader" hidden></div>
+            </button>
+        </div>
+    </form>
+</div>
   <div id="customAlertModal" class="alert-toast">
     <div class="alert-content">
         <span id="alertIcon"></span>
         <span id="alertMessage"></span>
     </div>
 </div>
-  <script type="module" src="../../assets/scripts/create-nanny-Controller.js"></script>
+
+    <script type="module" src="../../assets/scripts/create-nanny-Controller.js"></script>
 </body>
 </html>
