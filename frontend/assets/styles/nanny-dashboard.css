@@ -233,3 +233,30 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--main-bg);
     border-radius: 16px; margin-bottom: 15px;
 }
 @keyframes shimmer { 100% { background-position: -200% 0; } }
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    display: flex; /* Overrides default if hidden */
+}
+
+.job-item {
+    display: flex !important;
+    opacity: 1 !important;
+}
+
+#modalBody {
+    padding: 10px;
+}
+
+.modal-content-wrapper h2 {
+    font-size: 1.5rem;
+    color: var(--navy);
+}
+
+#modalBody .btn-search {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+}

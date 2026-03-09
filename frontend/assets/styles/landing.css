@@ -1,0 +1,857 @@
+body {
+  /* Sets the background to white */
+  background-color: #ffffff; 
+
+  /* Removes default browser spacing around the edges */
+  margin: 0;
+  padding: 0;
+  
+  /* Optional: Sets a default font for better readability */
+  font-family: sans-serif; 
+}
+/* General Styles */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+}
+
+.company-name {
+  font-size: 1.7rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.nav-links a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 700;
+  transition: color 0.3s;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 1.3em;
+}
+
+.nav-links a:hover {
+  color: #007bff;
+}
+
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  background: none;
+  border: none;
+  gap: 5px;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background-color: #333;
+  border-radius: 2px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    display: none; /* Hidden on mobile by default */
+    flex-direction: column;
+    position: absolute;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    top: 70px;
+    right: 5%;
+    background: white;
+    width: 200px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    z-index: 10;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-links a {
+    margin: 10px 0;
+  }
+}
+/* 1. Global Reset */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: white; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden; 
+}
+
+header {
+    top: 0;
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+}
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    box-sizing: border-box;  
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+    border-radius: 50%;
+}
+
+.company-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #007bff;
+
+}
+
+.full-page-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center; /* Better vertical alignment */
+    width: 100%; 
+    min-height: 100vh;   /* Use viewport height instead of fixed 900px */
+    padding: 100px 5% 40px; /* Padding-top accounts for navbar height */
+    box-sizing: border-box;
+    gap: 30px;
+    background: #f8fafc;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); 
+}
+
+.card-content {
+    flex: 1;
+    min-width: 320px; 
+    padding: 20px;
+}
+
+.name {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: darkblue
+}
+
+.title {
+    margin: 10px 0;
+    color: #222;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 2000;
+}
+
+.description {
+    line-height: 1.7;
+    color: black;
+    font-weight: 1.0 rem;
+    margin-bottom: 30px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.profile-image-section {
+    flex: 1;
+    min-width: 320px;
+    max-width: 600px;
+    height: auto;
+}
+
+.profile-image-section img {
+    width: 100%;
+    height: 600px;
+    margin: 0 auto;
+    /* object-fit: cover; */
+    transition: transform 0.3s ease-in-out;
+    border-radius: 5px;
+
+
+}
+.card-content .name {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.card-content .title {
+    font-size: clamp(2.5rem, 5vw, 4.5rem); /* Scales text size between mobile/desktop */
+    color: #1e4d7b;
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+.profile-image-section img:hover {
+    transform: scale(1.05);
+}
+/* 6. Luminous Buttons */
+.button-group {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 80px;
+}
+
+.btn {
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    background-color: #325d8f; 
+    color: white;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+}
+
+.btn:hover {
+    background-color: #1373e0; /* Luminous Green */
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 10px 25px rgba(25, 55, 83, 0.5);
+}
+
+/* 7. Mobile Menu (Hamburger) */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background: #333;
+}
+
+@media (max-width: 768px) {
+    .hamburger { display: flex; }
+    .nav-links { display: none; } /* Add your JS toggle logic here */
+    
+    .full-page-container {
+        padding: 20px 10px;
+    }
+
+    .profile-image-section {
+        height: 350px;
+    }
+}
+
+/* About Section Base */
+.about-section {
+    padding: 60px 5%;
+    background-color: #ffffff;
+}
+
+/* Mission Layout */
+.mission-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap; /* Key for responsiveness */
+    align-items: center;
+    gap: 50px;       /* Reduced from 200px */
+    margin: 50px 0;
+    min-height: auto; /* Remove fixed 400px height */
+}
+
+.mission-text { flex: 1; }
+.mission-text p {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin-top: 40px;
+}
+
+.mission-visual { 
+    flex: 1; 
+    position: relative; 
+}
+
+.mission-visual, .mission-text {
+    flex: 1;
+    min-width: 320px;
+}
+.mission-visual img {
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.badge {
+    background: #eef2f6;
+    color: #5b7a9d;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.section-title {
+    font-size: 3rem;
+    color: #0d2c4b;
+    margin: 20px 0;
+}
+
+.section-title span { color: #2c5e8c; }
+
+.mission-checks {
+    display: flex;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.check-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #333;
+}
+
+.check-item i { color: #2c5e8c; }
+
+.main-mission-img {
+    width: 100%;
+    border-radius: 20px;
+}
+
+.stat-card {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    background: #1e4d7b;
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+.stat-card h3 { font-size: 2rem; margin: 0; }
+.stat-card p { font-size: 0.7rem; margin: 0; letter-spacing: 1px; }
+
+.vetting-process { text-align: center; }
+.grid-title { font-size: 2rem; color: #0d2c4b; }
+.grid-subtitle { color: #666; max-width: 600px; margin: 0 auto 50px; }
+
+.vetting-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.vetting-card {
+    background: #f8fafc;
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: left;
+    transition: transform 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.vetting-card:hover {
+    transform: translateY(-10px);
+    border-color: #cbd5e1;
+}
+
+.icon-box {
+    background: #e2e8f0;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    color: #1e4d7b;
+    font-size: 1.2rem;
+}
+
+.vetting-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: #333; }
+.vetting-card p { font-size: 0.9rem; color: #666; line-height: 1.6; }
+
+@media (max-width: 992px) {
+    .mission-container {
+        gap: 30px;
+    }
+    .card-content .title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .full-page-container {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 120px;
+    }
+
+    .mission-container {
+        flex-direction: column-reverse; /* Image below text on mobile */
+        text-align: center;
+    }
+
+    .mission-checks {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .button-group {
+        justify-content: center;
+        margin-top: 40px;
+    }
+
+    .stat-card {
+        right: 10px;
+        bottom: 10px;
+        padding: 15px;
+    }
+
+    .stat-card h3 { font-size: 1.5rem; }
+}
+
+.its-us {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Services Section Styles */
+.services-container {
+    padding: 80px 10%;
+    background-color: #f8fafc; /* Slightly different grey to separate from About */
+}
+
+.services-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.services-title {
+    font-size: 2.5rem;
+    color: #0d2c4b;
+    margin: 15px 0;
+}
+
+.services-subtitle {
+    color: #64748b;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* The Grid System */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.service-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+.service-icon {
+    width: 60px;
+    height: 60px;
+    background: #eef2f6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #1e4d7b;
+    margin-bottom: 25px;
+}
+
+.service-card h3 {
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 20px;
+}
+
+.service-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+    flex-grow: 1; /* Pushes button to the bottom */
+}
+
+.service-list li {
+    margin-bottom: 12px;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+.service-list li i {
+    color: #10b981; /* Success Green */
+    font-size: 0.8rem;
+}
+
+/* Buttons */
+.service-btn {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    background-color: #1e4d7b;
+    color: white;
+    transition: background 0.3s;
+}
+
+.service-btn:hover {
+    background-color: #0d2c4b;
+}
+
+.btn-alt {
+    background-color: #e2e8f0;
+    color: #1e293b;
+}
+
+.btn-alt:hover {
+    background-color: #cbd5e1;
+}
+
+/* Admin/Full-width Card */
+.admin-track {
+    grid-column: span 2;
+    background: linear-gradient(to right, #ffffff, #f1f5f9);
+}
+
+.admin-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+/* Responsive Mobile Layout */
+@media (max-width: 850px) {
+    .services-grid {
+        grid-template-columns: 1fr; /* Stack cards vertically */
+    }
+
+    .admin-track {
+        grid-column: span 1;
+    }
+
+    .admin-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .services-container {
+        padding: 60px 5%;
+    }
+}
+
+
+/* Testimonials Wrapper */
+.testimonials-wrapper {
+    padding: 60px 0;
+    background-color: white;
+    overflow: hidden; /* Important: hides cards outside the screen */
+}
+
+.marquee-container {
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    padding: 20px 0;
+}
+
+/* The actual moving strip */
+.marquee-content {
+    display: flex;
+    gap: 30px;
+    animation: scroll-right 30s linear infinite;
+}
+
+/* Keyframes for Left to Right Motion */
+@keyframes scroll-right {
+    0% {
+        transform: translateX(-50%); /* Starts halfway back (at the duplicate set) */
+    }
+    100% {
+        transform: translateX(0); /* Moves forward to the end */
+    }
+}
+
+/* PAUSE ON HOVER */
+.marquee-container:hover .marquee-content {
+    animation-play-state: paused;
+}
+
+/* The Card Design */
+.testimonial-card {
+    flex: 0 0 350px; /* Fixed width for each card */
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: #1e4d7b;
+}
+
+.stars {
+    color: #facc15; /* Gold/Yellow */
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.testimonial-card p {
+    font-family: 'Segoe UI', sans-serif;
+    color: #475569;
+    line-height: 1.6;
+    font-style: italic;
+    margin-bottom: 25px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info span {
+    font-weight: bold;
+    color: #1e4d7b;
+    font-size: 0.9rem;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .testimonial-card {
+        flex: 0 0 280px; /* Smaller cards on mobile */
+    }
+    .marquee-content {
+        animation-duration: 20s; /* Slightly faster on small screens */
+    }
+}
+
+/* --- Footer Styling --- */
+.main-footer {
+    background-color: #0d2c4b; /* Deep professional navy */
+    color: #ffffff;
+    padding: 80px 5% 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Brand Section */
+.footer-brand .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.footer-brand .footer-logo img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: white;
+    padding: 2px;
+}
+
+.footer-brand .footer-logo span {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.footer-bio {
+    color: #a3b3c5;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+/* Social Icons */
+.footer-socials {
+    display: flex;
+    gap: 15px;
+}
+
+.footer-socials a {
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer-socials a:hover {
+    background: #00e5ff; /* Luminous Blue */
+    color: #0d2c4b;
+    transform: translateY(-3px);
+}
+
+/* Links Sections */
+.footer-links h3 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-links h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 30px;
+    height: 2px;
+    background-color: #00e5ff;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links ul li {
+    margin-bottom: 12px;
+}
+
+.footer-links ul li a {
+    color: #a3b3c5;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links ul li a:hover {
+    color: #ffffff;
+    padding-left: 5px; /* Subtle hover slide effect */
+}
+
+/* Bottom Bar */
+.footer-bottom {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.footer-bottom p {
+    color: #6d8ba9;
+    font-size: 0.85rem;
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 992px) {
+    .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .footer-brand .footer-logo, 
+    .footer-socials, 
+    .footer-links h3::after {
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .footer-links h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}

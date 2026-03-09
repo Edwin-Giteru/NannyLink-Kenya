@@ -1,36 +1,29 @@
 import { getAllJobs, applyToJob, getNannyApplications } from "../../src/service/nannyDashboardService.js";
 
-/**
- * NANNYLINK DASHBOARD CORE LOGIC
- * Implements: Dynamic Filtering, Persistent Applications, and Modal UI
- */
-
-// --- Global State ---
 const State = {
     allJobs: [],
     filteredJobs: [],
-    appliedJobIds: new Set(), // Persistent set of IDs
+    appliedJobIds: new Set(), 
     currentFilters: {
         keyword: "",
         location: "",
-        category: "" // "full_time", "part_time", "weekends", "evenings"
+        category: "" 
     },
     categories: [
-        { id: "full_time", label: "Full-Time Nanny", selector: '[data-category="Full-Time"]' },
-        { id: "part_time", label: "Part-Time", selector: '[data-category="Part-Time"]' },
-        { id: "weekends", label: "Live-In", selector: '[data-category="Live-In"]' }, // Mapping provided UI to real keys
-        { id: "evenings", label: "Tutor / Governess", selector: '[data-category="Tutor"]' }
+        { id: "full_time", label: "Full-Time Nanny", selector: '[data-category="full_time"]' },
+        { id: "part_time", label: "Part-Time", selector: '[data-category="part_time"]' },
+        { id: "weekends", label: "Live-In", selector: '[data-category="weekends"]' }, 
+        { id: "evenings", label: "Tutor / Governess", selector: '[data-category="evenings"]' }
     ]
 };
 
-// --- Initialization ---
 document.addEventListener("DOMContentLoaded", async () => {
     setupUIListeners();
     await initializeData();
 });
+
 async function initializeData() {
     renderLoadingState(true);
-    
     try {
         const jobsResponse = await getAllJobs();
         const appsResponse = await getNannyApplications();
@@ -38,166 +31,165 @@ async function initializeData() {
         if (jobsResponse.success) {
             State.allJobs = jobsResponse.data;
             
-            // 1. Robust data extraction
-            // We check both the response object and common wrapping patterns
+            // Sync Applications
             let applications = [];
             if (appsResponse && appsResponse.data) {
-                if (Array.isArray(appsResponse.data)) {
-                    applications = appsResponse.data;
-                } else if (Array.isArray(appsResponse.data.applications)) {
-                    applications = appsResponse.data.applications;
-                }
+                applications = Array.isArray(appsResponse.data) 
+                    ? appsResponse.data 
+                    : (appsResponse.data.applications || []);
             }
-
-            // 2. Safely add job IDs
             applications.forEach(app => {
-                if (app && app.job_id) {
-                    State.appliedJobIds.add(app.job_id);
-                }
+                if (app && app.job_id) State.appliedJobIds.add(app.job_id.toString());
             });
             
             syncLocalStorage();
             populateLocationDropdown();
             computeCategoryCounts();
             applyFilters(); 
-        } else {
-            showToast("Error", "Failed to load jobs.", "error");
         }
     } catch (error) {
-        console.error("Initialization failed:", error);
-        showToast("Error", "A critical error occurred while loading data.", "error");
+        console.error("Init Error:", error);
     } finally {
-        // Ensure loading state is turned off even if an error occurs
         renderLoadingState(false);
     }
 }
 
-
 function applyFilters() {
     const { keyword, location, category } = State.currentFilters;
-
     State.filteredJobs = State.allJobs.filter(job => {
         const matchesKeyword = !keyword || 
-            job.title.toLowerCase().includes(keyword.toLowerCase()) || 
-            (job.description && job.description.toLowerCase().includes(keyword.toLowerCase()));
-        
+            (job.title?.toLowerCase().includes(keyword.toLowerCase())) || 
+            (job.description?.toLowerCase().includes(keyword.toLowerCase()));
         const matchesLocation = !location || job.location === location;
         const matchesCategory = !category || job.category === category;
-
         return matchesKeyword && matchesLocation && matchesCategory;
     });
-
     renderJobList();
 }
 
-// --- UI Rendering ---
 function renderJobList() {
-    const container = document.getElementById("jobFeed");
-    const countLabel = document.getElementById("resultsCount") || document.getElementById("statusHeading");
-    
-    if (countLabel) countLabel.innerText = `${State.filteredJobs.length} Jobs Found`;
+    const container = document.getElementById("jobList"); 
+    if (!container) return;
 
     if (State.filteredJobs.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <p>No jobs found matching your criteria. Try resetting filters.</p>
-                <button class="btn-primary-action" onclick="resetFilters()">Reset All</button>
-            </div>`;
+        container.innerHTML = `<p style="text-align:center; padding: 20px;">No jobs found match your search.</p>`;
         return;
     }
 
     container.innerHTML = State.filteredJobs.map(job => {
-        const isApplied = State.appliedJobIds.has(job.id);
+        const isApplied = State.appliedJobIds.has(job.id.toString());
+        const pay = job.hourly_pay || job.hourlyPay || 0;
+
         return `
-        <div class="job-item-card animate-in">
-            <div class="job-main-info">
-                <span class="category-badge">${job.category.replace('_', ' ')}</span>
+        <div class="job-item">
+            <div class="job-info">
                 <h4>${job.title}</h4>
-                <div class="job-meta">
-                    <span>📍 ${job.location}</span>
-                    <span>💰 Ksh ${job.hourlyPay}/hr</span>
+                <div class="job-tags">
+                    <span>📍 ${job.location || 'Juja'}</span>
+                    <span>🏷️ Nanny</span>
+                    <span>💰 Ksh ${pay}/hr</span>
                 </div>
             </div>
             <div class="job-action">
-                <button class="btn-secondary" onclick="openJobModal(${job.id})">View Details</button>
-                <button class="btn-primary-action apply-btn" 
-                        id="apply-btn-${job.id}"
-                        ${isApplied ? 'disabled' : ''} 
-                        onclick="handleApply(${job.id})">
-                    ${isApplied ? 'Applied' : 'Apply Now'}
+                <button class="btn-secondary" onclick="window.openJobModal('${job.id}')">View</button>
+                <button class="btn-search apply-btn" 
+                        id="apply-btn-${job.id}" 
+                        onclick="window.handleApply('${job.id}')" 
+                        ${isApplied ? 'disabled style="background: #cbd5e1;"' : ''}>
+                    ${isApplied ? 'Applied' : 'Apply'}
                 </button>
             </div>
-        </div>
-    `}).join('');
+        </div>`;
+    }).join('');
 }
 
-function computeCategoryCounts() {
-    State.categories.forEach(cat => {
-        const count = State.allJobs.filter(j => j.category === cat.id).length;
-        const card = document.querySelector(cat.selector);
-        if (card) {
-            const countEl = card.querySelector('.cat-count') || card.querySelector('span:last-child');
-            if (countEl) countEl.innerText = `(${count}) Jobs`;
-        }
-    });
-}
+// GLOBAL MODAL LOGIC
+window.openJobModal = (jobId) => {
+    const job = State.allJobs.find(j => j.id.toString() === jobId.toString());
+    if (!job) return;
 
-function populateLocationDropdown() {
-    const dropdown = document.getElementById("locationFilter") || document.getElementById("locationDropdown");
-    if (!dropdown) return;
+    const modal = document.getElementById('jobModal');
+    const body = document.getElementById('modalBody');
+    const isApplied = State.appliedJobIds.has(job.id.toString());
+    const pay = job.hourly_pay || job.hourlyPay || "N/A";
 
-    const locations = [...new Set(State.allJobs.map(j => j.location))];
-    dropdown.innerHTML = `<option value="">All Locations</option>` + 
-        locations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-}
+    body.innerHTML = `
+        <div style="padding: 10px;">
+            <h2 style="color: var(--navy); margin-bottom: 5px;">${job.title}</h2>
+            <p style="color: var(--primary); font-weight: bold; margin-bottom: 20px;">
+                Ksh ${pay}/hr | ${job.location || 'Juja'}
+            </p>
+            <h5 style="margin-bottom: 10px; color: var(--navy);">Description</h5>
+            <p style="color: var(--grey-text); line-height: 1.6; margin-bottom: 25px;">
+                ${job.description || "No detailed description provided."}
+            </p>
+            <button class="btn-search" 
+                id="modal-apply-${job.id}"
+                ${isApplied ? 'disabled style="background: #cbd5e1;"' : ''}
+                onclick="window.handleApply('${job.id}');">
+                ${isApplied ? 'Application Submitted' : 'Submit Application Now'}
+            </button>
+        </div>`;
+    
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+};
 
-// --- Interaction Handlers ---
-async function handleApply(jobId) {
-    const btn = document.getElementById(`apply-btn-${jobId}`);
-    btn.innerText = "Processing...";
-    btn.disabled = true;
-
-    const result = await applyToJob(jobId);
-
-    if (result.success) {
-        State.appliedJobIds.add(jobId);
-        btn.innerText = "Applied";
-        btn.classList.add("btn-applied");
-        saveToLocalStorage(jobId);
-        showToast("Success", "Application submitted successfully!", "success");
-    } else {
-        btn.innerText = "Apply Now";
-        btn.disabled = false;
-        showToast("Error", result.message, "error");
+window.closeModalFunc = () => {
+    const modal = document.getElementById('jobModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
     }
-}
+};
 
+window.handleApply = async (jobId) => {
+    const mainBtn = document.getElementById(`apply-btn-${jobId}`);
+    const modalBtn = document.getElementById(`modal-apply-${jobId}`);
+    
+    const updateBtn = (text, disabled) => {
+        if (mainBtn) { mainBtn.innerText = text; mainBtn.disabled = disabled; }
+        if (modalBtn) { modalBtn.innerText = text; modalBtn.disabled = disabled; }
+    };
+
+    updateBtn("Applying...", true);
+
+    try {
+        const result = await applyToJob(jobId);
+        if (result.success) {
+            State.appliedJobIds.add(jobId.toString());
+            updateBtn("Applied", true);
+            if (mainBtn) mainBtn.style.background = "#cbd5e1";
+            saveToLocalStorage(jobId);
+            
+            // Optional: Close modal after short delay on success
+            setTimeout(window.closeModalFunc, 1500);
+        } else {
+            alert("Application failed. Please try again.");
+            updateBtn("Apply", false);
+        }
+    } catch (err) {
+        updateBtn("Apply", false);
+    }
+};
+
+// UI UTILITIES
 function setupUIListeners() {
-    // Search Button
-    const searchBtn = document.getElementById("findJobBtn");
-    searchBtn?.addEventListener("click", () => {
+    document.getElementById("findJobBtn")?.addEventListener("click", () => {
         State.currentFilters.keyword = document.getElementById("keywordSearch")?.value || "";
-        State.currentFilters.location = document.getElementById("locationFilter")?.value || "";
+        State.currentFilters.location = document.getElementById("locationDropdown")?.value || "";
         applyFilters();
-        document.getElementById("resultsSection")?.scrollIntoView({ behavior: 'smooth' });
     });
 
-    // Sidebar Toggle
-    const sidebar = document.getElementById("sidebar");
-    document.getElementById("sidebarToggle")?.addEventListener("click", () => {
-        const expanded = sidebar.getAttribute("aria-expanded") === "true";
-        sidebar.setAttribute("aria-expanded", !expanded);
-    });
+    document.getElementById('closeModal')?.addEventListener('click', window.closeModalFunc);
 
-    // Category Card Clicks
     State.categories.forEach(cat => {
         const card = document.querySelector(cat.selector);
         card?.addEventListener("click", () => {
+            document.querySelectorAll(".category-card").forEach(c => c.classList.remove("active"));
             if (State.currentFilters.category === cat.id) {
-                State.currentFilters.category = ""; // Toggle off
-                card.classList.remove("active");
+                State.currentFilters.category = ""; 
             } else {
-                document.querySelectorAll(".category-card").forEach(c => c.classList.remove("active"));
                 State.currentFilters.category = cat.id;
                 card.classList.add("active");
             }
@@ -206,84 +198,40 @@ function setupUIListeners() {
     });
 }
 
-// --- Modal Functionality ---
-window.openJobModal = (jobId) => {
-    const job = State.allJobs.find(j => j.id === jobId);
-    if (!job) return;
+function computeCategoryCounts() {
+    State.categories.forEach(cat => {
+        const count = State.allJobs.filter(j => j.category === cat.id).length;
+        const card = document.querySelector(cat.selector);
+        if (card) {
+            const countEl = card.querySelector('.cat-count') || card; 
+            if (countEl.classList.contains('cat-count')) countEl.innerText = `(${count}) Jobs`;
+        }
+    });
+}
 
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay active';
-    modal.id = 'active-modal';
-    
-    modal.innerHTML = `
-        <div class="modal-card">
-            <button class="close-modal" onclick="closeModal()">&times;</button>
-            <div class="modal-header">
-                <h2>${job.title}</h2>
-                <span class="badge">${job.category.replace('_', ' ')}</span>
-            </div>
-            <div class="modal-body">
-                <div class="modal-meta-grid">
-                    <div><strong>📍 Location:</strong> ${job.location}</div>
-                    <div><strong>💰 Pay:</strong> Ksh ${job.hourlyPay}/hr</div>
-                </div>
-                <section>
-                    <h5>Description</h5>
-                    <p>${job.description}</p>
-                </section>
-                <section>
-                    <h5>Key Duties</h5>
-                    <ul>${job.duties.map(d => `<li>${d}</li>`).join('')}</ul>
-                </section>
-                <section>
-                    <h5>Requirements</h5>
-                    <p>${job.requirements}</p>
-                </section>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-primary-action" 
-                        ${State.appliedJobIds.has(job.id) ? 'disabled' : ''} 
-                        onclick="handleApply(${job.id}); closeModal();">
-                    ${State.appliedJobIds.has(job.id) ? 'Already Applied' : 'Submit Application'}
-                </button>
-            </div>
-        </div>
-    `;
+function populateLocationDropdown() {
+    const dropdown = document.getElementById("locationDropdown");
+    if (!dropdown) return;
+    const locations = [...new Set(State.allJobs.map(j => j.location).filter(Boolean))];
+    dropdown.innerHTML = `<option value="">All Locations</option>` + 
+        locations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
+}
 
-    document.body.appendChild(modal);
-    modal.onclick = (e) => { if(e.target === modal) closeModal(); };
-};
-
-window.closeModal = () => {
-    const m = document.getElementById('active-modal');
-    if (m) m.remove();
-};
-
-// --- Utilities & Persistence ---
 function saveToLocalStorage(jobId) {
     const saved = JSON.parse(localStorage.getItem("applied_jobs") || "[]");
-    if (!saved.includes(jobId)) {
-        saved.push(jobId);
+    if (!saved.includes(jobId.toString())) {
+        saved.push(jobId.toString());
         localStorage.setItem("applied_jobs", JSON.stringify(saved));
     }
 }
 
 function syncLocalStorage() {
     const saved = JSON.parse(localStorage.getItem("applied_jobs") || "[]");
-    saved.forEach(id => State.appliedJobIds.add(id));
+    saved.forEach(id => State.appliedJobIds.add(id.toString()));
 }
 
 function renderLoadingState(isLoading) {
-    const feed = document.getElementById("jobFeed");
-    if (isLoading) {
-        feed.innerHTML = Array(3).fill('<div class="skeleton"></div>').join('');
-    }
-}
-
-function showToast(title, msg, type) {
-    const toast = document.getElementById("customAlertModal");
-    if (!toast) return;
-    document.getElementById("alertMessage").innerText = msg;
-    toast.classList.add("show", type);
-    setTimeout(() => toast.classList.remove("show"), 3000);
+    const feed = document.getElementById("jobList");
+    if (!feed) return;
+    feed.innerHTML = isLoading ? `<div class="skeleton"></div>`.repeat(3) : "";
 }
