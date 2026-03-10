@@ -1,172 +1,341 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile</title>
-    <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
-    <link rel="stylesheet" href="../../assets/styles/profile.css">   
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – My Profile</title>
+  <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
+  <link rel="stylesheet" href="../../assets/styles/nannyprofile.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="logo">NannyLink</div>
-            <nav>
-                <a href="nannydashboard.html">🏠 Job Board</a>
-                <a href="profile.html" class="active">👤 My Profile</a>
-                <a href="#" id="logoutBtn">🚪 Logout</a>
-            </nav>
-        </aside>
 
-        <main class="main-content">
-            <header class="top-bar">
-                <div class="breadcrumb"><a href="nannydashboard.html">Job Board</a> / <a href="profile.html">My Profile</a></div>
-                <h1>My Profile</h1>
-                <p class="subtitle">Manage your professional identity and applications</p>
-            </header>
+<div class="dashboard-wrapper">
 
-            <div class="profile-tabs">
-                <button class="tab-btn active" data-tab="profile">Profile</button>
-                <button class="tab-btn" data-tab="applications">Applications</button>
-                <button class="tab-btn" data-tab="security">Security</button>
-            </div>
-
-            <div class="tab-content-wrapper">
-                <section id="profile" class="tab-pane active">
-                    <div class="profile-header-card">
-                        <div class="avatar-wrapper">
-                            <div class="initials-fallback" id="profileInitials">?</div>
-                            <img src="" id="profilePhoto" class="avatar-img" alt="Profile" style="display: none;">
-                        </div>
-                        <div class="user-meta">
-                            <h2 id="displayFullName">Loading...</h2>
-                            <div id="vettingBadge" class="status-pill status-pending">Checking Status</div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <h3> Professional Details</h3>
-                            <div class="read-only-field">
-                                <label>Years of Experience</label>
-                                <p id="infoExperience">-</p>
-                            </div>
-                            <div class="read-only-field">
-                                <label>Skills</label>
-                                <p id="infoSkills">-</p>
-                            </div>
-                            <div class="read-only-field">
-                                <label>Availability</label>
-                                <p id="infoAvailability">-</p>
-                            </div>
-                        </div>
-
-                        <div class="info-card">
-                            <h3> Location & ID</h3>
-                            <div class="read-only-field">
-                                <label>Address</label>
-                                <p id="infoAddress">-</p>
-                            </div>
-                            <div class="read-only-field">
-                                <label>Preferred Location</label>
-                                <p id="infoPreferredLocation">-</p>
-                            </div>
-                            <div class="read-only-field">
-                                <label>National ID (Masked)</label>
-                                <p id="infoIDNumber">****</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="applications" class="tab-pane">
-                    <div class="table-card">
-                        <h3>Application History</h3>
-                        <div id="applicationsList">
-                            <p class="loading-state">Fetching history...</p>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="security" class="tab-pane">
-                    <div class="security-grid">
-                        <div class="info-card">
-                            <h3>Update Professional Profile</h3>
-                            <form id="editProfileForm">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label>Full Name</label>
-                                        <input type="text" id="editName">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Years of Experience</label>
-                                        <input type="number" id="editExperience">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Address</label>
-                                        <input type="text" id="editAddress">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Preferred Location</label>
-                                        <input type="text" id="editPreferredLocation">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Availability</label>
-                                        <select id="editAvailability">
-                                            <option value="">Select Availability</option>
-                                            <option value="full_time">Full Time</option>
-                                            <option value="part_time">Part Time</option>
-                                            <option value="weekends">Weekends</option>
-                                            <option value="evenings">Evenings</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Profile Photo URL</label>
-                                        <input type="text" id="editPhotoUrl" placeholder="https://...">
-                                    </div>
-                                    <div class="form-group" style="grid-column: span 2;">
-                                        <label>Skills</label>
-                                        <textarea id="editSkills" rows="3"></textarea>
-                                    </div>
-                                </div>
-                                <button type="submit" class="save-btn">Save Changes</button>
-                            </form>
-                        </div>
-                        <div class="info-card danger-zone">
-                            <h3>Account Actions</h3>
-                            <p>Deleting your account is permanent and cannot be undone.</p>
-                            <button id="deleteAccountBtn" class="delete-btn-outline">Delete Account</button>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
+  <!-- ════════ SIDEBAR (same as dashboard) ════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
     </div>
+    <nav class="sidebar-nav">
+      <a href="nannydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a href="nannyprofile.html" class="active"><i class="fas fa-user"></i><span>My Profile</span></a>
+      <a href="#"><i class="fas fa-search"></i><span>Browse Jobs</span></a>
+      <a href="#"><i class="fas fa-paper-plane"></i><span>Applications</span></a>
+      <a href="#"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <a href="#"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="#"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    <button class="btn-public-profile">
+      <i class="fas fa-eye"></i><span>View Public Profile</span>
+    </button>
+  </aside>
 
-    <div id="customAlertModal" class="alert-toast">
-        <div class="alert-content">
-            <span id="alertIcon"></span>
-            <span id="alertMessage"></span>
+  <!-- ════════ MAIN ════════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h2>My Profile</h2>
+      </div>
+      <div class="header-right">
+        <div class="header-icons">
+          <button class="icon-btn"><i class="fas fa-bell"></i><span class="badge"></span></button>
         </div>
-    </div>
-
-    <div id="deleteModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="warning-icon">⚠️</div>
-                <h2>Confirm Delete</h2>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to perform this action?</p>
-                <p><strong>This action is permanent and cannot be undone.</strong></p>
-            </div>
-            <div class="modal-footer">
-                <button id="cancelDelete" class="modal-btn btn-secondary">Cancel</button>
-                <button id="confirmDelete" class="modal-btn btn-danger">Yes, Delete My Account</button>
-            </div>
+        <div class="user-profile">
+          <div class="name-wrap">
+            <span id="userName">Loading…</span>
+            <div class="user-role">Professional Nanny</div>
+          </div>
+          <div class="user-avatar" id="userAvatar">N</div>
         </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- ── PROFILE HERO ── -->
+      <div class="profile-hero" id="profileHero">
+        <div class="hero-banner">
+          <div class="hero-banner-pattern"></div>
+        </div>
+
+        <div class="hero-body">
+          <div class="hero-left">
+            <div class="avatar-wrapper" id="avatarWrapper">
+              <div class="profile-avatar" id="profileAvatar">N</div>
+              <label class="avatar-upload-btn" for="photoInput" title="Change photo">
+                <i class="fas fa-camera"></i>
+              </label>
+              <input type="file" id="photoInput" accept="image/*" style="display:none">
+            </div>
+
+            <div class="hero-info">
+              <h1 id="heroName">Loading…</h1>
+              <p id="heroAddress"><i class="fas fa-map-marker-alt"></i> <span>–</span></p>
+              <div class="hero-badges">
+                <span class="vetting-chip" id="vettingChip">
+                  <i class="fas fa-shield-alt"></i> Pending
+                </span>
+                <span class="avail-chip" id="availChip">
+                  <i class="fas fa-clock"></i> –
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn-edit-profile" id="btnEditProfile">
+              <i class="fas fa-pen"></i> Edit Profile
+            </button>
+            <button class="btn-share-profile">
+              <i class="fas fa-share-alt"></i> Share
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── THREE COLUMN LAYOUT ── -->
+      <div class="profile-grid">
+
+        <!-- LEFT: About + Skills + Stats -->
+        <div class="profile-left">
+
+          <div class="pcard">
+            <div class="pcard-header">
+              <h3><i class="fas fa-user-circle"></i> About</h3>
+              <button class="pcard-edit-btn" data-section="about">
+                <i class="fas fa-pen"></i>
+              </button>
+            </div>
+            <p class="about-text" id="aboutText">No bio added yet.</p>
+            <div class="about-stats">
+              <div class="astat">
+                <span id="statYears">–</span>
+                <label>Years Exp.</label>
+              </div>
+              <div class="astat">
+                <span id="statApps">–</span>
+                <label>Applications</label>
+              </div>
+              <div class="astat">
+                <span id="statMatches">–</span>
+                <label>Matches</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="pcard">
+            <div class="pcard-header">
+              <h3><i class="fas fa-star"></i> Skills</h3>
+              <button class="pcard-edit-btn" data-section="skills">
+                <i class="fas fa-pen"></i>
+              </button>
+            </div>
+            <div class="skills-list" id="skillsList">
+              <span class="empty-pill">No skills added</span>
+            </div>
+          </div>
+
+          <div class="pcard">
+            <div class="pcard-header">
+              <h3><i class="fas fa-info-circle"></i> Details</h3>
+            </div>
+            <div class="detail-rows">
+              <div class="detail-row">
+                <i class="fas fa-map-pin"></i>
+                <div>
+                  <label>Preferred Location</label>
+                  <span id="detailLocation">–</span>
+                </div>
+              </div>
+              <div class="detail-row">
+                <i class="fas fa-calendar-check"></i>
+                <div>
+                  <label>Availability</label>
+                  <span id="detailAvailability">–</span>
+                </div>
+              </div>
+              <div class="detail-row">
+                <i class="fas fa-id-card"></i>
+                <div>
+                  <label>ID Verification</label>
+                  <span id="detailIdStatus">–</span>
+                </div>
+              </div>
+              <div class="detail-row">
+                <i class="fas fa-calendar-plus"></i>
+                <div>
+                  <label>Member Since</label>
+                  <span id="detailSince">–</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- MIDDLE: Applications -->
+        <div class="profile-middle">
+
+          <div class="pcard full-height">
+            <div class="pcard-header">
+              <h3><i class="fas fa-paper-plane"></i> Applications</h3>
+              <span class="pcard-count" id="appCount">0</span>
+            </div>
+
+            <!-- Filter tabs -->
+            <div class="filter-tabs" id="appTabs">
+              <button class="tab active" data-filter="all">All</button>
+              <button class="tab" data-filter="pending">Pending</button>
+              <button class="tab" data-filter="reviewing">Reviewing</button>
+              <button class="tab" data-filter="interview">Interview</button>
+              <button class="tab" data-filter="accepted">Accepted</button>
+            </div>
+
+            <div class="app-list" id="appList">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: Matches + Vetting -->
+        <div class="profile-right">
+
+          <div class="pcard">
+            <div class="pcard-header">
+              <h3><i class="fas fa-handshake"></i> Matches</h3>
+              <span class="pcard-count" id="matchCount">0</span>
+            </div>
+            <div class="match-list" id="matchList">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+          <div class="pcard vetting-card-full">
+            <div class="pcard-header">
+              <h3><i class="fas fa-shield-alt"></i> Vetting Progress</h3>
+            </div>
+            <div class="vetting-steps" id="vettingSteps">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+          <div class="pcard danger-zone">
+            <div class="pcard-header">
+              <h3><i class="fas fa-exclamation-triangle"></i> Account</h3>
+            </div>
+            <p class="danger-desc">Permanently delete your nanny profile and all associated data.</p>
+            <button class="btn-danger" id="btnDeleteProfile">
+              <i class="fas fa-trash-alt"></i> Delete Profile
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<!-- ════════ EDIT PROFILE MODAL ════════ -->
+<div id="editModal" class="modal">
+  <div class="modal-content modal-lg">
+    <div class="modal-header">
+      <div>
+        <h3>Edit Profile</h3>
+        <p>Update your professional information</p>
+      </div>
+      <button class="modal-close" id="closeEditModal">×</button>
     </div>
 
-    <script type="module" src="../../assets/scripts/nannyProfileController.js"></script>
+    <div class="modal-body">
+      <div class="edit-form-grid">
+
+        <div class="form-group full-width">
+          <label>Full Name</label>
+          <input type="text" id="editName" placeholder="Your full name">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Bio / Description</label>
+          <textarea id="editBio" rows="3"
+            placeholder="Tell families a little about yourself, your experience and approach to childcare…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" id="editAddress" placeholder="e.g. Westlands, Nairobi">
+        </div>
+
+        <div class="form-group">
+          <label>Preferred Location</label>
+          <input type="text" id="editPreferredLocation" placeholder="e.g. Nairobi CBD">
+        </div>
+
+        <div class="form-group">
+          <label>Years of Experience</label>
+          <input type="number" id="editYearsExp" min="0" max="50" placeholder="0">
+        </div>
+
+        <div class="form-group">
+          <label>Availability</label>
+          <select id="editAvailability">
+            <option value="full_time">Full-Time</option>
+            <option value="part_time">Part-Time</option>
+            <option value="live_in">Live-In</option>
+            <option value="on_call">On-Call</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Skills <span class="hint">(comma separated)</span></label>
+          <input type="text" id="editSkills"
+            placeholder="e.g. Infant care, First Aid, Cooking, Swimming lessons">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-apply" id="btnSaveProfile">
+        <i class="fas fa-save"></i> Save Changes
+      </button>
+      <button class="btn-secondary" id="cancelEditModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ DELETE CONFIRM MODAL ════════ -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content" style="max-width:420px">
+    <div class="modal-header">
+      <div>
+        <h3 style="color:#dc2626">Delete Profile</h3>
+        <p>This action cannot be undone</p>
+      </div>
+      <button class="modal-close" id="closeDeleteModal">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.88rem;color:#4b5563;line-height:1.6">
+        Are you sure you want to permanently delete your nanny profile?
+        All your applications, matches and data will be lost.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btnConfirmDelete">
+        <i class="fas fa-trash-alt"></i> Yes, Delete
+      </button>
+      <button class="btn-secondary" id="cancelDeleteModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<script type="module" src="../../assets/scripts/nannyProfileController.js"></script>
 </body>
 </html>

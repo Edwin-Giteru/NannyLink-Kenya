@@ -27,6 +27,13 @@ class MatchStatus(str, Enum):
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
+class ApplicationStatus(str, Enum):
+    PENDING = "pending"
+    REVIEWING = "reviewing"
+    INTERVIEW = "interview"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+
 class PaymentStatus(str, Enum):
     PENDING = "pending"
     COMPLETED = "completed"

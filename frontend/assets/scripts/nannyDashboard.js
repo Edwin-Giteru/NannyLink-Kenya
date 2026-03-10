@@ -1,237 +1,521 @@
 import { getAllJobs, applyToJob, getNannyApplications } from "../../src/service/nannyDashboardService.js";
+import { API_URL } from "../../src/utils/config.js";
 
+const $ = (id) => document.getElementById(id);
+const safeText = (id, val) => { const el = $(id); if (el) el.textContent = val; };
+
+function showToast(message, type = "info") {
+    let toast = document.querySelector(".toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.className = "toast";
+        document.body.appendChild(toast);
+    }
+    const icons = { success: "✓", error: "✕", info: "ℹ" };
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${icons[type] || icons.info}</span> ${message}`;
+    toast.classList.add("show");
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove("show"), 3200);
+}
+
+const initials = (name = "") =>
+    name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() || "").join("") || "N";
+
+function relativeTime(dateStr) {
+    if (!dateStr) return "Recently";
+    const diff = (Date.now() - new Date(dateStr)) / 1000;
+    if (diff < 60) return "Just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+}
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
 const State = {
+    user: null,
     allJobs: [],
-    filteredJobs: [],
-    appliedJobIds: new Set(), 
-    currentFilters: {
-        keyword: "",
-        location: "",
-        category: "" 
-    },
-    categories: [
-        { id: "full_time", label: "Full-Time Nanny", selector: '[data-category="full_time"]' },
-        { id: "part_time", label: "Part-Time", selector: '[data-category="part_time"]' },
-        { id: "weekends", label: "Live-In", selector: '[data-category="weekends"]' }, 
-        { id: "evenings", label: "Tutor / Governess", selector: '[data-category="evenings"]' }
-    ]
+    applications: [],
+    appliedJobIds: new Set(),
+    currentFilters: { keyword: "" },
+    loading: { jobs: true, apps: true, profile: true },
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-    setupUIListeners();
-    await initializeData();
-});
+/* ═══════════════════════════════════════════
+   PROFILE
+═══════════════════════════════════════════ */
+async function getProfileData() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return { success: false };
 
-async function initializeData() {
-    renderLoadingState(true);
     try {
-        const jobsResponse = await getAllJobs();
-        const appsResponse = await getNannyApplications();
+        const payload = JSON.parse(atob(token.split('.')[1]));
 
-        if (jobsResponse.success) {
-            State.allJobs = jobsResponse.data;
-            
-            // Sync Applications
-            let applications = [];
-            if (appsResponse && appsResponse.data) {
-                applications = Array.isArray(appsResponse.data) 
-                    ? appsResponse.data 
-                    : (appsResponse.data.applications || []);
-            }
-            applications.forEach(app => {
-                if (app && app.job_id) State.appliedJobIds.add(app.job_id.toString());
-            });
-            
-            syncLocalStorage();
-            populateLocationDropdown();
-            computeCategoryCounts();
-            applyFilters(); 
+        const response = await fetch(`${API_URL}/Nanny/profile/me`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return {
+                success: true,
+                data: {
+                    full_name: data.name,
+                    vetting_status: data.vetting_status || "PENDING",
+                    profile_photo_url: data.profile_photo_url || null,
+                    preferred_location: data.preferred_location || "",
+                    match_count: data.match_count || 0,
+                    weekly_earnings: data.weekly_earnings || 0,
+                }
+            };
         }
-    } catch (error) {
-        console.error("Init Error:", error);
-    } finally {
-        renderLoadingState(false);
+
+        // Nanny profile not created yet — fallback to JWT
+        return {
+            success: true,
+            data: {
+                full_name: payload.name || payload.email || "Nanny User",
+                vetting_status: "PENDING",
+                profile_photo_url: null,
+                match_count: 0,
+                weekly_earnings: 0,
+            }
+        };
+
+    } catch (e) {
+        console.error("Profile fetch error:", e);
+        return { success: false };
     }
 }
 
-function applyFilters() {
-    const { keyword, location, category } = State.currentFilters;
-    State.filteredJobs = State.allJobs.filter(job => {
-        const matchesKeyword = !keyword || 
-            (job.title?.toLowerCase().includes(keyword.toLowerCase())) || 
-            (job.description?.toLowerCase().includes(keyword.toLowerCase()));
-        const matchesLocation = !location || job.location === location;
-        const matchesCategory = !category || job.category === category;
-        return matchesKeyword && matchesLocation && matchesCategory;
-    });
-    renderJobList();
+/* ═══════════════════════════════════════════
+   UI: PROFILE
+═══════════════════════════════════════════ */
+function updateProfileUI() {
+    if (!State.user) return;
+    const { full_name, vetting_status, profile_photo_url } = State.user;
+
+    safeText("userName", full_name || "Nanny User");
+
+    const avatarEl = document.querySelector(".user-avatar");
+    if (avatarEl) {
+        avatarEl.innerHTML = profile_photo_url
+            ? `<img src="${profile_photo_url}" alt="avatar">`
+            : initials(full_name);
+    }
+
+    const status = (vetting_status || "PENDING").toUpperCase();
+    const map = {
+        PENDING:     { pct: 25,  msg: "Documents received. Reviewing your profile." },
+        IN_PROGRESS: { pct: 50,  msg: "Background check in progress." },
+        INTERVIEWED: { pct: 75,  msg: "Final verification steps ongoing." },
+        VETTED:      { pct: 100, msg: "Your profile is fully verified! 🎉" },
+        VERIFIED:    { pct: 100, msg: "Your profile is fully verified! 🎉" },
+        REJECTED:    { pct: 0,   msg: "Verification failed. Please contact support." },
+    };
+    const { pct = 10, msg = "Starting verification process." } = map[status] || {};
+
+    const progressFill = $("progressFill");
+    if (progressFill) {
+        progressFill.style.width = `${pct}%`;
+        progressFill.classList.toggle("complete", pct === 100);
+    }
+    safeText("progressPercent", `${pct}%`);
+    safeText("progressPercentBig", `${pct}% Complete`);
+    safeText("vettingDetail", msg);
 }
 
-function renderJobList() {
-    const container = document.getElementById("jobList"); 
+/* ═══════════════════════════════════════════
+   UI: STATS
+═══════════════════════════════════════════ */
+function updateStats() {
+    safeText("statAvailable", State.allJobs.length);
+    safeText("statApps", State.applications.length);
+    safeText("statMatches", State.user?.match_count ?? 0);
+    const earnings = State.user?.weekly_earnings ?? 0;
+    safeText("statEarnings", `Ksh ${Number(earnings).toLocaleString()}`);
+}
+
+/* ═══════════════════════════════════════════
+   UI: JOBS
+═══════════════════════════════════════════ */
+function renderSkeletons(container, count = 3) {
+    container.innerHTML = Array.from({ length: count }, () => `
+        <div class="skeleton-card">
+            <div class="skeleton sk-icon"></div>
+            <div class="sk-body">
+                <div class="skeleton sk-line"></div>
+                <div class="skeleton sk-line short"></div>
+                <div class="skeleton sk-line xshort"></div>
+            </div>
+        </div>`).join("");
+}
+
+function renderJobs() {
+    const container = $("jobList");
     if (!container) return;
 
-    if (State.filteredJobs.length === 0) {
-        container.innerHTML = `<p style="text-align:center; padding: 20px;">No jobs found match your search.</p>`;
+    if (State.loading.jobs) { renderSkeletons(container); return; }
+
+    const kw = State.currentFilters.keyword.toLowerCase().trim();
+    const filtered = State.allJobs.filter((j) =>
+        !kw ||
+        j.title?.toLowerCase().includes(kw) ||
+        j.location?.toLowerCase().includes(kw) ||
+        j.care_needs?.toLowerCase().includes(kw)
+    );
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-msg">No jobs found${kw ? ` for "<strong>${kw}</strong>"` : ""}.</div>`;
         return;
     }
 
-    container.innerHTML = State.filteredJobs.map(job => {
-        const isApplied = State.appliedJobIds.has(job.id.toString());
-        const pay = job.hourly_pay || job.hourlyPay || 0;
-
+    container.innerHTML = filtered.slice(0, 6).map((job, i) => {
+        const applied = State.appliedJobIds.has(String(job.id));
         return `
-        <div class="job-item">
-            <div class="job-info">
-                <h4>${job.title}</h4>
-                <div class="job-tags">
-                    <span>📍 ${job.location || 'Juja'}</span>
-                    <span>🏷️ Nanny</span>
-                    <span>💰 Ksh ${pay}/hr</span>
+        <div class="job-card-item" style="animation-delay:${i * 0.06}s"
+             onclick="window._openJobModal('${job.id}')">
+            <div class="job-icon-box"><i class="fas fa-baby"></i></div>
+            <div class="job-details">
+                <h4>${job.title || "Nanny Position"}</h4>
+                <p>${job.location || "Location TBD"} · ${job.required_experience || 0} yrs exp</p>
+                <div class="job-chips">
+                    <span>${job.availability || "Full-Time"}</span>
+                    ${job.care_needs ? `<span class="chip-alt">${job.care_needs}</span>` : ""}
                 </div>
             </div>
-            <div class="job-action">
-                <button class="btn-secondary" onclick="window.openJobModal('${job.id}')">View</button>
-                <button class="btn-search apply-btn" 
-                        id="apply-btn-${job.id}" 
-                        onclick="window.handleApply('${job.id}')" 
-                        ${isApplied ? 'disabled style="background: #cbd5e1;"' : ''}>
-                    ${isApplied ? 'Applied' : 'Apply'}
+            <div class="job-price">
+                <p>Ksh ${(job.salary || 0).toLocaleString()}</p>
+                <button class="btn-view ${applied ? "applied" : ""}"
+                    onclick="event.stopPropagation(); window._openJobModal('${job.id}')">
+                    ${applied ? "Applied ✓" : "View"}
                 </button>
             </div>
         </div>`;
-    }).join('');
+    }).join("");
 }
 
-// GLOBAL MODAL LOGIC
-window.openJobModal = (jobId) => {
-    const job = State.allJobs.find(j => j.id.toString() === jobId.toString());
+/* ═══════════════════════════════════════════
+   UI: APPLICATION STATUS
+   
+   API response shape (per application):
+   {
+     id, job_id, nanny_id,
+     status,       ← APPLICATION status (pending/reviewing/interview/accepted/rejected)
+     applied_at, created_at, updated_at,
+     job_post: {
+       title,      ← job title  ✅ use this
+       location,
+       salary,
+       status,     ← JOB status (open/closed) — NOT the same as app status
+       ...
+     }
+   }
+═══════════════════════════════════════════ */
+function renderApplicationStatus() {
+    const container = $("appStatusList");
+    if (!container) return;
+
+    if (State.loading.apps) { renderSkeletons(container, 2); return; }
+
+    if (State.applications.length === 0) {
+        container.innerHTML = `<p class="empty-msg" style="padding:16px 0;">No applications yet.</p>`;
+        return;
+    }
+
+    container.innerHTML = State.applications.slice(0, 4).map((app) => {
+        // ✅ Title is nested inside job_post
+        const jobTitle  = app.job_post?.title    || "Childcare Job";
+        const location  = app.job_post?.location || "";
+
+        // ✅ Application-level status (top-level field)
+        // Backend may not have this column yet — defaults to "Pending"
+        const appStatus  = app.status || "Pending";
+        const badgeClass = appStatus.toLowerCase().replace(/\s+/g, "_");
+
+        return `
+        <div class="status-row">
+            <div class="status-info">
+                <strong>${jobTitle}</strong>
+                <p>${location ? location + " · " : ""}${relativeTime(app.applied_at)}</p>
+            </div>
+            <span class="status-badge ${badgeClass}">${appStatus}</span>
+        </div>`;
+    }).join("");
+}
+
+/* ═══════════════════════════════════════════
+   UI: ACTIVE MATCHES
+═══════════════════════════════════════════ */
+function renderActiveMatches() {
+    const container = $("activeMatchesList");
+    if (!container) return;
+
+    const matches = State.user?.active_matches || [];
+
+    if (matches.length === 0) {
+        container.innerHTML = `
+        <div class="seeking-block">
+            <i class="fas fa-user-friends"></i>
+            <p>Seeking new matches?</p>
+            <button onclick="window.location.href='#'">Update Availability</button>
+        </div>`;
+        return;
+    }
+
+    container.innerHTML = matches.map((m) => `
+        <div class="match-card">
+            <div class="match-avatar">${initials(m.family_name || "F")}</div>
+            <div class="match-info">
+                <strong>${m.family_name || "Family"}</strong>
+                <p>Contract #${m.contract_id || "–"}</p>
+            </div>
+            <span class="match-status">Active</span>
+        </div>`).join("") +
+        `<button class="btn-manage" onclick="window.location.href='#'">Manage Contracts</button>`;
+}
+
+/* ═══════════════════════════════════════════
+   JOB MODAL
+═══════════════════════════════════════════ */
+function openJobModal(jobId) {
+    const job = State.allJobs.find((j) => String(j.id) === String(jobId));
     if (!job) return;
 
-    const modal = document.getElementById('jobModal');
-    const body = document.getElementById('modalBody');
-    const isApplied = State.appliedJobIds.has(job.id.toString());
-    const pay = job.hourly_pay || job.hourlyPay || "N/A";
+    const applied = State.appliedJobIds.has(String(jobId));
 
-    body.innerHTML = `
-        <div style="padding: 10px;">
-            <h2 style="color: var(--navy); margin-bottom: 5px;">${job.title}</h2>
-            <p style="color: var(--primary); font-weight: bold; margin-bottom: 20px;">
-                Ksh ${pay}/hr | ${job.location || 'Juja'}
-            </p>
-            <h5 style="margin-bottom: 10px; color: var(--navy);">Description</h5>
-            <p style="color: var(--grey-text); line-height: 1.6; margin-bottom: 25px;">
-                ${job.description || "No detailed description provided."}
-            </p>
-            <button class="btn-search" 
-                id="modal-apply-${job.id}"
-                ${isApplied ? 'disabled style="background: #cbd5e1;"' : ''}
-                onclick="window.handleApply('${job.id}');">
-                ${isApplied ? 'Application Submitted' : 'Submit Application Now'}
+    $("modalBody").innerHTML = `
+        <div class="modal-header">
+            <div>
+                <h3>${job.title || "Nanny Position"}</h3>
+                <p>${job.location || "Location TBD"}</p>
+            </div>
+            <button class="modal-close" onclick="window._closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-detail-grid">
+                <div class="detail-chip">
+                    <label>Pay</label>
+                    <span>Ksh ${(job.salary || 0).toLocaleString()}/mo</span>
+                </div>
+                <div class="detail-chip">
+                    <label>Experience</label>
+                    <span>${job.required_experience || 0} years</span>
+                </div>
+                <div class="detail-chip">
+                    <label>Schedule</label>
+                    <span>${job.availability || "Full-Time"}</span>
+                </div>
+                <div class="detail-chip">
+                    <label>Care Needs</label>
+                    <span>${job.care_needs || "General"}</span>
+                </div>
+            </div>
+            ${job.duties ? `<p class="modal-desc">${job.duties}</p>` : ""}
+        </div>
+        <div class="modal-footer">
+            <button class="btn-apply" id="applyBtn"
+                ${applied ? "disabled" : ""}
+                onclick="window._handleApply('${job.id}')">
+                ${applied ? "Already Applied ✓" : "Apply Now"}
             </button>
+            <button class="btn-secondary" onclick="window._closeModal()">Close</button>
         </div>`;
-    
-    modal.classList.add('active');
-    modal.setAttribute('aria-hidden', 'false');
-};
 
-window.closeModalFunc = () => {
-    const modal = document.getElementById('jobModal');
-    if (modal) {
-        modal.classList.remove('active');
-        modal.setAttribute('aria-hidden', 'true');
+    $("jobModal").classList.add("open");
+}
+
+function closeModal() {
+    $("jobModal")?.classList.remove("open");
+}
+
+async function handleApply(jobId) {
+    if (State.appliedJobIds.has(String(jobId))) return;
+
+    const btn = $("applyBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "Applying…"; }
+
+    const res = await applyToJob(jobId);
+
+    if (res.success) {
+        State.appliedJobIds.add(String(jobId));
+
+        // ✅ Mirror exact API shape so renderApplicationStatus works immediately
+        const matchedJob = State.allJobs.find(j => String(j.id) === String(jobId));
+        State.applications.unshift({
+            id: res.data?.id || null,
+            job_id: jobId,
+            applied_at: new Date().toISOString(),
+            status: "Pending",       // top-level application status
+            job_post: {              // mirrors API response shape
+                title:    matchedJob?.title    || "Childcare Job",
+                location: matchedJob?.location || "",
+            }
+        });
+
+        renderApplicationStatus();
+        updateStats();
+        renderJobs();
+        closeModal();
+        showToast("Application submitted successfully!", "success");
+    } else {
+        if (btn) { btn.disabled = false; btn.textContent = "Apply Now"; }
+        showToast(res.message || "Could not apply. Try again.", "error");
     }
-};
+}
 
-window.handleApply = async (jobId) => {
-    const mainBtn = document.getElementById(`apply-btn-${jobId}`);
-    const modalBtn = document.getElementById(`modal-apply-${jobId}`);
-    
-    const updateBtn = (text, disabled) => {
-        if (mainBtn) { mainBtn.innerText = text; mainBtn.disabled = disabled; }
-        if (modalBtn) { modalBtn.innerText = text; modalBtn.disabled = disabled; }
+// Expose to inline onclick handlers
+window._openJobModal = openJobModal;
+window._closeModal   = closeModal;
+window._handleApply  = handleApply;
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+function setupSidebar() {
+    const toggle  = $("menuToggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    let overlay = document.querySelector(".sidebar-overlay");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.className = "sidebar-overlay";
+        document.body.appendChild(overlay);
+    }
+
+    const openSidebar  = () => {
+        sidebar?.classList.add("open");
+        overlay.classList.add("active");
+        toggle?.querySelector("i")?.classList.replace("fa-bars", "fa-times");
+    };
+    const closeSidebar = () => {
+        sidebar?.classList.remove("open");
+        overlay.classList.remove("active");
+        toggle?.querySelector("i")?.classList.replace("fa-times", "fa-bars");
     };
 
-    updateBtn("Applying...", true);
+    toggle?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        sidebar?.classList.contains("open") ? closeSidebar() : openSidebar();
+    });
+    overlay.addEventListener("click", closeSidebar);
+    window.addEventListener("resize", () => { if (window.innerWidth > 768) closeSidebar(); });
+}
+
+/* ═══════════════════════════════════════════
+   EVENT LISTENERS
+═══════════════════════════════════════════ */
+function setupEventListeners() {
+    let debounceTimer;
+    $("keywordSearch")?.addEventListener("input", (e) => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            State.currentFilters.keyword = e.target.value;
+            renderJobs();
+        }, 250);
+    });
+
+    $("jobModal")?.addEventListener("click", (e) => {
+        if (e.target === $("jobModal")) closeModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+    });
+}
+
+/* ═══════════════════════════════════════════
+   POLLING — refresh every 60s
+═══════════════════════════════════════════ */
+function startPolling() {
+    setInterval(async () => {
+        try {
+            const [jobsRes, appsRes] = await Promise.all([
+                getAllJobs(),
+                getNannyApplications()
+            ]);
+
+            if (jobsRes.success) {
+                State.allJobs = jobsRes.data || [];
+                renderJobs();
+            }
+
+            if (appsRes.success) {
+                const newApps = appsRes.data || [];
+                // Notify on status change
+                newApps.forEach((a) => {
+                    const old = State.applications.find((x) => x.job_id === a.job_id);
+                    if (old && old.status !== a.status) {
+                        showToast(
+                            `"${a.job_post?.title || "Application"}" updated → ${a.status}`,
+                            "info"
+                        );
+                    }
+                });
+                State.applications = newApps;
+                State.appliedJobIds = new Set(newApps.map((a) => String(a.job_id)).filter(Boolean));
+                renderApplicationStatus();
+                updateStats();
+            }
+        } catch (e) { /* silent */ }
+    }, 60_000);
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+async function initializeDashboard() {
+    setupSidebar();
+    setupEventListeners();
+
+    // Show skeletons immediately while data loads
+    renderJobs();
+    renderApplicationStatus();
 
     try {
-        const result = await applyToJob(jobId);
-        if (result.success) {
-            State.appliedJobIds.add(jobId.toString());
-            updateBtn("Applied", true);
-            if (mainBtn) mainBtn.style.background = "#cbd5e1";
-            saveToLocalStorage(jobId);
-            
-            // Optional: Close modal after short delay on success
-            setTimeout(window.closeModalFunc, 1500);
-        } else {
-            alert("Application failed. Please try again.");
-            updateBtn("Apply", false);
+        const [jobsRes, appsRes, profileRes] = await Promise.all([
+            getAllJobs(),
+            getNannyApplications(),
+            getProfileData(),
+        ]);
+
+        // Profile
+        State.loading.profile = false;
+        if (profileRes.success && profileRes.data) {
+            State.user = profileRes.data;
+            updateProfileUI();
         }
+
+        // Jobs
+        State.loading.jobs = false;
+        if (jobsRes.success) State.allJobs = jobsRes.data || [];
+        renderJobs();
+        updateStats();
+
+        // Applications
+        State.loading.apps = false;
+        if (appsRes.success) {
+            State.applications = appsRes.data || [];
+            // ✅ Seed applied IDs from job_id (not application id)
+            State.applications.forEach((app) => {
+                if (app.job_id) State.appliedJobIds.add(String(app.job_id));
+            });
+        }
+        renderApplicationStatus();
+        renderActiveMatches();
+        updateStats();
+
+        startPolling();
+
     } catch (err) {
-        updateBtn("Apply", false);
-    }
-};
-
-// UI UTILITIES
-function setupUIListeners() {
-    document.getElementById("findJobBtn")?.addEventListener("click", () => {
-        State.currentFilters.keyword = document.getElementById("keywordSearch")?.value || "";
-        State.currentFilters.location = document.getElementById("locationDropdown")?.value || "";
-        applyFilters();
-    });
-
-    document.getElementById('closeModal')?.addEventListener('click', window.closeModalFunc);
-
-    State.categories.forEach(cat => {
-        const card = document.querySelector(cat.selector);
-        card?.addEventListener("click", () => {
-            document.querySelectorAll(".category-card").forEach(c => c.classList.remove("active"));
-            if (State.currentFilters.category === cat.id) {
-                State.currentFilters.category = ""; 
-            } else {
-                State.currentFilters.category = cat.id;
-                card.classList.add("active");
-            }
-            applyFilters();
-        });
-    });
-}
-
-function computeCategoryCounts() {
-    State.categories.forEach(cat => {
-        const count = State.allJobs.filter(j => j.category === cat.id).length;
-        const card = document.querySelector(cat.selector);
-        if (card) {
-            const countEl = card.querySelector('.cat-count') || card; 
-            if (countEl.classList.contains('cat-count')) countEl.innerText = `(${count}) Jobs`;
-        }
-    });
-}
-
-function populateLocationDropdown() {
-    const dropdown = document.getElementById("locationDropdown");
-    if (!dropdown) return;
-    const locations = [...new Set(State.allJobs.map(j => j.location).filter(Boolean))];
-    dropdown.innerHTML = `<option value="">All Locations</option>` + 
-        locations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-}
-
-function saveToLocalStorage(jobId) {
-    const saved = JSON.parse(localStorage.getItem("applied_jobs") || "[]");
-    if (!saved.includes(jobId.toString())) {
-        saved.push(jobId.toString());
-        localStorage.setItem("applied_jobs", JSON.stringify(saved));
+        console.error("Dashboard init error:", err);
+        State.loading = { jobs: false, apps: false, profile: false };
+        renderJobs();
+        renderApplicationStatus();
+        showToast("Some data could not be loaded.", "error");
     }
 }
 
-function syncLocalStorage() {
-    const saved = JSON.parse(localStorage.getItem("applied_jobs") || "[]");
-    saved.forEach(id => State.appliedJobIds.add(id.toString()));
-}
-
-function renderLoadingState(isLoading) {
-    const feed = document.getElementById("jobList");
-    if (!feed) return;
-    feed.innerHTML = isLoading ? `<div class="skeleton"></div>`.repeat(3) : "";
-}
+document.addEventListener("DOMContentLoaded", initializeDashboard);

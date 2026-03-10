@@ -9,6 +9,35 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter(tags=["Nanny"], prefix="/Nanny", redirect_slashes=False)
 
+
+@router.get("/profile/me", response_model=NannyResponse)
+async def get_my_profile(
+    db: SessionDep,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Returns the full nanny profile for the currently authenticated nanny.
+    Used by the dashboard to display the nanny's name, photo, vetting status, etc.
+    """
+    if current_user.role.lower() != "nanny":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only nanny accounts can access this endpoint."
+        )
+
+    service = NannyService(db)
+    result = await service.get_nanny(current_user.id)
+
+    if not result.success:
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
+
+    return result.data
+
+
+
 @router.post("", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
 async def create_nanny(
     nanny_create: NannyCreate,

@@ -130,3 +130,21 @@ async def get_jobs(
         )
     
     return result.data
+
+# a router to get the family name by job id
+@router.get("/{job_id}/family-name")
+async def get_family_name_by_job_id(
+    db: SessionDep,
+    job_id: UUID
+):
+    service = JobService(db)
+
+    result = await service.get_family_name_by_job_id(job_id)
+
+    if not result.success:
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
+    
+    return result.data

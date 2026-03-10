@@ -591,10 +591,9 @@ header {
     gap: 30px;
 }
 
-/* Responsive Mobile Layout */
 @media (max-width: 850px) {
     .services-grid {
-        grid-template-columns: 1fr; /* Stack cards vertically */
+        grid-template-columns: 1fr; 
     }
 
     .admin-track {
@@ -616,7 +615,7 @@ header {
 .testimonials-wrapper {
     padding: 60px 0;
     background-color: white;
-    overflow: hidden; /* Important: hides cards outside the screen */
+    overflow: hidden;
 }
 
 .marquee-container {
@@ -634,7 +633,6 @@ header {
     animation: scroll-right 30s linear infinite;
 }
 
-/* Keyframes for Left to Right Motion */
 @keyframes scroll-right {
     0% {
         transform: translateX(-50%); /* Starts halfway back (at the duplicate set) */
@@ -829,7 +827,6 @@ header {
     font-size: 0.85rem;
 }
 
-/* --- Responsiveness --- */
 @media (max-width: 992px) {
     .footer-container {
         grid-template-columns: repeat(2, 1fr);

@@ -57,28 +57,37 @@ export async function applyToJob(jobId) {
     }
 }
 
-// export async function getNannyApplications() {
-//     try {
-//         const token = localStorage.getItem("access_token");
-//         const response = await fetch(`${API_URL}/`, {
-//             headers: { "Authorization": `Bearer ${token}` }
-//         });
-//         const result = await response.json();
-//         return response.ok ? { success: true, data: result } : { success: false, message: result.detail };
-//     } catch (error) {
-//         return { success: false, message: "Could not sync applications." };
-//     }
-// }
-
 export async function getNannyApplications() {
-    const { token, userId } = getAuthData();
+    const token = localStorage.getItem("access_token");
+    if (!token) return { success: false };
+
     try {
-        const response = await fetch(`${API_URL}/Nanny/applications${userId}`, {
+        const response = await fetch(`${API_URL}/Nanny/applications/me`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        return response.ok
+            ? { success: true, data }
+            : { success: false, message: data.detail || "Failed to fetch applications" };
+    } catch (error) {
+        console.error("Applications fetch error:", error);
+        return { success: false, message: "Network error" };
+    }
+}
+
+// endpoint for fetching the family name of a job posting in javascript frontend
+export async function getFamilyNameByJobId(jobId) {
+    const token = localStorage.getItem("access_token");
+    try {
+        const response = await fetch(`${API_URL}/job/${jobId}/family-name`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await response.json();
-        return response.ok ? { success: true, data } : { success: false };
+        return response.ok ? { success: true, data } : { success: false, message: data.detail };
     } catch (error) {
-        return { success: false };
+        return { success: false, message: "Could not fetch family name." };
     }
 }
