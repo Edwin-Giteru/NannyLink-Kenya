@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – My Applications</title>
+  <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
+  <link rel="stylesheet" href="../../assets/styles/application.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ════════ SIDEBAR ════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="nannydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a href="nannyprofile.html"><i class="fas fa-user"></i><span>My Profile</span></a>
+      <a href="browse-jobs.html"><i class="fas fa-search"></i><span>Browse Jobs</span></a>
+      <a href="applications.html" class="active"><i class="fas fa-paper-plane"></i><span>Applications</span></a>
+      <a href="matches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <a href="#"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="#"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    <button class="btn-public-profile">
+      <i class="fas fa-eye"></i><span>View Public Profile</span>
+    </button>
+  </aside>
+
+  <!-- ════════ MAIN ════════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h2>My Applications</h2>
+      </div>
+      <div class="header-right">
+        <div class="header-icons">
+          <button class="icon-btn"><i class="fas fa-bell"></i><span class="badge"></span></button>
+        </div>
+        <div class="user-profile">
+          <div class="name-wrap">
+            <span id="userName">Loading…</span>
+            <div class="user-role">Professional Nanny</div>
+          </div>
+          <div class="user-avatar" id="userAvatar">N</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- ── STAT CARDS ── -->
+      <div class="app-stats-grid">
+        <div class="app-stat-card">
+          <div class="app-stat-icon total"><i class="fas fa-paper-plane"></i></div>
+          <div class="app-stat-info">
+            <span id="statTotal">—</span>
+            <label>Total Applied</label>
+          </div>
+        </div>
+        <div class="app-stat-card">
+          <div class="app-stat-icon pending"><i class="fas fa-hourglass-half"></i></div>
+          <div class="app-stat-info">
+            <span id="statPending">—</span>
+            <label>Pending</label>
+          </div>
+        </div>
+        <div class="app-stat-card">
+          <div class="app-stat-icon reviewing"><i class="fas fa-eye"></i></div>
+          <div class="app-stat-info">
+            <span id="statReviewing">—</span>
+            <label>Under Review</label>
+          </div>
+        </div>
+        <div class="app-stat-card">
+          <div class="app-stat-icon interview"><i class="fas fa-comments"></i></div>
+          <div class="app-stat-info">
+            <span id="statInterview">—</span>
+            <label>Interview</label>
+          </div>
+        </div>
+        <div class="app-stat-card">
+          <div class="app-stat-icon accepted"><i class="fas fa-circle-check"></i></div>
+          <div class="app-stat-info">
+            <span id="statAccepted">—</span>
+            <label>Accepted</label>
+          </div>
+        </div>
+        <div class="app-stat-card">
+          <div class="app-stat-icon rejected"><i class="fas fa-circle-xmark"></i></div>
+          <div class="app-stat-info">
+            <span id="statRejected">—</span>
+            <label>Rejected</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SEARCH + FILTER BAR ── -->
+      <div class="apps-toolbar">
+        <div class="apps-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="appSearch" placeholder="Search by job title or location…">
+          <button class="btn-clear-search" id="clearAppSearch" style="display:none">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="status-filter-tabs" id="statusTabs">
+          <button class="stab active" data-status="all">All</button>
+          <button class="stab" data-status="pending">Pending</button>
+          <button class="stab" data-status="reviewing">Reviewing</button>
+          <button class="stab" data-status="interview">Interview</button>
+          <button class="stab" data-status="accepted">Accepted</button>
+          <button class="stab" data-status="rejected">Rejected</button>
+        </div>
+
+        <div class="apps-sort-wrap">
+          <select id="appSort">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="salary_high">Salary: High to Low</option>
+            <option value="salary_low">Salary: Low to High</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── APPLICATION LIST ── -->
+      <div class="applications-list" id="applicationsList">
+        <!-- populated by JS -->
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ════════ JOB DETAIL MODAL ════════ -->
+<div id="jobModal" class="modal">
+  <div class="modal-content modal-lg">
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ════════ WITHDRAW CONFIRM MODAL ════════ -->
+<div id="withdrawModal" class="modal">
+  <div class="modal-content" style="max-width:440px">
+    <div class="modal-header">
+      <div>
+        <h3 class="withdraw-title">Withdraw Application</h3>
+        <p>This cannot be undone</p>
+      </div>
+      <button class="modal-close" id="closeWithdrawModal">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="withdraw-body-text">
+        Are you sure you want to withdraw your application for
+        <strong id="withdrawJobTitle">this job</strong>?
+        You will need to re-apply if you change your mind.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-withdraw-confirm" id="btnConfirmWithdraw">
+        <i class="fas fa-trash-alt"></i> Yes, Withdraw
+      </button>
+      <button class="btn-secondary" id="cancelWithdrawModal">Keep Application</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../../assets/scripts/application.js"></script>
+</body>
+</html>

@@ -35,3 +35,13 @@ class ApplicationRepository:
         stmt = select(Application.nanny_id).where(Application.job_id == job_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
+    
+    async def delete_application(self, application_id: UUID, nanny_id: UUID) -> bool:
+        stmt = select(Application).where(Application.id == application_id, Application.nanny_id == nanny_id)
+        result = await self.db.execute(stmt)
+        application = result.scalar_one_or_none()
+        if application:
+            await self.db.delete(application)
+            await self.db.commit()
+            return True
+        return False

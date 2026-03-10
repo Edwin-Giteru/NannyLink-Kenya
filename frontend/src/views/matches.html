@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – My Matches</title>
+  <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
+  <link rel="stylesheet" href="../../assets/styles/matches.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ════════ SIDEBAR ════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="nannydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a href="nanny-profile.html"><i class="fas fa-user"></i><span>My Profile</span></a>
+      <a href="browse-job.html"><i class="fas fa-search"></i><span>Browse Jobs</span></a>
+      <a href="applications.html"><i class="fas fa-paper-plane"></i><span>Applications</span></a>
+      <a href="matches.html" class="active"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <a href="#"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="#"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    <button class="btn-public-profile">
+      <i class="fas fa-eye"></i><span>View Public Profile</span>
+    </button>
+  </aside>
+
+  <!-- ════════ MAIN ════════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h2>My Matches</h2>
+      </div>
+      <div class="header-right">
+        <div class="header-icons">
+          <button class="icon-btn"><i class="fas fa-bell"></i><span class="badge"></span></button>
+        </div>
+        <div class="user-profile">
+          <div class="name-wrap">
+            <span id="userName">Loading…</span>
+            <div class="user-role">Professional Nanny</div>
+          </div>
+          <div class="user-avatar" id="userAvatar">N</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- ── STAT CARDS ── -->
+      <div class="match-stats-grid">
+        <div class="match-stat-card">
+          <div class="match-stat-icon total"><i class="fas fa-handshake"></i></div>
+          <div class="match-stat-info">
+            <span id="statTotal">—</span>
+            <label>Total Matches</label>
+          </div>
+        </div>
+        <div class="match-stat-card">
+          <div class="match-stat-icon active"><i class="fas fa-circle-check"></i></div>
+          <div class="match-stat-info">
+            <span id="statActive">—</span>
+            <label>Active</label>
+          </div>
+        </div>
+        <div class="match-stat-card">
+          <div class="match-stat-icon pending"><i class="fas fa-hourglass-half"></i></div>
+          <div class="match-stat-info">
+            <span id="statPending">—</span>
+            <label>Pending</label>
+          </div>
+        </div>
+        <div class="match-stat-card">
+          <div class="match-stat-icon ended"><i class="fas fa-circle-xmark"></i></div>
+          <div class="match-stat-info">
+            <span id="statEnded">—</span>
+            <label>Ended</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TOOLBAR ── -->
+      <div class="matches-toolbar">
+        <div class="match-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="matchSearch" placeholder="Search by family or job title…">
+          <button class="btn-clear-search" id="clearMatchSearch" style="display:none">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="match-filter-tabs" id="matchTabs">
+          <button class="mtab active" data-status="all">All</button>
+          <button class="mtab" data-status="active">Active</button>
+          <button class="mtab" data-status="pending">Pending</button>
+          <button class="mtab" data-status="ended">Ended</button>
+        </div>
+
+        <div class="match-sort-wrap">
+          <select id="matchSort">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── MATCH CARDS ── -->
+      <div class="matches-list" id="matchesList"></div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ════════ MATCH DETAIL MODAL ════════ -->
+<div id="matchModal" class="modal">
+  <div class="modal-content modal-lg">
+    <div id="matchModalBody"></div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../../assets/scripts/matches.js"></script>
+</body>
+</html>

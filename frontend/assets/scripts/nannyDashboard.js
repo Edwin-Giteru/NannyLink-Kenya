@@ -1,6 +1,9 @@
 import { getAllJobs, applyToJob, getNannyApplications } from "../../src/service/nannyDashboardService.js";
 import { API_URL } from "../../src/utils/config.js";
 
+/* ═══════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════ */
 const $ = (id) => document.getElementById(id);
 const safeText = (id, val) => { const el = $(id); if (el) el.textContent = val; };
 
@@ -39,6 +42,7 @@ const State = {
     allJobs: [],
     applications: [],
     appliedJobIds: new Set(),
+    matches: [],
     currentFilters: { keyword: "" },
     loading: { jobs: true, apps: true, profile: true },
 };
@@ -91,8 +95,24 @@ async function getProfileData() {
 }
 
 /* ═══════════════════════════════════════════
-   UI: PROFILE
+   MATCHES
 ═══════════════════════════════════════════ */
+async function getMatches() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return { success: false, data: [] };
+    try {
+        const res = await fetch(`${API_URL}/matches/`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!res.ok) return { success: false, data: [] };
+        const data = await res.json();
+        const matches = Array.isArray(data) ? data : (data.matches || data.data || []);
+        return { success: true, data: matches };
+    } catch (e) {
+        console.error("Matches fetch error:", e);
+        return { success: false, data: [] };
+    }
+}
 function updateProfileUI() {
     if (!State.user) return;
     const { full_name, vetting_status, profile_photo_url } = State.user;
@@ -253,28 +273,39 @@ function renderActiveMatches() {
     const container = $("activeMatchesList");
     if (!container) return;
 
-    const matches = State.user?.active_matches || [];
+    const matches = State.matches;
 
     if (matches.length === 0) {
         container.innerHTML = `
         <div class="seeking-block">
             <i class="fas fa-user-friends"></i>
             <p>Seeking new matches?</p>
-            <button onclick="window.location.href='#'">Update Availability</button>
+            <button onclick="window.location.href='browse-job.html'">Browse Jobs</button>
         </div>`;
         return;
     }
 
-    container.innerHTML = matches.map((m) => `
+    // Helper to extract family name — matches MatchResponse schema
+    // match.family.name comes from FamilyBrief in match_schema.py
+    const familyName = (m) => m.family?.name || "Family";
+
+    container.innerHTML = matches.slice(0, 5).map((m) => {
+        const name    = familyName(m);
+        const title   = m.job_post?.title || "Nanny Position";
+        const initStr = initials(name);
+        return `
         <div class="match-card">
-            <div class="match-avatar">${initials(m.family_name || "F")}</div>
+            <div class="match-avatar">${initStr}</div>
             <div class="match-info">
-                <strong>${m.family_name || "Family"}</strong>
-                <p>Contract #${m.contract_id || "–"}</p>
+                <strong>${name}</strong>
+                <p>${title}</p>
             </div>
             <span class="match-status">Active</span>
-        </div>`).join("") +
-        `<button class="btn-manage" onclick="window.location.href='#'">Manage Contracts</button>`;
+        </div>`;
+    }).join("") +
+    `<button class="btn-manage" onclick="window.location.href='matches.html'">
+        View All Matches
+    </button>`;
 }
 
 /* ═══════════════════════════════════════════
@@ -475,10 +506,11 @@ async function initializeDashboard() {
     renderApplicationStatus();
 
     try {
-        const [jobsRes, appsRes, profileRes] = await Promise.all([
+        const [jobsRes, appsRes, profileRes, matchesRes] = await Promise.all([
             getAllJobs(),
             getNannyApplications(),
             getProfileData(),
+            getMatches(),
         ]);
 
         // Profile
@@ -498,15 +530,22 @@ async function initializeDashboard() {
         State.loading.apps = false;
         if (appsRes.success) {
             State.applications = appsRes.data || [];
-            // ✅ Seed applied IDs from job_id (not application id)
+            // Seed applied IDs from job_id (not application id)
             State.applications.forEach((app) => {
                 if (app.job_id) State.appliedJobIds.add(String(app.job_id));
             });
         }
         renderApplicationStatus();
-        renderActiveMatches();
-        updateStats();
 
+        // Matches — real data from GET /matches/
+        if (matchesRes.success) {
+            State.matches = matchesRes.data || [];
+        }
+        // Update match count stat card with real count
+        safeText("statMatches", State.matches.length);
+        renderActiveMatches();
+
+        updateStats();
         startPolling();
 
     } catch (err) {

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Browse Jobs</title>
+  <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
+  <link rel="stylesheet" href="../../assets/styles/browse-job.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ════════ SIDEBAR ════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="nannydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a href="nannyprofile.html"><i class="fas fa-user"></i><span>My Profile</span></a>
+      <a href="browse-job.html" class="active"><i class="fas fa-search"></i><span>Browse Jobs</span></a>
+      <a href="applications.html"><i class="fas fa-paper-plane"></i><span>Applications</span></a>
+      <a href="matches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <a href="#"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="#"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    <button class="btn-public-profile">
+      <i class="fas fa-eye"></i><span>View Public Profile</span>
+    </button>
+  </aside>
+
+  <!-- ════════ MAIN ════════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h2>Browse Jobs</h2>
+      </div>
+      <div class="header-right">
+        <div class="header-icons">
+          <button class="icon-btn" aria-label="Notifications">
+            <i class="fas fa-bell"></i><span class="badge"></span>
+          </button>
+        </div>
+        <div class="user-profile">
+          <div class="name-wrap">
+            <span id="userName">Loading…</span>
+            <div class="user-role">Professional Nanny</div>
+          </div>
+          <div class="user-avatar" id="userAvatar">N</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- ── PAGE HERO ── -->
+      <div class="browse-hero">
+        <div class="browse-hero-text">
+          <h1>Browse Nanny Jobs</h1>
+          <p id="jobCountLine">Explore active caregiver opportunities in your area.</p>
+        </div>
+
+        <!-- ── SEARCH + FILTERS BAR ── -->
+        <div class="search-filter-bar">
+          <div class="search-input-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput"
+              placeholder="Search keywords (e.g. newborn, tutor, cook…)">
+            <button class="btn-clear-search" id="clearSearch" style="display:none">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div class="filter-dropdowns">
+            <div class="filter-dropdown" id="locationFilter">
+              <button class="filter-btn" data-key="location">
+                <i class="fas fa-map-marker-alt"></i> Location
+                <i class="fas fa-chevron-down arrow"></i>
+              </button>
+              <div class="dropdown-panel">
+                <label><input type="checkbox" value="nairobi"> Nairobi</label>
+                <label><input type="checkbox" value="mombasa"> Mombasa</label>
+                <label><input type="checkbox" value="kisumu"> Kisumu</label>
+                <label><input type="checkbox" value="nakuru"> Nakuru</label>
+                <label><input type="checkbox" value="eldoret"> Eldoret</label>
+                <label><input type="checkbox" value="juja"> Juja</label>
+                <label><input type="checkbox" value="thika"> Thika</label>
+              </div>
+            </div>
+
+            <div class="filter-dropdown" id="experienceFilter">
+              <button class="filter-btn" data-key="experience">
+                <i class="fas fa-briefcase"></i> Experience
+                <i class="fas fa-chevron-down arrow"></i>
+              </button>
+              <div class="dropdown-panel">
+                <label><input type="radio" name="exp" value="0"> Any experience</label>
+                <label><input type="radio" name="exp" value="1"> 1+ years</label>
+                <label><input type="radio" name="exp" value="2"> 2+ years</label>
+                <label><input type="radio" name="exp" value="3"> 3+ years</label>
+                <label><input type="radio" name="exp" value="5"> 5+ years</label>
+                <label><input type="radio" name="exp" value="10"> 10+ years</label>
+              </div>
+            </div>
+
+            <div class="filter-dropdown" id="scheduleFilter">
+              <button class="filter-btn" data-key="schedule">
+                <i class="fas fa-clock"></i> Hours
+                <i class="fas fa-chevron-down arrow"></i>
+              </button>
+              <div class="dropdown-panel">
+                <label><input type="checkbox" value="full_time"> Full-Time</label>
+                <label><input type="checkbox" value="part_time"> Part-Time</label>
+                <label><input type="checkbox" value="live_in"> Live-In</label>
+                <label><input type="checkbox" value="on_call"> On-Call</label>
+              </div>
+            </div>
+
+            <div class="filter-dropdown" id="salaryFilter">
+              <button class="filter-btn" data-key="salary">
+                <i class="fas fa-coins"></i> Salary
+                <i class="fas fa-chevron-down arrow"></i>
+              </button>
+              <div class="dropdown-panel salary-panel">
+                <label class="range-label">Min: <strong id="salaryMinLabel">Ksh 0</strong></label>
+                <input type="range" id="salaryMin" min="0" max="200000" step="5000" value="0">
+                <label class="range-label">Max: <strong id="salaryMaxLabel">Ksh 200,000</strong></label>
+                <input type="range" id="salaryMax" min="0" max="200000" step="5000" value="200000">
+              </div>
+            </div>
+
+            <button class="btn-clear-filters" id="clearFilters" style="display:none">
+              <i class="fas fa-filter-circle-xmark"></i> Clear filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Active filter chips -->
+        <div class="active-chips" id="activeChips"></div>
+      </div>
+
+      <!-- ── RESULTS AREA ── -->
+      <div class="results-area">
+
+        <div class="results-toolbar">
+          <span class="results-count" id="resultsCount">Loading…</span>
+          <div class="toolbar-right">
+            <select class="sort-select" id="sortSelect">
+              <option value="newest">Newest First</option>
+              <option value="salary_high">Salary: High to Low</option>
+              <option value="salary_low">Salary: Low to High</option>
+              <option value="experience">Least Experience Needed</option>
+            </select>
+            <div class="view-toggle">
+              <button class="view-btn active" id="gridViewBtn" title="Grid view">
+                <i class="fas fa-th-large"></i>
+              </button>
+              <button class="view-btn" id="listViewBtn" title="List view">
+                <i class="fas fa-list"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Job cards grid -->
+        <div class="jobs-grid" id="jobsGrid">
+          <!-- populated by JS -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+      </div>
+
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<!-- ════════ JOB DETAIL MODAL ════════ -->
+<div id="jobModal" class="modal">
+  <div class="modal-content modal-lg">
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<script type="module" src="../../assets/scripts/browseJob.js"></script>
+</body>
+</html>

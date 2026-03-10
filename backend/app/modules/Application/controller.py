@@ -78,3 +78,33 @@ async def get_applications_for_job(
             detail=result.error
         )
     return result.data
+
+
+@router.delete("/application/{application_id}")
+async def delete_application(
+    application_id: str,
+    db: SessionDep,
+    current_user: User = Depends(get_current_user)
+):
+    application_service = ApplicationService(db)
+
+    if current_user.role != "nanny":
+        raise HTTPException(
+            status_code=403,
+            detail="Only users with nanny role can delete applications."
+        )
+    # get the nanny_id for the current user
+    nanny_repo = NannyRepository(db)
+    nanny = await nanny_repo.get_nanny_by_user_id(current_user.id)
+    if not nanny:
+        raise HTTPException(
+            status_code=404,
+            detail="Nanny profile not found for the current user."
+        )
+    result = await application_service.delete_application(application_id, nanny.id)
+    if not result.success:
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
+    return {"detail": "Application deleted successfully."}

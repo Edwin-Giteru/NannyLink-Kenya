@@ -72,3 +72,21 @@ class ApplicationService:
                 f"An error occurred while retrieving applications for job_id {job_id}: {str(e)}",
                 status_code=500
             )
+    
+    async def delete_application(self, application_id: UUID, nanny_id: UUID) -> Result:
+        try:
+            success = await self.application_repo.delete_application(application_id, nanny_id)
+            if not success:
+                return Result.fail(
+                    f"Application with id {application_id} not found or does not belong to nanny_id {nanny_id}.",
+                    status_code=404
+                )
+            return Result.ok(
+                data={"message": "Application deleted successfully."},
+                status_code=200
+            )
+        except Exception as e:
+            return Result.fail(
+                f"An error occurred while deleting application: {str(e)}",
+                status_code=500
+            )

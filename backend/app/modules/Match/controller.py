@@ -29,3 +29,18 @@ async def create_match(
         )
     
     return result.data
+
+@router.get("/matches/", status_code=200)
+async def list_matches(
+    db: SessionDep,
+    current_user: User = Depends(get_current_user)
+):
+    match_service = MatchService(db)
+    result = await match_service.list_matches(current_user.id)
+    if not result.success:
+        raise HTTPException(
+            status_code=result.status_code,
+            detail=result.error
+        )
+    
+    return result.data
