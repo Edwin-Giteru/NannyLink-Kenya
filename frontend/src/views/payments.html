@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Payments</title>
+  <link rel="stylesheet" href="../../assets/styles/nanny-dashboard.css">
+  <link rel="stylesheet" href="../../assets/styles/pages.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="nannydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a href="nannyprofile.html"><i class="fas fa-user"></i><span>My Profile</span></a>
+      <a href="browse-job.html"><i class="fas fa-search"></i><span>Browse Jobs</span></a>
+      <a href="applications.html"><i class="fas fa-paper-plane"></i><span>Applications</span></a>
+      <a href="matches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <a href="payments.html" class="active"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="contracts.html"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    <button class="btn-public-profile"><i class="fas fa-eye"></i><span>View Public Profile</span></button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h2>Payments</h2>
+      </div>
+      <div class="header-right">
+        <div class="header-icons">
+          <button class="icon-btn"><i class="fas fa-bell"></i><span class="badge"></span></button>
+        </div>
+        <div class="user-profile">
+          <div class="name-wrap">
+            <span id="userName">Loading…</span>
+            <div class="user-role">Professional Nanny</div>
+          </div>
+          <div class="user-avatar" id="userAvatar">N</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- STAT CARDS -->
+      <div class="pcs-stat-grid">
+        <div class="pcs-stat-card">
+          <div class="pcs-stat-icon mpesa"><i class="fas fa-money-bill-wave"></i></div>
+          <div class="pcs-stat-info">
+            <span id="statTotalPaid">—</span>
+            <label>Total Paid</label>
+          </div>
+        </div>
+        <div class="pcs-stat-card">
+          <div class="pcs-stat-icon green"><i class="fas fa-circle-check"></i></div>
+          <div class="pcs-stat-info">
+            <span id="statCompleted">—</span>
+            <label>Completed</label>
+          </div>
+        </div>
+        <div class="pcs-stat-card">
+          <div class="pcs-stat-icon gold"><i class="fas fa-hourglass-half"></i></div>
+          <div class="pcs-stat-info">
+            <span id="statPending">—</span>
+            <label>Pending</label>
+          </div>
+        </div>
+        <div class="pcs-stat-card">
+          <div class="pcs-stat-icon red"><i class="fas fa-circle-xmark"></i></div>
+          <div class="pcs-stat-info">
+            <span id="statFailed">—</span>
+            <label>Failed</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONNECTION FEE SECTION -->
+      <div class="panel" id="connectionFeePanel">
+        <div class="panel-header">
+          <h2><i class="fas fa-link"></i> Connection Fee Status</h2>
+          <span id="feeOverallBadge" class="status-badge pending">Loading…</span>
+        </div>
+        <div class="panel-body">
+          <!-- Hero -->
+          <div class="fee-hero" id="feeHero">
+            <div class="fee-hero-icon">🤝</div>
+            <div class="fee-hero-info">
+              <h3>Pay Your Connection Fee</h3>
+              <p>Both you and the family must pay the connection fee to unlock your match and proceed to a contract.</p>
+              <span class="fee-amount" id="feeAmount">Ksh —<small>/one-time</small></span>
+            </div>
+            <div class="fee-hero-action">
+              <button class="btn-mpesa" id="btnPayFee" disabled>
+                <span class="mpesa-logo">M</span>
+                Pay via M-Pesa
+              </button>
+            </div>
+          </div>
+
+          <!-- No active match -->
+          <div id="noMatchNotice" style="display:none" class="pcs-empty">
+            <i class="fas fa-handshake" style="color:var(--border)"></i>
+            <h3>No active match yet</h3>
+            <p>Connection fee payments are tied to a match. Get matched with a family first.</p>
+          </div>
+
+          <!-- Both-parties status pills -->
+          <div style="margin-top:16px">
+            <p style="font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:10px">
+              Payment Progress
+            </p>
+            <div class="payment-parties" id="paymentParties">
+              <div class="party-pill waiting" id="nannyPartyPill">
+                <div class="party-pill-icon"><i class="fas fa-user-nurse"></i></div>
+                <div class="party-pill-info">
+                  <strong>You (Nanny)</strong>
+                  <span id="nannyPayStatus">Checking…</span>
+                </div>
+              </div>
+              <div class="party-pill waiting" id="familyPartyPill">
+                <div class="party-pill-icon"><i class="fas fa-house-user"></i></div>
+                <div class="party-pill-info">
+                  <strong>Family</strong>
+                  <span id="familyPayStatus">Checking…</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENT HISTORY -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2><i class="fas fa-clock-rotate-left"></i> Payment History</h2>
+          <div class="pcs-toolbar">
+            <div class="pcs-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="paymentSearch" placeholder="Search by M-Pesa code…">
+            </div>
+            <select class="pcs-filter-select" id="paymentStatusFilter">
+              <option value="all">All Status</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="PENDING">Pending</option>
+              <option value="FAILED">Failed</option>
+            </select>
+          </div>
+        </div>
+        <div class="panel-body no-pad">
+          <div class="pcs-table-wrap">
+            <table class="pcs-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Match</th>
+                  <th>Amount</th>
+                  <th>M-Pesa Code</th>
+                  <th>Status</th>
+                  <th>Phone</th>
+                </tr>
+              </thead>
+              <tbody id="paymentHistoryBody">
+                <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-light)">
+                  <i class="fas fa-spinner fa-spin"></i> Loading payments…
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- M-PESA PAYMENT MODAL -->
+<div id="mpesaModal" class="modal">
+  <div class="modal-content" style="max-width:420px">
+    <div class="modal-header">
+      <div>
+        <h3 style="font-family:'Fraunces',serif;color:var(--navy)">Pay via M-Pesa</h3>
+        <p>Connection fee payment</p>
+      </div>
+      <button class="modal-close" id="closeMpesaModal">×</button>
+    </div>
+    <div class="modal-body" id="mpesaModalBody">
+      <div class="mpesa-modal-icon">📱</div>
+      <div class="mpesa-steps">
+        <div class="mpesa-step"><span class="mpesa-step-num">1</span>Enter your M-Pesa phone number below.</div>
+        <div class="mpesa-step"><span class="mpesa-step-num">2</span>You'll receive an STK push on your phone.</div>
+        <div class="mpesa-step"><span class="mpesa-step-num">3</span>Enter your M-Pesa PIN to confirm.</div>
+      </div>
+      <div class="phone-input-wrap" style="margin-top:16px">
+        <span class="phone-prefix">+254</span>
+        <input type="tel" id="mpesaPhone" placeholder="7XX XXX XXX" maxlength="9">
+      </div>
+      <p class="form-hint" style="margin-top:8px">Enter the 9 digits after +254 (e.g. 712345678)</p>
+    </div>
+    <!-- Pending state (shown after STK push sent) -->
+    <div class="mpesa-pending-state" id="mpesaPendingState">
+      <div class="mpesa-spinner"></div>
+      <p style="font-weight:600;color:var(--navy);margin-bottom:6px">STK Push Sent!</p>
+      <p style="font-size:.9rem;color:var(--text-mid)">Check your phone and enter your M-Pesa PIN to complete payment.</p>
+      <p style="font-size:.8rem;color:var(--text-light);margin-top:12px">This page will update automatically once payment is confirmed.</p>
+    </div>
+    <div class="modal-footer" id="mpesaModalFooter">
+      <button class="btn-mpesa" id="btnConfirmMpesa" style="flex:1;justify-content:center">
+        <span class="mpesa-logo">M</span> Send STK Push
+      </button>
+      <button class="btn-secondary" id="cancelMpesaModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../../assets/scripts/payments.js"></script>
+</body>
+</html>

@@ -80,15 +80,15 @@ app = FastAPI(
         UUID: str 
     }
 )
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://nannylink-kenya.onrender.com",
-    "http://127.0.0.1:5500"]
+# origins = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+#     "https://nannylink-kenya.onrender.com",
+#     "http://127.0.0.1:5500"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
