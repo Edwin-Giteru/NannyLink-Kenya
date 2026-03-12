@@ -115,7 +115,7 @@ class PaymentService:
                         pass
 
                 # Update match status
-                match_result = await self.match_service.get_match_by_id(payment.match_id)
+                match_result = await self.match_service.get_match_model_by_id(payment.match_id)
                 if match_result.success and match_result.data:
                     match_result.data.status = models.MatchStatus.PARTIALLY_PAID
                     self.db.add(match_result.data)

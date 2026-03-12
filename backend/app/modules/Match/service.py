@@ -76,3 +76,16 @@ class MatchService:
     # kept for backwards compatibility
     async def get_matches_by_user_id(self, user_id: UUID) -> Result:
         return await self.list_matches(user_id)
+
+
+    async def get_match_model_by_id(self, match_id: UUID) -> Result:
+        """
+        Returns the raw SQLAlchemy Model for internal database operations
+        """
+        try:
+            match = await self.match_repo.get_match_by_id(match_id)
+            if not match:
+                return Result.fail(f"Match {match_id} not found.", status_code=404)
+            return Result.ok(data=match, status_code=200)
+        except Exception as e:
+            return Result.fail(str(e), status_code=500)
