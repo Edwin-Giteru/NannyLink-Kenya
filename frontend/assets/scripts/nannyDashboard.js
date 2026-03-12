@@ -280,7 +280,7 @@ function renderActiveMatches() {
         <div class="seeking-block">
             <i class="fas fa-user-friends"></i>
             <p>Seeking new matches?</p>
-            <button onclick="window.location.href='browse-job.html'">Browse Jobs</button>
+            <button onclick="window.location.href='browse-jobs.html'">Browse Jobs</button>
         </div>`;
         return;
     }
@@ -405,6 +405,16 @@ window._handleApply  = handleApply;
 /* ═══════════════════════════════════════════
    SIDEBAR
 ═══════════════════════════════════════════ */
+/* ── Auto-set active nav based on current page ── */
+function setupActiveNav() {
+  const page = window.location.pathname.split("/").pop() || "nannydashboard.html";
+  document.querySelectorAll(".sidebar-nav a").forEach(a => {
+    a.classList.remove("active");
+    const href = (a.getAttribute("href") || "").split("/").pop();
+    if (href === page) a.classList.add("active");
+  });
+}
+
 function setupSidebar() {
     const toggle  = $("menuToggle");
     const sidebar = document.querySelector(".sidebar");
@@ -498,6 +508,7 @@ function startPolling() {
    INIT
 ═══════════════════════════════════════════ */
 async function initializeDashboard() {
+    setupActiveNav();
     setupSidebar();
     setupEventListeners();
 

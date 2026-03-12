@@ -212,7 +212,7 @@ function renderMatches() {
         <p>${isFiltered
           ? "Try adjusting your search or filter."
           : "Keep applying to jobs — matches happen when a family selects you."}</p>
-        ${!isFiltered ? `<a href="browse-job.html" class="btn-browse-jobs">
+        ${!isFiltered ? `<a href="browse-jobs.html" class="btn-browse-jobs">
           <i class="fas fa-search"></i> Browse Jobs
         </a>` : ""}
       </div>`;
@@ -411,6 +411,16 @@ function closeMatchModal() { $("matchModal")?.classList.remove("open"); }
 /* ═══════════════════════════════════════════
    SIDEBAR
 ═══════════════════════════════════════════ */
+
+/* ── Auto-set active nav based on current page ── */
+function setupActiveNav() {
+  const page = window.location.pathname.split("/").pop() || "nannydashboard.html";
+  document.querySelectorAll(".sidebar-nav a").forEach(a => {
+    a.classList.remove("active");
+    const href = (a.getAttribute("href") || "").split("/").pop();
+    if (href === page) a.classList.add("active");
+  });
+}
 function setupSidebar() {
   const toggle  = $("menuToggle");
   const sidebar = document.querySelector(".sidebar");
@@ -482,6 +492,7 @@ window._goPage = (page) => {
    INIT
 ═══════════════════════════════════════════ */
 async function init() {
+  setupActiveNav();
   setupSidebar();
   setupEvents();
   renderSkeletons();

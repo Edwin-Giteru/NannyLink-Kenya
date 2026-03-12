@@ -195,15 +195,33 @@
     <div class="modal-body" id="mpesaModalBody">
       <div class="mpesa-modal-icon">📱</div>
       <div class="mpesa-steps">
-        <div class="mpesa-step"><span class="mpesa-step-num">1</span>Enter your M-Pesa phone number below.</div>
+        <div class="mpesa-step"><span class="mpesa-step-num">1</span>Confirm the amount and enter your M-Pesa phone number.</div>
         <div class="mpesa-step"><span class="mpesa-step-num">2</span>You'll receive an STK push on your phone.</div>
         <div class="mpesa-step"><span class="mpesa-step-num">3</span>Enter your M-Pesa PIN to confirm.</div>
       </div>
-      <div class="phone-input-wrap" style="margin-top:16px">
-        <span class="phone-prefix">+254</span>
-        <input type="tel" id="mpesaPhone" placeholder="7XX XXX XXX" maxlength="9">
+      <!-- Amount field -->
+      <div style="margin-top:16px">
+        <label style="display:block;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-light);margin-bottom:6px">
+          Amount (Ksh)
+        </label>
+        <div class="phone-input-wrap">
+          <span class="phone-prefix" style="font-size:.9rem;letter-spacing:.02em">KSH</span>
+          <input type="number" id="mpesaAmount" value="2000" min="1" step="1" style="font-weight:600;font-size:1rem">
+        </div>
+        <p class="form-hint" style="margin-top:5px">Standard connection fee is Ksh 2,000. You may adjust if needed.</p>
       </div>
-      <p class="form-hint" style="margin-top:8px">Enter the 9 digits after +254 (e.g. 712345678)</p>
+
+      <!-- Phone field -->
+      <div style="margin-top:14px">
+        <label style="display:block;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-light);margin-bottom:6px">
+          M-Pesa Phone Number
+        </label>
+        <div class="phone-input-wrap">
+          <span class="phone-prefix">+254</span>
+          <input type="tel" id="mpesaPhone" placeholder="7XX XXX XXX" maxlength="9">
+        </div>
+        <p class="form-hint" style="margin-top:5px">Enter the 9 digits after +254 (e.g. 712345678)</p>
+      </div>
     </div>
     <!-- Pending state (shown after STK push sent) -->
     <div class="mpesa-pending-state" id="mpesaPendingState">

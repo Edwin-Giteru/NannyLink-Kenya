@@ -47,7 +47,9 @@ async function fetchUserInfo() {
   if (!token) return null;
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
-    return { email: payload.email || payload.sub || "", id: payload.sub };
+    // Never fall back to sub for email — sub is a UUID, not an address.
+    const email = payload.email || payload.user_email || payload.username || "";
+    return { email, id: payload.sub };
   } catch {
     return null;
   }
@@ -121,7 +123,13 @@ function populateForm(profile, user) {
   setVal("settingName", profile?.name || "");
 
   // Email comes from JWT, not NannyProfile (NannyProfile has no email field)
+  // Show email from JWT; if the token has no email claim, show a
+  // clear placeholder so the field is never filled with a raw UUID.
   setVal("settingEmail", user?.email || "");
+  if (!user?.email) {
+    const el = $("settingEmail");
+    if (el) el.placeholder = "Email not available — contact support";
+  }
 
   // Address fields
   setVal("settingAddress",          profile?.address          || "");
@@ -277,6 +285,16 @@ function setupDeleteModal() {
   });
 }
 
+/* ── Auto-set active nav based on current page ── */
+function setupActiveNav() {
+  const page = window.location.pathname.split("/").pop() || "nannydashboard.html";
+  document.querySelectorAll(".sidebar-nav a").forEach(a => {
+    a.classList.remove("active");
+    const href = (a.getAttribute("href") || "").split("/").pop();
+    if (href === page) a.classList.add("active");
+  });
+}
+
 /* ─── Sidebar ─── */
 function setupSidebar() {
   const toggle  = $("menuToggle");
@@ -318,6 +336,7 @@ function setupEvents() {
 
 /* ─── Init ─── */
 async function init() {
+  setupActiveNav();
   setupSidebar();
   setupEvents();
   setupPhotoUpload();

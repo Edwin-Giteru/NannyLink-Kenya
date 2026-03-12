@@ -640,7 +640,7 @@ body { font-family: 'Ubuntu', sans-serif !important; font-size: 17px; }
   font-family: 'Ubuntu', sans-serif;
 }
 
-.settings-nav-item i { width: 18px; text-align: center; color: var(--text-light); font-size: .9rem; flex-shrink: 0; }
+.settings-nav-item i { width: 18px; text-align: center; color: var(--text-light); font-size: .9rem; flex-shrink: 0; display: inline-block; }
 .settings-nav-item:hover { background: var(--cream-2); color: var(--navy); }
 .settings-nav-item:hover i { color: var(--gold); }
 .settings-nav-item.active { background: var(--navy-5); color: var(--navy); font-weight: 600; }
@@ -957,4 +957,138 @@ body { font-family: 'Ubuntu', sans-serif !important; font-size: 17px; }
   .contract-detail-row { grid-template-columns: repeat(2, 1fr); }
   .panel-header { padding: 14px 16px; }
   .panel-body { padding: 16px; }
+}
+
+/* ══════════════════════════════════════
+   SETTINGS — RESPONSIVE IMPROVEMENTS
+══════════════════════════════════════ */
+
+/* Ensure the settings layout panel wrapper doesn't overflow */
+.settings-layout > div:last-child {
+  min-width: 0;
+}
+
+/* Profile header card — avatar + info side by side on wider screens */
+.avatar-upload-area {
+  padding: 4px 0 8px;
+}
+
+/* Email field disabled style — make it clear it's read-only */
+.form-group input:disabled {
+  background: var(--cream-2);
+  color: var(--text-mid);
+  cursor: default;
+  border-color: var(--border);
+}
+
+/* Section panel headers — consistent icon spacing */
+.panel-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+}
+
+.panel-header h2 i {
+  font-size: .95rem;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+/* Active sessions row */
+.session-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ── MOBILE (< 600px) ── */
+@media (max-width: 599px) {
+  .settings-mobile-tabs {
+    margin-bottom: 12px;
+  }
+
+  .smtab {
+    padding: 6px 14px;
+    font-size: .82rem;
+  }
+
+  .avatar-upload-area {
+    gap: 14px;
+  }
+
+  .settings-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.2rem;
+  }
+
+  .btn-upload-photo {
+    font-size: .82rem;
+    padding: 8px 14px;
+  }
+
+  .settings-form-grid {
+    gap: 14px;
+  }
+
+  /* Danger zone — stack buttons under text on small screens */
+  .danger-zone-panel .panel-body > div > div {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-save-settings {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-danger {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── TABLET (600px – 959px) ── */
+@media (min-width: 600px) and (max-width: 959px) {
+  .settings-layout {
+    display: block;
+  }
+
+  /* Desktop panel nav is hidden; mobile tabs show instead */
+  .settings-mobile-tabs {
+    margin-bottom: 16px;
+  }
+
+  .settings-form-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .btn-save-settings {
+    min-width: 180px;
+  }
+}
+
+@media (min-width: 960px) {
+  /* Desktop sidebar nav panel — fixed width, sticky */
+  .settings-layout > .panel:first-child {
+    position: sticky;
+    top: 20px;
+  }
+
+  .settings-nav-item {
+    padding: 12px 16px;
+  }
+
+  /* Two-column form rows */
+  .settings-form-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Give save buttons a defined width on desktop */
+  .btn-save-settings {
+    min-width: 160px;
+  }
 }

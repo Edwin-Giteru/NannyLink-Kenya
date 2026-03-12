@@ -28,17 +28,23 @@ function formatKsh(n) {
   return `Ksh ${Number(n).toLocaleString("en-KE", { minimumFractionDigits: 2 })}`;
 }
 
-/* ── Payment status normalisation ── */
-function normStatus(raw) {
-  return (raw || "").toUpperCase();
+/* ── Payment status helpers ── */
+function isPaid(p) {
+  return ["completed", "success"].includes((p.payment_status || "").toLowerCase());
+}
+
+function isFailed(p) {
+  return ["failed", "failure"].includes((p.payment_status || "").toLowerCase());
 }
 
 function statusBadge(raw) {
-  const s = normStatus(raw);
-  if (s === "COMPLETED") return `<span class="status-badge accepted">Completed</span>`;
-  if (s === "FAILED")    return `<span class="status-badge closed">Failed</span>`;
-  return                        `<span class="status-badge pending">Pending</span>`;
+  const s = (raw || "").toLowerCase();
+  if (s === "completed" || s === "success") return `<span class="status-badge accepted">Completed</span>`;
+  if (s === "failed"    || s === "failure") return `<span class="status-badge closed">Failed</span>`;
+  return                                           `<span class="status-badge pending">Pending</span>`;
 }
+
+const CONNECTION_FEE = 1;   
 
 /* ─── State ─── */
 const State = {
@@ -61,7 +67,6 @@ async function fetchProfile() {
 
     const profile = profileRes.ok ? await profileRes.json() : null;
 
-    // Decode user_id from JWT
     const token = localStorage.getItem("access_token");
     if (token) {
       try { State.currentUserId = JSON.parse(atob(token.split(".")[1])).sub; } catch {}
@@ -74,8 +79,6 @@ async function fetchProfile() {
     }
 
     State.allMatches = matches;
-
-    // Use first non-ended match for connection fee display
     State.activeMatch = matches.find(m => {
       const s = (m.status || "").toLowerCase().replace(/_/g, "");
       return !["ended", "completed", "terminated", "cancelled"].includes(s);
@@ -89,12 +92,9 @@ async function fetchProfile() {
 }
 
 async function fetchPaymentsForMatch(matchId) {
-  // GET /payments/{match_id}/all  — returns all payments for a match
-  // This endpoint may need to be created. We try it; if it 404s, we
-  // derive payment status from the match.status field instead.
   try {
     const res = await fetch(`${API_URL}/payments/match/${matchId}`, { headers: authHeaders() });
-    if (!res.ok) return null; // null = endpoint doesn't exist yet
+    if (!res.ok) return null;
     const data = await res.json();
     return Array.isArray(data) ? data : (data.payments || []);
   } catch {
@@ -103,16 +103,11 @@ async function fetchPaymentsForMatch(matchId) {
 }
 
 async function fetchPayments() {
-  // Strategy: try GET /payments/match/{id} for each match.
-  // If that endpoint doesn't exist, fall back to deriving status from match.status.
-  // This prevents the page from hanging on a missing endpoint.
   try {
     const payments = [];
     for (const match of (State.allMatches || [])) {
       const matchPayments = await fetchPaymentsForMatch(match.id);
-      if (matchPayments) {
-        payments.push(...matchPayments);
-      }
+      if (matchPayments) payments.push(...matchPayments);
     }
     return payments;
   } catch {
@@ -125,10 +120,9 @@ function renderStats() {
   const payments = State.payments;
   let totalPaid = 0, completed = 0, pending = 0, failed = 0;
   payments.forEach(p => {
-    const s = normStatus(p.payment_status);
-    if (s === "COMPLETED") { completed++; totalPaid += Number(p.amount || 0); }
-    else if (s === "FAILED") failed++;
-    else pending++;
+    if (isPaid(p))        { completed++; totalPaid += Number(p.amount || 0); }
+    else if (isFailed(p)) { failed++; }
+    else                  { pending++; }
   });
   safeText("statTotalPaid", formatKsh(totalPaid));
   safeText("statCompleted", completed);
@@ -151,8 +145,6 @@ function renderConnectionFee() {
   $("feeHero").style.display        = "flex";
   $("noMatchNotice").style.display  = "none";
 
-  // ── Derive payment status ──────────────────────────────
-  // Priority 1: use real Payment records if available
   const matchPayments = State.payments.filter(p =>
     String(p.match_id) === String(match.id)
   );
@@ -160,20 +152,9 @@ function renderConnectionFee() {
   let nannyPaid, familyPaid;
 
   if (matchPayments.length > 0) {
-    nannyPaid = matchPayments.some(p =>
-      String(p.user_id) === String(State.currentUserId) &&
-      normStatus(p.payment_status) === "COMPLETED"
-    );
-    familyPaid = matchPayments.some(p =>
-      String(p.user_id) !== String(State.currentUserId) &&
-      normStatus(p.payment_status) === "COMPLETED"
-    );
+    nannyPaid  = matchPayments.some(p => String(p.user_id) === String(State.currentUserId) && isPaid(p));
+    familyPaid = matchPayments.some(p => String(p.user_id) !== String(State.currentUserId) && isPaid(p));
   } else {
-    // Priority 2: read from match.status enum
-    // AWAITING_PAYMENT       → neither paid
-    // NANNY_PAID             → nanny paid, family hasn't
-    // FAMILY_PAID            → family paid, nanny hasn't
-    // BOTH_PAID / ACTIVE etc → both paid
     const ms = (match.status || "").toUpperCase().replace(/_/g, "");
     nannyPaid  = ["NANNYPAID","BOTHPAID","ACTIVE","CONFIRMED","MATCHED","INPROGRESS"].includes(ms);
     familyPaid = ["FAMILYPAID","BOTHPAID","ACTIVE","CONFIRMED","MATCHED","INPROGRESS"].includes(ms);
@@ -181,12 +162,13 @@ function renderConnectionFee() {
 
   const bothPaid = nannyPaid && familyPaid;
 
-  // Amount
-  const amount = matchPayments[0]?.amount || null;
+  // Show amount from a real paid record if available, otherwise the constant
+  const paidRecord = matchPayments.find(p => isPaid(p));
+  const anyRecord  = matchPayments[0];
+  const displayAmt = paidRecord?.amount ?? anyRecord?.amount ?? CONNECTION_FEE;
   const feeEl = $("feeAmount");
-  if (feeEl) feeEl.innerHTML = `${amount ? formatKsh(amount) : "Ksh 2,000"}<small>/one-time</small>`;
+  if (feeEl) feeEl.innerHTML = `${formatKsh(displayAmt)}<small>/one-time</small>`;
 
-  // Overall badge
   const badge = $("feeOverallBadge");
   if (bothPaid) {
     badge.textContent = "Both Paid ✓";
@@ -199,19 +181,26 @@ function renderConnectionFee() {
     badge.className   = "status-badge closed";
   }
 
-  // Pay button
   const btn = $("btnPayFee");
-  if (nannyPaid) {
+  const myPayment = matchPayments.find(p => String(p.user_id) === String(State.currentUserId));
+  const myPaid    = myPayment && isPaid(myPayment);
+  const myPending = myPayment && !myPaid && !isFailed(myPayment);
+
+  if (myPaid) {
     btn.innerHTML = `<span class="mpesa-logo">M</span> You've Paid ✓`;
     btn.disabled  = true;
     btn.style.background = "var(--mpesa-dark)";
+  } else if (myPending) {
+    btn.innerHTML = `<span class="mpesa-logo">M</span> Payment Processing…`;
+    btn.disabled  = true;
+    btn.style.background = "var(--text-mid)";
   } else {
     btn.disabled  = false;
+    btn.style.background = "";
     btn.innerHTML = `<span class="mpesa-logo">M</span> Pay via M-Pesa`;
     btn.onclick   = () => openMpesaModal(match.id);
   }
 
-  // Party pills
   const setParty = (pillId, statusId, paid) => {
     const pill = $(pillId);
     if (!pill) return;
@@ -229,7 +218,7 @@ function applyFilter() {
   State.filteredPayments = State.payments.filter(p => {
     const code = (p.mpesa_transaction_code || "").toLowerCase();
     if (kw && !code.includes(kw)) return false;
-    if (State.statusFilter !== "all" && normStatus(p.payment_status) !== State.statusFilter) return false;
+    if (State.statusFilter !== "all" && (p.payment_status || "").toLowerCase() !== State.statusFilter.toLowerCase()) return false;
     return true;
   });
 }
@@ -266,7 +255,11 @@ function renderHistoryTable() {
 /* ─── M-Pesa Modal ─── */
 function openMpesaModal(matchId) {
   $("mpesaPhone").value = "";
-  $("mpesaModalBody").style.display = "block";
+
+  // Always pre-fill with CONNECTION_FEE — the single source of truth above
+  if ($("mpesaAmount")) $("mpesaAmount").value = CONNECTION_FEE;
+
+  $("mpesaModalBody").style.display   = "block";
   $("mpesaModalFooter").style.display = "flex";
   $("mpesaPendingState").classList.remove("show");
 
@@ -281,32 +274,33 @@ async function submitMpesaPayment(matchId) {
     return;
   }
 
+  // Read from the input (which was pre-filled with CONNECTION_FEE)
+  const amount = parseFloat($("mpesaAmount")?.value || CONNECTION_FEE);
+  if (!amount || amount < 1) {
+    showToast("Enter a valid amount.", "error");
+    return;
+  }
+
   const phone = `+254${rawPhone}`;
   const btn   = $("btnConfirmMpesa");
   btn.disabled = true;
   btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending…`;
 
   try {
-    // POST /payments/{match_id}?phone_number=+254XXXXXXXXX
     const res = await fetch(
-      `${API_URL}/payments/${matchId}?phone_number=${encodeURIComponent(phone)}`,
+      `${API_URL}/payments/${matchId}?phone_number=${encodeURIComponent(phone)}&amount=${amount}`,
       { method: "POST", headers: authHeaders() }
     );
 
     const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Payment initiation failed.");
 
-    if (!res.ok) {
-      throw new Error(data.detail || "Payment initiation failed.");
-    }
-
-    // Show pending / waiting-for-PIN state
-    $("mpesaModalBody").style.display     = "none";
-    $("mpesaModalFooter").style.display   = "none";
+    $("mpesaModalBody").style.display   = "none";
+    $("mpesaModalFooter").style.display = "none";
     $("mpesaPendingState").classList.add("show");
-
     showToast("STK push sent! Check your phone.", "success");
 
-    // Poll for payment status after 15 seconds
+    // Poll for updated status after 15 seconds
     setTimeout(async () => {
       const updated = await fetchPayments();
       State.payments = updated;
@@ -324,6 +318,16 @@ async function submitMpesaPayment(matchId) {
   }
 }
 
+/* ── Auto-set active nav based on current page ── */
+function setupActiveNav() {
+  const page = window.location.pathname.split("/").pop() || "nannydashboard.html";
+  document.querySelectorAll(".sidebar-nav a").forEach(a => {
+    a.classList.remove("active");
+    const href = (a.getAttribute("href") || "").split("/").pop();
+    if (href === page) a.classList.add("active");
+  });
+}
+
 /* ─── Sidebar ─── */
 function setupSidebar() {
   const toggle  = $("menuToggle");
@@ -337,7 +341,6 @@ function setupSidebar() {
 
 /* ─── Events ─── */
 function setupEvents() {
-  // Search
   let dbt;
   $("paymentSearch")?.addEventListener("input", e => {
     State.keyword = e.target.value;
@@ -350,8 +353,7 @@ function setupEvents() {
     renderHistoryTable();
   });
 
-  // Modal close
-  $("closeMpesaModal")?.addEventListener("click", () => $("mpesaModal").classList.remove("open"));
+  $("closeMpesaModal")?.addEventListener("click",  () => $("mpesaModal").classList.remove("open"));
   $("cancelMpesaModal")?.addEventListener("click", () => $("mpesaModal").classList.remove("open"));
   $("mpesaModal")?.addEventListener("click", e => { if (e.target === $("mpesaModal")) $("mpesaModal").classList.remove("open"); });
   document.addEventListener("keydown", e => { if (e.key === "Escape") $("mpesaModal")?.classList.remove("open"); });
@@ -359,21 +361,18 @@ function setupEvents() {
 
 /* ─── Init ─── */
 async function init() {
+  setupActiveNav();
   setupSidebar();
   setupEvents();
 
-  const [profile, payments] = await Promise.all([
-    fetchProfile(),
-    fetchPayments(),
-  ]);
-
+  const profile  = await fetchProfile();
+  const payments = await fetchPayments();
   State.payments = payments;
 
-  // Header
   if (profile) {
     safeText("userName", profile.name || "Nanny User");
     const av = $("userAvatar");
-    if (av) av.textContent = (profile.name || "N").split(" ").slice(0,2).map(w=>w[0]?.toUpperCase()||"").join("");
+    if (av) av.textContent = (profile.name || "N").split(" ").slice(0,2).map(w => w[0]?.toUpperCase() || "").join("");
   }
 
   renderStats();
