@@ -93,3 +93,21 @@ class FamilyService:
                 f"Failed to update user do to the following error: {str(e)}",
                 status_code=500
             )
+    
+    async def get_user_id_by_family_id(self, family_id: uuid.UUID) -> Result:
+        try:
+            user = await self.family_repo.get_user_id_by_family_id(family_id)
+            if not user:
+                return Result.fail(
+                    f"User with family_id {family_id} doesnot exist",
+                    status_code=404
+                )
+            return Result.ok(
+                data=user,
+                status_code=500
+            )
+        except Exception as e:
+            return Result.fail(
+                f"Failed to update user do to the following error: {str(e)}",
+                status_code=500
+            )

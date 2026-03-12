@@ -124,3 +124,21 @@ class NannyService:
                 f"Failed to delete nanny with this error: {str(e)}",
                 status_code=500
             )
+    
+    async def get_user_id_by_nanny_id(self, nanny_id: uuid.UUID) -> Result:
+        try:
+            user = await self.nanny_repo.get_user_id_by_nanny_id(nanny_id)
+            if not user:
+                return Result.fail(
+                    f"User with nanny_id {nanny_id} doesnot exist",
+                    status_code=404
+                )
+            return Result.ok(
+                data=user,
+                status_code=200
+            )
+        except Exception as e:
+            return Result.fail(
+                f"Failed to load user with this error: {str(e)}",
+                status_code=500
+            )

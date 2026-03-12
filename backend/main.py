@@ -24,9 +24,9 @@ def custom_openapi():
         return app.openapi_schema
         
     openapi_schema = get_openapi(
-        title="My API",
+        title="NannyLink API",
         version="1.0.0",
-        description="NANNY LINK JWT Bearer token authentication",
+        description="Nanny Link API with selective JWT Auth",
         routes=app.routes,
     )
 
@@ -38,8 +38,6 @@ def custom_openapi():
         }
     }
 
-    openapi_schema["security"] = [{"BearerAuth": []}]
-
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
@@ -49,30 +47,19 @@ KEEP_ALIVE_INTERVAL = 240
 @asynccontextmanager
 async def lifespan(app: FastAPI):    
     BASE_URL = os.getenv("BASE_URL")
-    
     if not BASE_URL:
-        logger.error("CRITICAL ERROR: BACKEND_BASE_URL environment variable is NOT set. Daraja integration requires a public URL.")
-        raise RuntimeError("BACKEND_BASE_URL environment variable is required for Daraja integration.")
+        raise RuntimeError("BASE_URL environment variable is required.")
 
-    # Execute production-specific setup
     BASE_URL = BASE_URL.rstrip('/')
-    os.environ["DARAJA_CALLBACK_URL"] = f"{BASE_URL}/stkcallback"
-    logger.info(f"Using Production Base URL: {BASE_URL}")
-    logger.info(f"Daraja Callback URL set to: {os.environ['DARAJA_CALLBACK_URL']}")
-
-    # 2. Start the keep-alive ping task
-    keep_alive_task = asyncio.create_task(keep_alive_ping(os.environ["DARAJA_CALLBACK_URL"]))
+    # Match the log: Safaricom hits /payments/callback
+    os.environ["DARAJA_CALLBACK_URL"] = f"{BASE_URL}/payments/callback"
+    
+    # Update health check URL for the ping task
+    health_url = f"{BASE_URL}/payments/health"
+    keep_alive_task = asyncio.create_task(keep_alive_ping(health_url))
 
     yield
-
-    # 3. Handle graceful shutdown
-    logger.info("Application shutdown initiated. Cancelling keep-alive task...")
     keep_alive_task.cancel()
-    try:
-        await keep_alive_task
-    except asyncio.CancelledError:
-        pass
-    logger.info("Application shutdown complete.")
 
 app = FastAPI(
     lifespan=lifespan,
@@ -110,26 +97,5 @@ async def keep_alive_ping(url: str):
         await asyncio.sleep(KEEP_ALIVE_INTERVAL)
         
 
-@app.post("/stkcallback")
-async def daraja_callback(request: Request, db: SessionDep):
-    try:
-        raw_body = await request.body()
-        callback_data = json.loads(raw_body.decode("utf-8"))
-        logger.info(f"Received STK Callback: {json.dumps(callback_data, indent=2)}")
-
-        service = PaymentService(db)
-        result = await service.handle_stk_callback(callback_data)
-
-        if not result.success:
-            return {"ResultCode": 1, "ResultDesc": result.error}
-
-        return {"ResultCode": 0, "ResultDesc": "Callback processed successfully."}
-
-    except json.JSONDecodeError:
-        logger.error("Invalid JSON payload in callback.")
-        return {"ResultCode": 1, "ResultDesc": "Invalid JSON format"}
-    except Exception as e:
-        logger.error(f"Callback processing error: {e}", exc_info=True)
-        return {"ResultCode": 1, "ResultDesc": f"Error: {str(e)}"}
 
 app.openapi = custom_openapi

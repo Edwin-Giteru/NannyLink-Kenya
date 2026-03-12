@@ -1,4 +1,5 @@
 from app.db.models.nanny_profile import NannyProfile
+from app.db.models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.modules.Nanny.nanny_schema import NannyCreate, NannyUpdate
@@ -49,3 +50,8 @@ class NannyRepository:
         await self.db.delete(nanny)
         await self.db.flush()
     
+    async def get_user_id_by_nanny_id(self, nanny_id: uuid.UUID) -> User:
+        stmt = select(User).join(NannyProfile, User.id == NannyProfile.user_id).where(NannyProfile.id == nanny_id)
+        result = await self.db.execute(stmt)
+        return result.scalars().first() 
+       

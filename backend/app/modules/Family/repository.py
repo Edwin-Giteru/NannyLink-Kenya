@@ -1,4 +1,5 @@
 from app.db.models.family_profile import FamilyProfile
+from app.db.models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.modules.Family.schema import FamilyCreate
@@ -29,4 +30,7 @@ class FamilyRepo:
         result = await self.db.execute(stmt)
         return result.scalars().first()
     
-    
+    async def get_user_id_by_family_id(self, family_id: uuid.UUID) -> User:
+        stmt = select(User).join(FamilyProfile, User.id == FamilyProfile.user_id).where(FamilyProfile.id == family_id)
+        result = await self.db.execute(stmt)
+        return result.scalars().first()
