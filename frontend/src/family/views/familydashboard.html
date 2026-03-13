@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Family Dashboard</title>
+  <link rel="stylesheet" href="../../../src/family/styles/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div>
+        <h3>NannyLink</h3>
+        <p>Premium Care Services</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html" class="active">
+        <i class="fas fa-th-large"></i><span>Dashboard</span>
+      </a>
+
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html">
+        <i class="fas fa-plus-circle"></i><span>Post a Job</span>
+      </a>
+      <a href="familyjobs.html">
+        <i class="fas fa-briefcase"></i><span>My Job Posts</span>
+      </a>
+      <a href="familyapplications.html">
+        <i class="fas fa-inbox"></i><span>Applications</span>
+      </a>
+
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html">
+        <i class="fas fa-handshake"></i><span>Matches</span>
+      </a>
+
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html">
+        <i class="fas fa-wallet"></i><span>Payments</span>
+      </a>
+      <a href="familycontracts.html">
+        <i class="fas fa-file-contract"></i><span>Contracts</span>
+      </a>
+
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html">
+        <i class="fas fa-house-user"></i><span>Profile</span>
+      </a>
+      <a href="familysettings.html">
+        <i class="fas fa-gear"></i><span>Settings</span>
+      </a>
+    </nav>
+
+    <!-- Sidebar bottom user -->
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ MAIN CONTENT ═══════════ -->
+  <main class="main-content">
+
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h2>Dashboard</h2>
+        <div class="search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="globalSearch" placeholder="Search applicants or jobs…">
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-icon-btn" id="btnNotif" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="badge" id="notifBadge" style="display:none"></span>
+        </button>
+        <button class="hdr-icon-btn" title="Messages">
+          <i class="fas fa-comment-dots"></i>
+        </button>
+        <a href="postjob.html" class="btn-post-job-hdr">
+          <i class="fas fa-plus"></i> Post New Job
+        </a>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <div class="page-body">
+
+      <!-- Welcome Section -->
+      <section class="welcome-section">
+        <div class="welcome-text">
+          <h1 id="welcomeHeading">Welcome back!</h1>
+          <p id="welcomeSub">Your childcare management is looking great today.</p>
+        </div>
+        <div class="profile-status-pill" id="profileStatusPill">
+          <div class="ps-icon"><i class="fas fa-shield-halved"></i></div>
+          <div class="ps-text">
+            <label>Profile Status</label>
+            <strong id="profileStatusText">Verified &amp; Active</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <!-- Active Jobs -->
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div>
+              <div class="stat-number" id="statActiveJobs">—</div>
+              <div class="stat-label">Active Jobs</div>
+            </div>
+            <div class="stat-card-icon navy-ic">
+              <i class="fas fa-briefcase"></i>
+            </div>
+          </div>
+          <div class="stat-sub warn" id="statJobsSub">
+            <i class="fas fa-clock"></i> Loading…
+          </div>
+        </div>
+
+        <!-- Total Applicants -->
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div>
+              <div class="stat-number" id="statTotalApps">—</div>
+              <div class="stat-label">Total Applicants</div>
+            </div>
+            <div class="stat-card-icon gold-ic">
+              <i class="fas fa-users"></i>
+            </div>
+          </div>
+          <div class="stat-sub up" id="statAppsSub">
+            <i class="fas fa-arrow-trend-up"></i> Loading…
+          </div>
+        </div>
+
+        <!-- Pending Matches -->
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div>
+              <div class="stat-number" id="statPendingMatches">—</div>
+              <div class="stat-label">Pending Matches</div>
+            </div>
+            <div class="stat-card-icon green-ic">
+              <i class="fas fa-handshake"></i>
+            </div>
+          </div>
+          <div class="stat-sub info" id="statMatchesSub">
+            <i class="fas fa-circle-info"></i> Loading…
+          </div>
+        </div>
+
+        <!-- Active Contracts -->
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div>
+              <div class="stat-number" id="statContracts">—</div>
+              <div class="stat-label">Active Contracts</div>
+            </div>
+            <div class="stat-card-icon blue-ic">
+              <i class="fas fa-file-contract"></i>
+            </div>
+          </div>
+          <div class="stat-sub info" id="statContractsSub">
+            <i class="fas fa-calendar-days"></i> Loading…
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-column content area -->
+      <div class="content-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="col-left">
+
+          <!-- Active Job Posts Summary -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Active Job Posts Summary</h3>
+              <a href="familyjobs.html" class="panel-link">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div id="jobPostsList">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+          <!-- Recent Applicants -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Recent Applicants</h3>
+              <a href="familyapplications.html" class="panel-link">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <table class="applicants-table" id="applicantsTable">
+              <thead>
+                <tr>
+                  <th>Applicant</th>
+                  <th>Applied For</th>
+                  <th>Status</th>
+                  <th class="td-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="applicantsBody">
+                <!-- populated by JS -->
+              </tbody>
+            </table>
+            <div class="view-more-row" id="viewMoreRow" style="display:none">
+              <a href="familyapplications.html" class="view-more-btn" id="viewMoreLink">
+                <i class="fas fa-users"></i>
+                <span id="viewMoreLabel">View all applicants</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="col-right">
+
+          <!-- Matches in Progress -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Matches in Progress</h3>
+            </div>
+            <div id="matchesList">
+              <!-- populated by JS -->
+            </div>
+            <a href="familymatches.html" class="manage-matches-btn">
+              Manage All Matches
+            </a>
+          </div>
+
+          <!-- Contract Overview -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Contract Overview</h3>
+              <a href="familycontracts.html" class="panel-link">View <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div style="padding:16px" id="contractOverview">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /content-grid -->
+
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<script type="module" src="scripts/dashboard.js"></script>
+</body>
+</html>

@@ -64,9 +64,9 @@ if (loginForm) {
                 if (role === "nanny") {
                     window.location.href = "../../src/views/nannydashboard.html"; 
                 } else if (role === "family") {
-                    window.location.href = "../family/dashboard.html";
+                    window.location.href = "../../src/family/views/familydashboard.html";
                 } else if (role === "admin") {
-                    window.location.href = "../admin/dashboard.html";
+                    window.location.href = "../../src/admin/views/dashboard.html";
                 } else {
                     window.location.href = "../../index.html"; 
                 }
