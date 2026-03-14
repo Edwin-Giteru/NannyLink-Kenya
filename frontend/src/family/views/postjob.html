@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Post a Job</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
+  <link rel="stylesheet" href="../styles/postjob.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div>
+        <h3>NannyLink</h3>
+        <p>Premium Care Services</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html">
+        <i class="fas fa-th-large"></i><span>Dashboard</span>
+      </a>
+
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html" class="active">
+        <i class="fas fa-plus-circle"></i><span>Post a Job</span>
+      </a>
+      <a href="familyjobs.html">
+        <i class="fas fa-briefcase"></i><span>My Job Posts</span>
+      </a>
+      <a href="familyapplications.html">
+        <i class="fas fa-inbox"></i><span>Applications</span>
+      </a>
+
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html">
+        <i class="fas fa-handshake"></i><span>Matches</span>
+      </a>
+
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html">
+        <i class="fas fa-wallet"></i><span>Payments</span>
+      </a>
+      <a href="familycontracts.html">
+        <i class="fas fa-file-contract"></i><span>Contracts</span>
+      </a>
+
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html">
+        <i class="fas fa-house-user"></i><span>Profile</span>
+      </a>
+      <a href="familysettings.html">
+        <i class="fas fa-gear"></i><span>Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <main class="main-content">
+
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="breadcrumb">
+          <a href="familydashboard.html">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>Post a Job</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-icon-btn" title="Notifications">
+          <i class="fas fa-bell"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <div class="page-body">
+
+      <!-- Page Title Row -->
+      <div class="pj-title-row">
+        <div>
+          <h1 class="pj-title">Post a New Job</h1>
+          <p class="pj-subtitle">Fill in the details below to attract the right nanny for your family.</p>
+        </div>
+        <div class="pj-title-actions">
+          <button class="btn-save-draft" id="btnSaveDraft">
+            <i class="fas fa-floppy-disk"></i> Save Draft
+          </button>
+        </div>
+      </div>
+
+      <!-- Two-col layout: form + live preview -->
+      <div class="pj-layout">
+
+        <!-- ── FORM ── -->
+        <div class="pj-form-col">
+
+          <!-- Progress Steps -->
+          <div class="pj-steps">
+            <div class="pj-step active" data-step="1">
+              <div class="pj-step-circle">1</div>
+              <span>Job Details</span>
+            </div>
+            <div class="pj-step-line"></div>
+            <div class="pj-step" data-step="2">
+              <div class="pj-step-circle">2</div>
+              <span>Requirements</span>
+            </div>
+            <div class="pj-step-line"></div>
+            <div class="pj-step" data-step="3">
+              <div class="pj-step-circle">3</div>
+              <span>Review &amp; Post</span>
+            </div>
+          </div>
+
+          <!-- ── STEP 1: Job Details ── -->
+          <div class="pj-step-panel active" id="stepPanel1">
+            <div class="pj-card">
+              <div class="pj-card-header">
+                <i class="fas fa-briefcase"></i>
+                <h2>Job Details</h2>
+              </div>
+              <div class="pj-card-body">
+
+                <!-- Job Title -->
+                <div class="pj-field">
+                  <label for="jobTitle">
+                    Job Title <span class="req">*</span>
+                  </label>
+                  <div class="pj-input-wrap">
+                    <i class="fas fa-briefcase"></i>
+                    <input type="text" id="jobTitle" name="title"
+                      placeholder="e.g. Full-time Live-in Nanny"
+                      maxlength="120" autocomplete="off">
+                  </div>
+                  <div class="pj-field-hint">
+                    <span class="pj-char-count"><span id="titleCount">0</span>/120</span>
+                  </div>
+                  <div class="pj-error" id="errTitle"></div>
+                </div>
+
+                <!-- Location -->
+                <div class="pj-field">
+                  <label for="jobLocation">
+                    Location <span class="req">*</span>
+                  </label>
+                  <div class="pj-input-wrap">
+                    <i class="fas fa-map-pin"></i>
+                    <input type="text" id="jobLocation" name="location"
+                      placeholder="e.g. Westlands, Nairobi"
+                      maxlength="255" autocomplete="off">
+                  </div>
+                  <div class="pj-error" id="errLocation"></div>
+                </div>
+
+                <!-- Availability -->
+                <div class="pj-field">
+                  <label>Availability <span class="req">*</span></label>
+                  <div class="pj-availability-grid">
+                    <label class="pj-avail-card">
+                      <input type="radio" name="availability" value="full_time">
+                      <div class="pj-avail-inner">
+                        <i class="fas fa-sun"></i>
+                        <strong>Full Time</strong>
+                        <span>Mon–Fri, all day</span>
+                      </div>
+                    </label>
+                    <label class="pj-avail-card">
+                      <input type="radio" name="availability" value="part_time">
+                      <div class="pj-avail-inner">
+                        <i class="fas fa-clock"></i>
+                        <strong>Part Time</strong>
+                        <span>Few hours daily</span>
+                      </div>
+                    </label>
+                    <label class="pj-avail-card">
+                      <input type="radio" name="availability" value="evenings">
+                      <div class="pj-avail-inner">
+                        <i class="fas fa-moon"></i>
+                        <strong>Evenings</strong>
+                        <span>After 5 PM</span>
+                      </div>
+                    </label>
+                    <label class="pj-avail-card">
+                      <input type="radio" name="availability" value="weekends">
+                      <div class="pj-avail-inner">
+                        <i class="fas fa-calendar-week"></i>
+                        <strong>Weekends</strong>
+                        <span>Sat &amp; Sun only</span>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="pj-error" id="errAvailability"></div>
+                </div>
+
+                <!-- Salary -->
+                <div class="pj-field">
+                  <label for="jobSalary">
+                    Monthly Salary (Ksh) <span class="req">*</span>
+                  </label>
+                  <div class="pj-input-wrap">
+                    <i class="fas fa-coins"></i>
+                    <input type="number" id="jobSalary" name="salary"
+                      placeholder="e.g. 25000" min="1" step="500">
+                  </div>
+                  <div class="pj-salary-hint" id="salaryHint"></div>
+                  <div class="pj-error" id="errSalary"></div>
+                </div>
+
+              </div><!-- /card-body -->
+            </div><!-- /card -->
+
+            <div class="pj-step-nav">
+              <span></span>
+              <button class="btn-next" id="btnNext1">
+                Next: Requirements <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── STEP 2: Requirements ── -->
+          <div class="pj-step-panel" id="stepPanel2">
+            <div class="pj-card">
+              <div class="pj-card-header">
+                <i class="fas fa-list-check"></i>
+                <h2>Requirements &amp; Duties</h2>
+              </div>
+              <div class="pj-card-body">
+
+                <!-- Experience -->
+                <div class="pj-field">
+                  <label for="jobExperience">
+                    Required Experience (years) <span class="req">*</span>
+                  </label>
+                  <div class="pj-experience-row">
+                    <button class="exp-btn" id="expMinus" type="button">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <div class="pj-input-wrap exp-input-wrap">
+                      <input type="number" id="jobExperience" name="required_experience"
+                        value="1" min="0" max="20">
+                    </div>
+                    <button class="exp-btn" id="expPlus" type="button">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                    <span class="exp-label" id="expLabel">1 year</span>
+                  </div>
+                  <div class="pj-error" id="errExperience"></div>
+                </div>
+
+                <!-- Duties -->
+                <div class="pj-field">
+                  <label for="jobDuties">
+                    Primary Duties <span class="req">*</span>
+                  </label>
+                  <div class="pj-textarea-wrap">
+                    <textarea id="jobDuties" name="duties"
+                      placeholder="e.g. Childcare, light cooking, school pick-up, homework help…"
+                      maxlength="255" rows="3"></textarea>
+                  </div>
+                  <div class="pj-field-hint">
+                    <span class="pj-char-count"><span id="dutiesCount">0</span>/255</span>
+                  </div>
+                  <div class="pj-error" id="errDuties"></div>
+                </div>
+
+                <!-- Care Needs -->
+                <div class="pj-field">
+                  <label for="jobCareNeeds">Care Needs <span class="optional">(optional)</span></label>
+                  <div class="pj-textarea-wrap">
+                    <textarea id="jobCareNeeds" name="care_needs"
+                      placeholder="e.g. Infant care, special needs experience, CPR certified preferred…"
+                      rows="3"></textarea>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="pj-step-nav">
+              <button class="btn-back" id="btnBack2">
+                <i class="fas fa-arrow-left"></i> Back
+              </button>
+              <button class="btn-next" id="btnNext2">
+                Next: Review &amp; Post <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── STEP 3: Review & Post ── -->
+          <div class="pj-step-panel" id="stepPanel3">
+            <div class="pj-card">
+              <div class="pj-card-header">
+                <i class="fas fa-circle-check"></i>
+                <h2>Review &amp; Confirm</h2>
+              </div>
+              <div class="pj-card-body">
+                <p class="pj-review-intro">
+                  Please review your job post before publishing. It will be visible to all vetted nannies immediately.
+                </p>
+                <div class="pj-review-grid" id="reviewGrid">
+                  <!-- populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <div class="pj-step-nav">
+              <button class="btn-back" id="btnBack3">
+                <i class="fas fa-arrow-left"></i> Back
+              </button>
+              <button class="btn-post" id="btnPost">
+                <i class="fas fa-paper-plane"></i> Post Job Now
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /form col -->
+
+        <!-- ── LIVE PREVIEW ── -->
+        <div class="pj-preview-col">
+          <div class="pj-preview-card" id="previewCard">
+            <div class="pj-preview-header">
+              <div class="pj-preview-badge">Live Preview</div>
+              <div class="pj-preview-status" id="previewStatus">
+                <i class="fas fa-circle"></i> Draft
+              </div>
+            </div>
+
+            <div class="pj-preview-body">
+              <h3 class="pj-preview-title" id="previewTitle">Your job title will appear here</h3>
+
+              <div class="pj-preview-meta">
+                <span id="previewLocation"><i class="fas fa-map-pin"></i> Location</span>
+                <span id="previewAvailability"><i class="fas fa-clock"></i> Availability</span>
+              </div>
+
+              <div class="pj-preview-salary" id="previewSalary">
+                <span class="salary-num">Ksh —</span>
+                <span class="salary-label">/month</span>
+              </div>
+
+              <div class="pj-preview-divider"></div>
+
+              <div class="pj-preview-section" id="previewDutiesWrap" style="display:none">
+                <label><i class="fas fa-list-check"></i> Duties</label>
+                <p id="previewDuties">—</p>
+              </div>
+
+              <div class="pj-preview-section" id="previewCareWrap" style="display:none">
+                <label><i class="fas fa-heart"></i> Care Needs</label>
+                <p id="previewCare">—</p>
+              </div>
+
+              <div class="pj-preview-section">
+                <label><i class="fas fa-star"></i> Experience Required</label>
+                <p id="previewExp">1 year minimum</p>
+              </div>
+
+              <div class="pj-preview-divider"></div>
+
+              <div class="pj-preview-footer">
+                <div class="pj-preview-family">
+                  <div class="pj-preview-avatar" id="previewFamilyAvatar">F</div>
+                  <div>
+                    <strong id="previewFamilyName">Your Family</strong>
+                    <span>Posted by family</span>
+                  </div>
+                </div>
+                <div class="pj-preview-hourly" id="previewHourly">
+                  —/hr est.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Completeness meter -->
+          <div class="pj-completeness">
+            <div class="pj-completeness-header">
+              <span>Post Completeness</span>
+              <strong id="completenessPct">0%</strong>
+            </div>
+            <div class="pj-completeness-bar">
+              <div class="pj-completeness-fill" id="completenessFill"></div>
+            </div>
+            <ul class="pj-completeness-checks" id="completenessChecks">
+              <!-- populated by JS -->
+            </ul>
+          </div>
+
+        </div><!-- /preview col -->
+      </div><!-- /pj-layout -->
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<!-- Success Modal -->
+<div class="pj-modal" id="successModal">
+  <div class="pj-modal-content">
+    <div class="pj-modal-icon success">
+      <i class="fas fa-circle-check"></i>
+    </div>
+    <h2>Job Posted!</h2>
+    <p>Your job is now live and visible to all vetted nannies on NannyLink.</p>
+    <div class="pj-modal-actions">
+      <a href="familyjobs.html" class="btn-modal-primary">
+        <i class="fas fa-briefcase"></i> View My Jobs
+      </a>
+      <button class="btn-modal-secondary" id="btnPostAnother">
+        <i class="fas fa-plus"></i> Post Another
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../scripts/postjob.js"></script>
+</body>
+</html>

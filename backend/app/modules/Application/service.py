@@ -90,3 +90,27 @@ class ApplicationService:
                 f"An error occurred while deleting application: {str(e)}",
                 status_code=500
             )
+    
+    async def get_applications_for_family(self, family_id: UUID) -> Result:
+        try:
+            applications = await self.application_repo.get_applications_by_family_id(family_id)
+            return Result.ok(data=applications, status_code=200)
+        except Exception as e:
+            return Result.fail(
+                f"Failed to get applications for family {family_id}: {str(e)}",
+                status_code=500
+            )
+        
+    
+    async def update_application_status(self, application_id: UUID, status: str) -> Result:
+        try:
+            application = await self.application_repo.get_application_by_id(application_id)
+            if not application:
+                return Result.fail(f"Application {application_id} not found.", status_code=404)
+            application.status = status
+            await self.db.commit()
+            await self.db.refresh(application)
+            return Result.ok(data=application, status_code=200)
+        except Exception as e:
+            await self.db.rollback()
+            return Result.fail(str(e), status_code=500)

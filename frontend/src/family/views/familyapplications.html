@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Applications</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
+  <link rel="stylesheet" href="../styles/applications.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html"><i class="fas fa-plus-circle"></i><span>Post a Job</span></a>
+      <a href="familyjobs.html"><i class="fas fa-briefcase"></i><span>My Job Posts</span></a>
+      <a href="familyapplications.html" class="active"><i class="fas fa-inbox"></i><span>Applications</span></a>
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="familycontracts.html"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html"><i class="fas fa-house-user"></i><span>Profile</span></a>
+      <a href="familysettings.html"><i class="fas fa-gear"></i><span>Settings</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <div class="breadcrumb">
+          <a href="familydashboard.html">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>Applications</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-icon-btn" id="btnRefresh" title="Refresh">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+        <a href="postjob.html" class="btn-post-job-hdr">
+          <i class="fas fa-plus"></i> Post New Job
+        </a>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- Page heading -->
+      <div class="ap-heading-row">
+        <div>
+          <h1 class="ap-title">Applications</h1>
+          <p class="ap-subtitle" id="apSubtitle">Loading…</p>
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="ap-stats-strip">
+        <div class="ap-stat">
+          <span class="ap-stat-num" id="stTotal">—</span>
+          <span class="ap-stat-lbl">Total</span>
+        </div>
+        <div class="ap-stat-div"></div>
+        <div class="ap-stat">
+          <span class="ap-stat-num amber" id="stNew">—</span>
+          <span class="ap-stat-lbl">New</span>
+        </div>
+        <div class="ap-stat-div"></div>
+        <div class="ap-stat">
+          <span class="ap-stat-num blue" id="stReviewing">—</span>
+          <span class="ap-stat-lbl">Reviewing</span>
+        </div>
+        <div class="ap-stat-div"></div>
+        <div class="ap-stat">
+          <span class="ap-stat-num green" id="stShortlisted">—</span>
+          <span class="ap-stat-lbl">Shortlisted</span>
+        </div>
+        <div class="ap-stat-div"></div>
+        <div class="ap-stat">
+          <span class="ap-stat-num red" id="stRejected">—</span>
+          <span class="ap-stat-lbl">Rejected</span>
+        </div>
+      </div>
+
+      <!-- Two-column layout: filters sidebar + main list -->
+      <div class="ap-layout">
+
+        <!-- ── Filter Sidebar ── -->
+        <aside class="ap-filters-panel" id="apFiltersPanel">
+          <div class="ap-filters-header">
+            <span><i class="fas fa-sliders"></i> Filters</span>
+            <div class="ap-filters-header-actions">
+              <button class="ap-filters-reset" id="btnResetFilters">Reset</button>
+              <button class="ap-filters-back" id="btnFiltersBack" title="Back to applications">
+                <i class="fas fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="ap-filter-group">
+            <label>Job Post</label>
+            <div class="ap-custom-select" id="jobSelectWrap">
+              <button class="ap-custom-select-btn" id="jobSelectBtn" type="button">
+                <span id="jobSelectLabel">All Jobs</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="ap-custom-select-list" id="jobSelectList">
+                <div class="ap-custom-option selected" data-value="all">All Jobs</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ap-filter-group">
+            <label>Status</label>
+            <div class="ap-status-checks" id="statusChecks">
+              <label class="ap-check"><input type="checkbox" value="new" checked> <span class="ap-check-badge new">New</span></label>
+              <label class="ap-check"><input type="checkbox" value="pending" checked> <span class="ap-check-badge pending">Pending</span></label>
+              <label class="ap-check"><input type="checkbox" value="reviewing" checked> <span class="ap-check-badge reviewing">Reviewing</span></label>
+              <label class="ap-check"><input type="checkbox" value="shortlisted" checked> <span class="ap-check-badge shortlisted">Shortlisted</span></label>
+              <label class="ap-check"><input type="checkbox" value="accepted" checked> <span class="ap-check-badge accepted">Accepted</span></label>
+              <label class="ap-check"><input type="checkbox" value="rejected"> <span class="ap-check-badge rejected">Rejected</span></label>
+            </div>
+          </div>
+
+          <div class="ap-filter-group">
+            <label>Experience</label>
+            <div class="ap-custom-select" id="expSelectWrap">
+              <button class="ap-custom-select-btn" id="expSelectBtn" type="button">
+                <span id="expSelectLabel">Any Experience</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="ap-custom-select-list" id="expSelectList">
+                <div class="ap-custom-option selected" data-value="all">Any Experience</div>
+                <div class="ap-custom-option" data-value="0">No experience</div>
+                <div class="ap-custom-option" data-value="1">1+ years</div>
+                <div class="ap-custom-option" data-value="2">2+ years</div>
+                <div class="ap-custom-option" data-value="3">3+ years</div>
+                <div class="ap-custom-option" data-value="5">5+ years</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ap-filter-group">
+            <label>Sort By</label>
+            <div class="ap-custom-select" id="sortSelectWrap">
+              <button class="ap-custom-select-btn" id="sortSelectBtn" type="button">
+                <span id="sortSelectLabel">Newest First</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="ap-custom-select-list" id="sortSelectList">
+                <div class="ap-custom-option selected" data-value="newest">Newest First</div>
+                <div class="ap-custom-option" data-value="oldest">Oldest First</div>
+                <div class="ap-custom-option" data-value="exp_high">Most Experience</div>
+                <div class="ap-custom-option" data-value="exp_low">Least Experience</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- ── Main Content ── -->
+        <div class="ap-main">
+
+          <!-- Toolbar -->
+          <div class="ap-toolbar">
+            <div class="ap-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="apSearch" placeholder="Search by name or job…">
+              <button class="ap-search-clear" id="apSearchClear" style="display:none">
+                <i class="fas fa-xmark"></i>
+              </button>
+            </div>
+            <button class="ap-filter-toggle" id="btnToggleFilters">
+              <i class="fas fa-sliders"></i>
+              <span>Filters</span>
+              <span class="ap-filter-badge" id="filterBadge" style="display:none">0</span>
+            </button>
+          </div>
+
+          <!-- Results count + bulk actions -->
+          <div class="ap-results-bar">
+            <span id="apResultsCount" class="ap-results-count"></span>
+            <div class="ap-bulk-actions" id="bulkActions" style="display:none">
+              <span id="bulkCount">0 selected</span>
+              <button class="ap-bulk-btn shortlist" id="btnBulkShortlist">
+                <i class="fas fa-star"></i> Shortlist
+              </button>
+              <button class="ap-bulk-btn reject" id="btnBulkReject">
+                <i class="fas fa-xmark"></i> Reject
+              </button>
+            </div>
+          </div>
+
+          <!-- Application list -->
+          <div id="apList">
+            <!-- populated by JS -->
+          </div>
+
+        </div><!-- /ap-main -->
+      </div><!-- /ap-layout -->
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<!-- ════════ DETAIL DRAWER ════════ -->
+<div class="ap-drawer-overlay" id="drawerOverlay"></div>
+<aside class="ap-drawer" id="appDrawer">
+  <div class="ap-drawer-header">
+    <h3>Application Details</h3>
+    <button class="ap-drawer-close" id="closeDrawer"><i class="fas fa-xmark"></i></button>
+  </div>
+
+  <div class="ap-drawer-body" id="drawerBody">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="ap-drawer-footer" id="drawerFooter">
+    <!-- action buttons populated by JS -->
+  </div>
+</aside>
+
+<!-- ════════ CONFIRM MODAL ════════ -->
+<div class="ap-modal" id="confirmModal">
+  <div class="ap-modal-content">
+    <div class="ap-modal-icon" id="confirmIcon">
+      <i class="fas fa-circle-question"></i>
+    </div>
+    <h3 id="confirmTitle">Confirm Action</h3>
+    <p id="confirmMsg">Are you sure?</p>
+    <div class="ap-modal-actions">
+      <button class="ap-modal-cancel" id="confirmCancel">Cancel</button>
+      <button class="ap-modal-confirm" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../scripts/applications.js"></script>
+</body>
+</html>

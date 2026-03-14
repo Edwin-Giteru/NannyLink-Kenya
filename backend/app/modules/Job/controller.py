@@ -9,73 +9,92 @@ from uuid import UUID
 
 router = APIRouter(tags=["Job"], prefix="/job")
 
-@router.post("/{family_id}", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
+# ─────────────────────────────────────────────────────────────────────────────
+# IMPORTANT: All fixed-path routes (/me, /family/me, /) MUST come before
+# wildcard routes (/{job_id}) — otherwise FastAPI matches the literal string
+# as a UUID and returns 422 or 405.
+# ─────────────────────────────────────────────────────────────────────────────
+
+@router.post("/me", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
 async def create_a_job(
-        db: SessionDep,
-        job_create: JobCreate,
-        current_user: User = Depends(get_current_user)
+    db: SessionDep,
+    job_create: JobCreate,
+    current_user: User = Depends(get_current_user)
 ):
     """
-    Docstring for create_a_job
-    
-    :param db: Description
-    :type db: SessionDep
-    :param job_create: Description
-    :type job_create: JobCreate
-    :param current_user: Description
-    :type current_user: User
+    Create a job post for the authenticated family user.
+    Family is resolved from the JWT — no family_id needed in the URL.
     """
-    service = JobService(db)
-    family_repo = FamilyRepo(db)
-
     if current_user.role != "family":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"User with id {current_user.id} is not authorized to perform this action"
         )
-    
+
+    family_repo = FamilyRepo(db)
     family = await family_repo.get_family_by_user_id(current_user.id)
     if not family:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id: {current_user.id}, has no family profile"
+            detail=f"User with id: {current_user.id} has no family profile"
         )
-    
-    result = await service.create_a_job(family.id, job_create)
-
-    if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-    
-    return result.data
-
-@router.get("/{job_id}", response_model=JobResponse)
-async def get_job(
-    db: SessionDep,
-    job_id: UUID
-):
-    """
-    Docstring for get_job
-    
-    :param db: Description
-    :type db: SessionDep
-    :param job_id: Description
-    :type job_id: UUID
-    """
 
     service = JobService(db)
-
-    result = await service.get_a_job_by_id(job_id)
-
+    result = await service.create_a_job(family.id, job_create)
     if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-    
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+
     return result.data
+
+
+@router.get("/family/me", response_model=list[JobResponse])
+async def get_my_family_jobs(
+    db: SessionDep,
+    current_user: User = Depends(get_current_user)
+):
+    """Return all job posts belonging to the authenticated family user."""
+    if current_user.role != "family":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only family accounts can access this endpoint."
+        )
+
+    family_repo = FamilyRepo(db)
+    family = await family_repo.get_family_by_user_id(current_user.id)
+    if not family:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No family profile found. Please create one first."
+        )
+
+    service = JobService(db)
+    result = await service.get_jobs_by_family(family.id)
+    if not result.success:
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+
+    return result.data
+
+
+@router.get("/", response_model=list[JobResponse])
+async def get_jobs(db: SessionDep):
+    """Return all job posts (public — no auth required)."""
+    service = JobService(db)
+    result = await service.get_jobs()
+    if not result.success:
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+    return result.data
+
+
+# ── Wildcard routes LAST ──────────────────────────────────────────────────────
+
+@router.get("/{job_id}", response_model=JobResponse)
+async def get_job(db: SessionDep, job_id: UUID):
+    service = JobService(db)
+    result = await service.get_a_job_by_id(job_id)
+    if not result.success:
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+    return result.data
+
 
 @router.patch("/{job_id}", response_model=JobResponse)
 async def update_job(
@@ -84,67 +103,22 @@ async def update_job(
     job_update: JobUpdate,
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Docstring for update_job
-    
-    :param db: Description
-    :type db: SessionDep
-    :param job_id: Description
-    :type job_id: UUID
-    :param job_update: Description
-    :type job_update: JobUpdate
-    :param current_user: Description
-    :type current_user: User
-    """
-
-    service = JobService(db)
-
     if current_user.role != "family":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User is not authorized to perform this action"
         )
-    
+    service = JobService(db)
     result = await service.update_a_job(job_id, job_update)
-
     if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-    
+        raise HTTPException(status_code=result.status_code, detail=result.error)
     return result.data
 
-@router.get("/", response_model=list[JobResponse])
-async def get_jobs(
-    db: SessionDep
-):
-    service = JobService(db)
 
-    result = await service.get_jobs()
-
-    if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-    
-    return result.data
-
-# a router to get the family name by job id
 @router.get("/{job_id}/family-name")
-async def get_family_name_by_job_id(
-    db: SessionDep,
-    job_id: UUID
-):
+async def get_family_name_by_job_id(db: SessionDep, job_id: UUID):
     service = JobService(db)
-
     result = await service.get_family_name_by_job_id(job_id)
-
     if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-    
+        raise HTTPException(status_code=result.status_code, detail=result.error)
     return result.data

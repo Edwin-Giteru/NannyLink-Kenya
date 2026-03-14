@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Matches</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
+  <link rel="stylesheet" href="../styles/matches.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html"><i class="fas fa-plus-circle"></i><span>Post a Job</span></a>
+      <a href="familyjobs.html"><i class="fas fa-briefcase"></i><span>My Job Posts</span></a>
+      <a href="familyapplications.html"><i class="fas fa-inbox"></i><span>Applications</span></a>
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html" class="active"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="familycontracts.html"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html"><i class="fas fa-house-user"></i><span>Profile</span></a>
+      <a href="familysettings.html"><i class="fas fa-gear"></i><span>Settings</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <div class="breadcrumb">
+          <a href="familydashboard.html">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>Matches</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-icon-btn" id="btnRefresh" title="Refresh">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+        <a href="familyapplications.html" class="btn-post-job-hdr">
+          <i class="fas fa-inbox"></i> View Applications
+        </a>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- Heading -->
+      <div class="mm-heading-row">
+        <div>
+          <h1 class="mm-title">My Matches</h1>
+          <p class="mm-subtitle" id="mmSubtitle">Loading your matches…</p>
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="mm-stats-strip">
+        <div class="mm-stat">
+          <span class="mm-stat-num" id="stTotal">—</span>
+          <span class="mm-stat-lbl">Total</span>
+        </div>
+        <div class="mm-stat-div"></div>
+        <div class="mm-stat">
+          <span class="mm-stat-num green" id="stActive">—</span>
+          <span class="mm-stat-lbl">Active</span>
+        </div>
+        <div class="mm-stat-div"></div>
+        <div class="mm-stat">
+          <span class="mm-stat-num amber" id="stPending">—</span>
+          <span class="mm-stat-lbl">Pending</span>
+        </div>
+        <div class="mm-stat-div"></div>
+        <div class="mm-stat">
+          <span class="mm-stat-num blue" id="stBothPaid">—</span>
+          <span class="mm-stat-lbl">Paid</span>
+        </div>
+        <div class="mm-stat-div"></div>
+        <div class="mm-stat">
+          <span class="mm-stat-num red" id="stEnded">—</span>
+          <span class="mm-stat-lbl">Ended</span>
+        </div>
+      </div>
+
+      <!-- Filter toolbar -->
+      <div class="mm-toolbar">
+        <div class="mm-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="mmSearch" placeholder="Search by nanny name or job…">
+          <button class="mm-search-clear" id="mmSearchClear" style="display:none">
+            <i class="fas fa-xmark"></i>
+          </button>
+        </div>
+        <div class="mm-filter-tabs" id="mmFilterTabs">
+          <button class="mm-tab active" data-filter="all">All</button>
+          <button class="mm-tab" data-filter="active">Active</button>
+          <button class="mm-tab" data-filter="pending">Pending</button>
+          <button class="mm-tab" data-filter="both_paid">Both Paid</button>
+          <button class="mm-tab" data-filter="ended">Ended</button>
+        </div>
+      </div>
+
+      <!-- Results count -->
+      <div class="mm-results-row">
+        <span id="mmResultsCount" class="mm-results-count"></span>
+      </div>
+
+      <!-- Matches grid -->
+      <div class="mm-grid" id="mmGrid">
+        <!-- populated by JS -->
+      </div>
+
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<!-- ════════ MATCH DETAIL DRAWER ════════ -->
+<div class="mm-drawer-overlay" id="drawerOverlay"></div>
+<aside class="mm-drawer" id="matchDrawer">
+  <div class="mm-drawer-header">
+    <h3 id="drawerTitle">Match Details</h3>
+    <button class="mm-drawer-close" id="closeDrawer"><i class="fas fa-xmark"></i></button>
+  </div>
+  <div class="mm-drawer-body" id="drawerBody">
+    <!-- populated by JS -->
+  </div>
+  <div class="mm-drawer-footer" id="drawerFooter">
+    <!-- populated by JS -->
+  </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../scripts/matches.js"></script>
+</body>
+</html>

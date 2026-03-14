@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – My Job Posts</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
+  <link rel="stylesheet" href="../styles/myjobs.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html"><i class="fas fa-plus-circle"></i><span>Post a Job</span></a>
+      <a href="familyjobs.html" class="active"><i class="fas fa-briefcase"></i><span>My Job Posts</span></a>
+      <a href="familyapplications.html"><i class="fas fa-inbox"></i><span>Applications</span></a>
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="familycontracts.html"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html"><i class="fas fa-house-user"></i><span>Profile</span></a>
+      <a href="familysettings.html"><i class="fas fa-gear"></i><span>Settings</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <div class="breadcrumb">
+          <a href="familydashboard.html">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>My Job Posts</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-icon-btn" title="Notifications">
+          <i class="fas fa-bell"></i>
+        </button>
+        <a href="postjob.html" class="btn-post-job-hdr">
+          <i class="fas fa-plus"></i> Post New Job
+        </a>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- Page heading + stats strip -->
+      <div class="mj-heading">
+        <div>
+          <h1 class="mj-title">My Job Posts</h1>
+          <p class="mj-subtitle" id="mjSubtitle">Loading your job posts…</p>
+        </div>
+      </div>
+
+      <!-- Summary stats -->
+      <div class="mj-stats-strip" id="mjStatsStrip">
+        <div class="mj-stat">
+          <span class="mj-stat-num" id="statTotal">—</span>
+          <span class="mj-stat-label">Total Posts</span>
+        </div>
+        <div class="mj-stat-div"></div>
+        <div class="mj-stat">
+          <span class="mj-stat-num green" id="statActive">—</span>
+          <span class="mj-stat-label">Active</span>
+        </div>
+        <div class="mj-stat-div"></div>
+        <div class="mj-stat">
+          <span class="mj-stat-num gold" id="statApps">—</span>
+          <span class="mj-stat-label">Total Applicants</span>
+        </div>
+        <div class="mj-stat-div"></div>
+        <div class="mj-stat">
+          <span class="mj-stat-num amber" id="statNew">—</span>
+          <span class="mj-stat-label">New Applications</span>
+        </div>
+      </div>
+
+      <!-- Toolbar: search + filter + view toggle -->
+      <div class="mj-toolbar">
+        <div class="mj-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="mjSearch" placeholder="Search job posts…">
+          <button class="mj-search-clear" id="mjSearchClear" style="display:none">
+            <i class="fas fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="mj-filters">
+          <select id="mjStatusFilter" class="mj-select">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="closed">Closed</option>
+            <option value="paused">Paused</option>
+            <option value="filled">Filled</option>
+          </select>
+
+          <select id="mjAvailFilter" class="mj-select">
+            <option value="all">All Types</option>
+            <option value="full_time">Full Time</option>
+            <option value="part_time">Part Time</option>
+            <option value="evenings">Evenings</option>
+            <option value="weekends">Weekends</option>
+          </select>
+
+          <select id="mjSortBy" class="mj-select">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="most_apps">Most Applicants</option>
+            <option value="salary_high">Salary ↑</option>
+            <option value="salary_low">Salary ↓</option>
+          </select>
+        </div>
+
+        <div class="mj-view-toggle">
+          <button class="mj-view-btn active" id="btnGridView" title="Grid view">
+            <i class="fas fa-table-cells"></i>
+          </button>
+          <button class="mj-view-btn" id="btnListView" title="List view">
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Results count -->
+      <div class="mj-results-row">
+        <span id="mjResultsCount"></span>
+        <button class="mj-clear-filters" id="mjClearFilters" style="display:none">
+          <i class="fas fa-filter-circle-xmark"></i> Clear filters
+        </button>
+      </div>
+
+      <!-- Job posts grid/list -->
+      <div class="mj-grid" id="mjGrid">
+        <!-- populated by JS -->
+      </div>
+
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<!-- ═══════ EDIT MODAL ═══════ -->
+<div class="mj-modal" id="editModal">
+  <div class="mj-modal-content">
+    <div class="mj-modal-header">
+      <h3><i class="fas fa-pen"></i> Edit Job Post</h3>
+      <button class="mj-modal-close" id="closeEditModal"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="mj-modal-body">
+      <div class="mj-edit-grid">
+
+        <div class="mj-edit-field full">
+          <label for="editTitle">Job Title <span class="req">*</span></label>
+          <div class="mj-edit-input-wrap">
+            <i class="fas fa-briefcase"></i>
+            <input type="text" id="editTitle" placeholder="e.g. Full-time Live-in Nanny" maxlength="120">
+          </div>
+        </div>
+
+        <div class="mj-edit-field">
+          <label for="editLocation">Location <span class="req">*</span></label>
+          <div class="mj-edit-input-wrap">
+            <i class="fas fa-map-pin"></i>
+            <input type="text" id="editLocation" placeholder="e.g. Westlands, Nairobi">
+          </div>
+        </div>
+
+        <div class="mj-edit-field">
+          <label for="editSalary">Monthly Salary (Ksh) <span class="req">*</span></label>
+          <div class="mj-edit-input-wrap">
+            <i class="fas fa-coins"></i>
+            <input type="number" id="editSalary" placeholder="e.g. 25000" min="1">
+          </div>
+        </div>
+
+        <div class="mj-edit-field">
+          <label for="editAvailability">Availability <span class="req">*</span></label>
+          <select id="editAvailability" class="mj-edit-select">
+            <option value="full_time">Full Time</option>
+            <option value="part_time">Part Time</option>
+            <option value="evenings">Evenings</option>
+            <option value="weekends">Weekends</option>
+          </select>
+        </div>
+
+        <div class="mj-edit-field">
+          <label for="editExperience">Required Experience (years)</label>
+          <div class="mj-edit-input-wrap">
+            <i class="fas fa-star"></i>
+            <input type="number" id="editExperience" min="0" max="20">
+          </div>
+        </div>
+
+        <div class="mj-edit-field full">
+          <label for="editDuties">Primary Duties <span class="req">*</span></label>
+          <textarea id="editDuties" rows="3" maxlength="255"
+            placeholder="e.g. Childcare, light cooking, school pick-up…"></textarea>
+        </div>
+
+        <div class="mj-edit-field full">
+          <label for="editCareNeeds">Care Needs <span class="optional">(optional)</span></label>
+          <textarea id="editCareNeeds" rows="2"
+            placeholder="e.g. Infant care, CPR certified preferred…"></textarea>
+        </div>
+
+      </div>
+    </div>
+    <div class="mj-modal-footer">
+      <button class="mj-btn-cancel" id="cancelEditModal">Cancel</button>
+      <button class="mj-btn-save" id="btnSaveEdit">
+        <i class="fas fa-floppy-disk"></i> Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ DELETE CONFIRM MODAL ═══════ -->
+<div class="mj-modal" id="deleteModal">
+  <div class="mj-modal-content mj-modal-sm">
+    <div class="mj-modal-header">
+      <h3><i class="fas fa-triangle-exclamation"></i> Close Job Post?</h3>
+      <button class="mj-modal-close" id="closeDeleteModal"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="mj-modal-body">
+      <p class="mj-delete-msg">
+        Are you sure you want to close <strong id="deleteJobTitle">"this job"</strong>?
+        This will hide it from nannies. You can reopen it later.
+      </p>
+    </div>
+    <div class="mj-modal-footer">
+      <button class="mj-btn-cancel" id="cancelDeleteModal">Keep Open</button>
+      <button class="mj-btn-danger" id="btnConfirmDelete">
+        <i class="fas fa-circle-xmark"></i> Close Job
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../scripts/myjobs.js"></script>
+</body>
+</html>

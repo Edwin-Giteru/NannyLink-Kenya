@@ -4,8 +4,9 @@ from app.modules.Nanny.nanny_service import NannyService
 from app.modules.Nanny.nanny_schema import NannyCreate, NannyResponse, NannyUpdate
 from app.utils.security import get_current_user
 from app.db.models.user import User
-import uuid
+from uuid import UUID
 from fastapi.responses import JSONResponse
+
 
 router = APIRouter(tags=["Nanny"], prefix="/Nanny", redirect_slashes=False)
 
@@ -83,27 +84,43 @@ async def update_nanny(
         )
     return result.data
 
-@router.get("/{nanny_id}")
-async def get_a_nanny(
+@router.get("/{nanny_id}", response_model=NannyResponse)
+async def get_nanny_by_id(
+    nanny_id: UUID,
     db: SessionDep,
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "nanny":
-        raise HTTPException(
-            status_code=403,
-            detail="Only users with the role of a nanny can perform this action"
-        )
-    
-    service = NannyService(db)
-    result = await service.get_nanny(current_user.id)
-
-    if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-    return result.data
-
+    """
+    Returns a nanny profile by id.
+    - Nanny: can only fetch their own profile.
+    - Family: can fetch any nanny profile (needed for reviewing applicants).
+    - Admin: unrestricted.
+    """
+    role = current_user.role.lower()
+ 
+    if role == "nanny":
+        # Nannies can only read their own profile
+        service = NannyService(db)
+        result = await service.get_nanny(current_user.id)       # looks up by user_id
+        if not result.success:
+            raise HTTPException(status_code=result.status_code, detail=result.error)
+        # Ensure they're not snooping on someone else's profile
+        if str(result.data.id) != str(nanny_id):
+            raise HTTPException(status_code=403, detail="You can only view your own profile.")
+        return result.data
+ 
+    elif role in ("family", "admin"):
+        # Families and admins can look up any nanny by profile id
+        service = NannyService(db)
+        result = await service.get_nanny_by_profile_id(nanny_id)   # see note below
+        if not result.success:
+            raise HTTPException(status_code=result.status_code, detail=result.error)
+        return result.data
+ 
+    else:
+        raise HTTPException(status_code=403, detail="Insufficient permissions.")
+ 
+ 
 
 @router.get("/applications/{nanny_id}")
 async def get_applications_for_nanny(   

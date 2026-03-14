@@ -45,3 +45,22 @@ class ApplicationRepository:
             await self.db.commit()
             return True
         return False
+
+    async def get_applications_by_family_id(self, family_id: UUID) -> list[Application]:
+        """
+        Return all applications for every job posted by this family,
+        with the job_post relationship eagerly loaded so ApplicationResponse
+        can serialise job_post without a lazy-load error.
+        """
+        from app.db.models.job_post import JobPost
+        from sqlalchemy.orm import selectinload
+    
+        stmt = (
+            select(Application)
+            .join(JobPost, Application.job_id == JobPost.id)
+            .where(JobPost.family_id == family_id)
+            .options(selectinload(Application.job_post))   
+            .order_by(Application.applied_at.desc())
+        )
+        result = await self.db.execute(stmt)
+        return result.scalars().all()

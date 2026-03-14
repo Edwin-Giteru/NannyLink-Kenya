@@ -58,26 +58,43 @@ class MatchService:
                 f"An error occurred while retrieving match: {str(e)}", status_code=500
             )
 
-    # ── used by the router ───────────────────────────────────
-    async def list_matches(self, user_id: UUID) -> Result:
+    async def list_matches(self, user_id: UUID, role: str) -> Result:
         """
-        Called by GET /matches/ — returns all matches for the
-        currently authenticated user (looked up via their nanny profile).
+        Returns matches for the authenticated user.
+        - role="nanny"  → look up NannyProfile, filter by selected_nanny_id
+        - role="family" → look up FamilyProfile, filter by family_id
         """
         try:
-            matches = await self.match_repo.get_matches_by_user_id(user_id)
+            if role == "nanny":
+                matches = await self.match_repo.get_matches_by_user_id(user_id)
+    
+            elif role == "family":
+                from app.modules.Family.repository import FamilyRepo
+                family_repo = FamilyRepo(self.match_repo.db)
+                family = await family_repo.get_family_by_user_id(user_id)
+                if not family:
+                    return Result.fail(
+                        "No family profile found for this user.",
+                        status_code=404
+                    )
+                matches = await self.match_repo.get_matches_by_family_id(family.id)
+    
+            else:
+                return Result.fail("Unsupported role for matches.", status_code=403)
+    
             data = [MatchResponse.model_validate(m) for m in matches]
             return Result.ok(data=data, status_code=200)
+    
         except Exception as e:
             return Result.fail(
-                f"An error occurred while listing matches: {str(e)}", status_code=500
+                f"An error occurred while listing matches: {str(e)}",
+                status_code=500
             )
-
-    # kept for backwards compatibility
+    
     async def get_matches_by_user_id(self, user_id: UUID) -> Result:
-        return await self.list_matches(user_id)
-
-
+        # Nanny-only path — existing nanny dashboard behaviour unchanged
+        return await self.list_matches(user_id, role="nanny")
+    
     async def get_match_model_by_id(self, match_id: UUID) -> Result:
         """
         Returns the raw SQLAlchemy Model for internal database operations

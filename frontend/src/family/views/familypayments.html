@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Payments</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
+  <link rel="stylesheet" href="../styles/familypayments.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html"><i class="fas fa-plus-circle"></i><span>Post a Job</span></a>
+      <a href="familyjobs.html"><i class="fas fa-briefcase"></i><span>My Job Posts</span></a>
+      <a href="familyapplications.html"><i class="fas fa-inbox"></i><span>Applications</span></a>
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html" class="active"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="familycontracts.html"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html"><i class="fas fa-house-user"></i><span>Profile</span></a>
+      <a href="familysettings.html"><i class="fas fa-gear"></i><span>Settings</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <div class="breadcrumb">
+          <a href="familydashboard.html">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>Payments</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-icon-btn" id="btnRefresh" title="Refresh">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- Heading -->
+      <div class="fp-heading-row">
+        <div>
+          <h1 class="fp-title">Payments</h1>
+          <p class="fp-subtitle" id="fpSubtitle">Loading…</p>
+        </div>
+      </div>
+
+      <!-- ── STAT CARDS ── -->
+      <div class="fp-stats-grid" id="fpStatsGrid">
+        <div class="fp-stat-card">
+          <div class="fp-stat-icon navy"><i class="fas fa-coins"></i></div>
+          <div class="fp-stat-body">
+            <p>Total Paid</p>
+            <h3 id="statTotalPaid">—</h3>
+            <span class="fp-stat-sub" id="subTotalPaid">Connection fees</span>
+          </div>
+        </div>
+        <div class="fp-stat-card">
+          <div class="fp-stat-icon green"><i class="fas fa-circle-check"></i></div>
+          <div class="fp-stat-body">
+            <p>Completed</p>
+            <h3 id="statCompleted">—</h3>
+            <span class="fp-stat-sub" id="subCompleted">Payments</span>
+          </div>
+        </div>
+        <div class="fp-stat-card">
+          <div class="fp-stat-icon amber"><i class="fas fa-clock"></i></div>
+          <div class="fp-stat-body">
+            <p>Pending</p>
+            <h3 id="statPending">—</h3>
+            <span class="fp-stat-sub" id="subPending">Awaiting confirm</span>
+          </div>
+        </div>
+        <div class="fp-stat-card">
+          <div class="fp-stat-icon red"><i class="fas fa-circle-xmark"></i></div>
+          <div class="fp-stat-body">
+            <p>Failed</p>
+            <h3 id="statFailed">—</h3>
+            <span class="fp-stat-sub">Transactions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CONNECTION FEE + MATCH SELECTOR ── -->
+      <div class="fp-content-grid">
+
+        <!-- Left: connection fee panel -->
+        <div class="fp-left">
+
+          <!-- Match selector (if multiple matches) -->
+          <div class="fp-match-selector" id="fpMatchSelector" style="display:none">
+            <label><i class="fas fa-handshake"></i> Select Match</label>
+            <div class="fp-custom-select" id="matchSelectWrap">
+              <button class="fp-custom-select-btn" id="matchSelectBtn" type="button">
+                <span id="matchSelectLabel">Select a match…</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="fp-custom-select-list" id="matchSelectList"></div>
+            </div>
+          </div>
+
+          <!-- Connection fee hero -->
+          <div class="fp-fee-panel" id="fpFeePanel">
+
+            <div class="fp-fee-hero" id="feeHero" style="display:none">
+              <div class="fp-fee-hero-top">
+                <div>
+                  <p class="fp-fee-label">Connection Fee</p>
+                  <div class="fp-fee-amount" id="feeAmount">
+                    <span class="fp-fee-num">Ksh —</span>
+                    <small>/one-time</small>
+                  </div>
+                </div>
+                <span class="fp-fee-badge" id="feeOverallBadge">Loading…</span>
+              </div>
+
+              <!-- Party pills -->
+              <div class="fp-party-row" id="paymentParties">
+                <div class="fp-party-pill" id="familyPartyPill">
+                  <i class="fas fa-house-user"></i>
+                  <div>
+                    <span class="fp-party-name">Your Family</span>
+                    <span class="fp-party-status" id="familyPayStatus">Not paid yet</span>
+                  </div>
+                </div>
+                <div class="fp-party-arrow"><i class="fas fa-arrows-left-right"></i></div>
+                <div class="fp-party-pill" id="nannyPartyPill">
+                  <i class="fas fa-person"></i>
+                  <div>
+                    <span class="fp-party-name">Nanny</span>
+                    <span class="fp-party-status" id="nannyPayStatus">Not paid yet</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pay button -->
+              <button class="fp-pay-btn" id="btnPayFee">
+                <span class="fp-mpesa-logo">M</span>
+                Pay via M-Pesa
+              </button>
+            </div>
+
+            <div class="fp-no-match" id="noMatchNotice">
+              <i class="fas fa-handshake"></i>
+              <p>No active match yet. Once you have a match, the connection fee will appear here.</p>
+              <a href="familymatches.html">View Matches</a>
+            </div>
+
+          </div><!-- /fee-panel -->
+        </div>
+
+        <!-- Right: payment history table -->
+        <div class="fp-right">
+          <div class="fp-history-panel">
+            <div class="fp-history-header">
+              <h3><i class="fas fa-receipt"></i> Payment History</h3>
+              <div class="fp-history-controls">
+                <div class="fp-history-search">
+                  <i class="fas fa-search"></i>
+                  <input type="text" id="paymentSearch" placeholder="Search M-Pesa code…">
+                </div>
+                <select id="paymentStatusFilter" class="fp-filter-select">
+                  <option value="all">All Status</option>
+                  <option value="completed">Completed</option>
+                  <option value="pending">Pending</option>
+                  <option value="failed">Failed</option>
+                </select>
+              </div>
+            </div>
+            <div class="fp-table-wrap">
+              <table class="fp-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Match</th>
+                    <th>Amount</th>
+                    <th>M-Pesa Code</th>
+                    <th>Status</th>
+                    <th>Phone</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentHistoryBody">
+                  <!-- populated by JS -->
+                </tbody>
+              </table>
+            </div>
+            <div class="fp-results-row" id="fpResultsRow" style="display:none">
+              <span id="fpResultsCount"></span>
+            </div>
+          </div>
+        </div>
+      </div><!-- /content-grid -->
+
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<!-- ═══════ M-PESA MODAL ═══════ -->
+<div class="fp-modal" id="mpesaModal">
+  <div class="fp-modal-content">
+    <div class="fp-modal-header">
+      <div class="fp-mpesa-logo-lg">M</div>
+      <div>
+        <h3>Pay via M-Pesa</h3>
+        <p>Enter your Safaricom number to receive the STK push</p>
+      </div>
+      <button class="fp-modal-close" id="closeMpesaModal"><i class="fas fa-xmark"></i></button>
+    </div>
+
+    <div class="fp-modal-body" id="mpesaModalBody">
+      <div class="fp-modal-field">
+        <label>Amount (Ksh)</label>
+        <div class="fp-modal-input-wrap locked">
+          <i class="fas fa-coins"></i>
+          <input type="number" id="mpesaAmount" readonly>
+          <span class="fp-locked-badge">Fixed</span>
+        </div>
+      </div>
+      <div class="fp-modal-field">
+        <label>M-Pesa Number <span class="req">*</span></label>
+        <div class="fp-modal-input-wrap">
+          <span class="fp-dial-code">+254</span>
+          <input type="tel" id="mpesaPhone" placeholder="7XXXXXXXX" maxlength="9"
+                 inputmode="numeric">
+        </div>
+        <p class="fp-modal-hint">Enter the last 9 digits of your Safaricom number</p>
+      </div>
+    </div>
+
+    <!-- Pending state -->
+    <div class="fp-modal-pending" id="mpesaPendingState">
+      <div class="fp-modal-pending-icon">
+        <i class="fas fa-mobile-screen-button"></i>
+      </div>
+      <h4>Check Your Phone</h4>
+      <p>An M-Pesa prompt has been sent to your phone.<br>Enter your PIN to complete the payment.</p>
+      <div class="fp-modal-spinner"><i class="fas fa-spinner fa-spin"></i> Waiting for confirmation…</div>
+    </div>
+
+    <div class="fp-modal-footer" id="mpesaModalFooter">
+      <button class="fp-modal-cancel" id="cancelMpesaModal">Cancel</button>
+      <button class="fp-modal-confirm" id="btnConfirmMpesa">
+        <span class="fp-mpesa-logo">M</span> Send STK Push
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../scripts/familypayments.js"></script>
+</body>
+</html>

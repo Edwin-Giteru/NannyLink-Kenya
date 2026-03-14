@@ -62,14 +62,14 @@ if (loginForm) {
                 
                 const role = result.role.toLowerCase(); 
                 if (role === "nanny") {
-                    window.location.href = "../../src/views/nannydashboard.html"; 
+                    window.location.href = "/frontend/src/views/nannydashboard.html"; 
                 } else if (role === "family") {
-                    window.location.href = "../../src/family/views/familydashboard.html";
-                } else if (role === "admin") {
-                    window.location.href = "../../src/admin/views/dashboard.html";
+                    window.location.href = "/frontend/src/family/views/familydashboard.html"; 
                 } else {
-                    window.location.href = "../../index.html"; 
+                    window.location.href = "/frontend/src/views/dashboard.html"; 
                 }
+               
+                // console.log("Attempting redirect to:", new URL("/frontend/src/family/views/familydashboard.html", window.location.href).href);
             } else {
                 showModal(result.message || "Invalid email or password", "error");
             }

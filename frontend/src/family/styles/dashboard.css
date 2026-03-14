@@ -926,8 +926,8 @@ body {
   .content-grid { grid-template-columns: 1fr 300px; }
 }
 
-/* Compact sidebar at 900px */
-@media (max-width: 960px) {
+/* Compact sidebar — icon only below 800px (not 960px so labels show at tablet) */
+@media (max-width: 800px) and (min-width: 601px) {
   :root { --sidebar-w: 64px; }
 
   .sidebar-logo p,
@@ -942,6 +942,45 @@ body {
   .sidebar-user { justify-content: center; padding: 12px; }
   .sidebar-user-avatar { width: 30px; height: 30px; }
 
+  /* Tooltip on hover so icon-only sidebar is still navigable */
+  .sidebar-nav a { position: relative; }
+  .sidebar-nav a span {
+    display: block !important;         /* override the hide */
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--navy-mid);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s ease;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  .sidebar-nav a span::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: var(--navy-mid);
+  }
+  .sidebar-nav a:hover span { opacity: 1; }
+}
+
+/* Medium breakpoint — full sidebar but tighter content grid */
+@media (max-width: 960px) and (min-width: 801px) {
+  .content-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 800px) and (min-width: 601px) {
   .content-grid { grid-template-columns: 1fr; }
 }
 

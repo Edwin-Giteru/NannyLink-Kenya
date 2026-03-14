@@ -100,3 +100,14 @@ class JobService:
                 f"Failed to get the family name for job with id: {job_id} due to this error: {str(e)}",
                 status_code=500
             )
+        
+    async def get_jobs_by_family(self, family_id: UUID) -> Result:
+        try:
+            jobs = await self.job_repo.get_jobs_by_family_id(family_id)
+            return Result.ok(data=jobs, status_code=200)
+        except Exception as e:
+            return Result.fail(
+                f"Failed to get jobs for family {family_id}: {str(e)}",
+                status_code=500
+            )
+ 

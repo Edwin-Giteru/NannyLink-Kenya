@@ -1,4 +1,4 @@
-import { API_URL } from "../../src/utils/config.js";
+import { API_URL } from "../../utils/config.js";
 
 /* ─────────────────────────────────────────────
    UTILS
@@ -85,45 +85,84 @@ const State = {
 async function apiFetch(path, fallback = null) {
   try {
     const res = await fetch(`${API_URL}${path}`, { headers: authHeaders() });
-    if (!res.ok) return fallback;
-    const data = await res.json();
-    return data;
-  } catch {
+    if (!res.ok) {
+      // Log the response body so we can see the actual error message from FastAPI
+      let detail = "";
+      try { detail = JSON.stringify(await res.json()); } catch {}
+      console.warn(`[familyDashboard] ${path} → HTTP ${res.status}`, detail);
+      return fallback;
+    }
+    return await res.json();
+  } catch (e) {
+    console.error(`[familyDashboard] ${path} fetch error:`, e);
     return fallback;
   }
 }
 
 async function fetchFamilyProfile() {
-  // GET /Family/{user_id}  — uses current user_id from JWT
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    try { State.currentUserId = JSON.parse(atob(token.split(".")[1])).sub; } catch {}
+  // Auth controller (authController.js) stores user_id in localStorage at login.
+  // Fall back to decoding the JWT sub claim if it's missing.
+  let userId = localStorage.getItem("user_id");
+
+  if (!userId) {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      try { userId = JSON.parse(atob(token.split(".")[1])).sub; } catch {}
+    }
   }
-  return apiFetch(`/Family/${State.currentUserId}`, null);
+
+  if (!userId) {
+    console.error("[familyDashboard] No user_id in localStorage and no JWT sub — user not logged in?");
+    return null;
+  }
+
+  // console.log("[familyDashboard] Fetching family profile for user_id:", userId);
+  State.currentUserId = userId;
+
+  // NOTE: Your backend's GET /Family/{user_id} ignores the path param and
+  // uses current_user.id from the JWT — so the userId in the URL doesn't
+  // matter as long as the JWT Bearer token is valid.
+  const profile = await apiFetch(`/Family/${userId}`, null);
+
+  if (!profile) {
+    console.warn("[familyDashboard] /Family/ returned null — family profile may not exist yet.");
+  } else {
+    console.log("[familyDashboard] Family profile loaded:");
+  }
+
+  return profile;
 }
 
 async function fetchFamilyJobs() {
-  // GET /jobs/family/me  — all jobs posted by this family
-  const data = await apiFetch("/jobs/family/me", []);
-  return Array.isArray(data) ? data : (data?.jobs || data?.data || []);
+  // Requires: GET /jobs/family/me — see family_dashboard_routes.py
+  const data = await apiFetch("/job/family/me", []);
+  const jobs = Array.isArray(data) ? data : (data?.jobs || data?.data || []);
+  console.log(`[familyDashboard] Jobs loaded: ${jobs.length}`);
+  return jobs;
 }
 
 async function fetchApplicationsForFamily() {
-  // GET /applications/family/me — all applications across family's job posts
+  // Requires: GET /applications/family/me — see family_dashboard_routes.py
   const data = await apiFetch("/applications/family/me", []);
-  return Array.isArray(data) ? data : (data?.applications || data?.data || []);
+  const apps = Array.isArray(data) ? data : (data?.applications || data?.data || []);
+  console.log(`[familyDashboard] Applications loaded: ${apps.length}`);
+  return apps;
 }
 
 async function fetchMatches() {
-  // GET /matches/ — returns matches where current user is the family
+  // GET /matches/ — already exists; returns matches for current user
   const data = await apiFetch("/matches/", []);
-  return Array.isArray(data) ? data : (data?.matches || data?.data || []);
+  const matches = Array.isArray(data) ? data : (data?.matches || data?.data || []);
+  console.log(`[familyDashboard] Matches loaded: ${matches.length}`);
+  return matches;
 }
 
 async function fetchContracts() {
-  // GET /contracts/me
+  // Requires: GET /contracts/me — see family_dashboard_routes.py
   const data = await apiFetch("/contracts/me", []);
-  return Array.isArray(data) ? data : (data?.contracts || data?.data || []);
+  const contracts = Array.isArray(data) ? data : (data?.contracts || data?.data || []);
+  console.log(`[familyDashboard] Contracts loaded: ${contracts.length}`);
+  return contracts;
 }
 
 /* ─────────────────────────────────────────────
@@ -556,17 +595,54 @@ function setupSidebar() {
    INIT
 ───────────────────────────────────────────── */
 async function init() {
+  // ── Auth guard ────────────────────────────────────────────────────
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    window.location.href = "/frontend/src/views/login.html";
+    return;
+  }
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      localStorage.clear();
+      window.location.href = "/frontend/src/views/login.html";
+      return;
+    }
+    // // ── Debug: log everything stored at login ──────────────────────
+    // console.log("[familyDashboard] Auth payload:", {
+    //   sub:      payload.sub,
+    //   role:     payload.role,
+    //   email:    payload.email,
+    //   exp:      new Date(payload.exp * 1000).toISOString(),
+    // });
+    // console.log("[familyDashboard] localStorage:", {
+    //   user_id:   localStorage.getItem("user_id"),
+    //   user_role: localStorage.getItem("user_role"),
+    //   token_present: !!token,
+    // });
+  } catch (e) {
+    console.error("[familyDashboard] JWT decode error:", e);
+  }
+  // ─────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────
+
   setupActiveNav();
   setupSidebar();
   renderSkeletons();
 
   try {
-    // Phase 1: profile first (we need user_id)
+    // Phase 1: profile (sets State.currentUserId internally)
     const family = await fetchFamilyProfile();
     State.family = family;
-    if (family) renderHeader(family);
 
-    // Phase 2: parallel data fetch
+    if (!family) {
+      showToast("Please complete your family profile first.", "info");
+      // setTimeout(() => { window.location.href = "familyprofile.html"; }, 2000);
+    } else {
+      renderHeader(family);
+    }
+
+    // Phase 2: all other data in parallel
     const [jobs, applications, matches, contracts] = await Promise.all([
       fetchFamilyJobs(),
       fetchApplicationsForFamily(),
@@ -586,7 +662,7 @@ async function init() {
     renderContractOverview();
 
   } catch (err) {
-    console.error("Family dashboard init error:", err);
+    console.error("[familyDashboard] init error:", err);
     showToast("Some data failed to load. Please refresh.", "error");
   }
 }

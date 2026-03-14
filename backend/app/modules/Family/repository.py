@@ -21,9 +21,10 @@ class FamilyRepo:
         return await self.save(new_family)
     
     async def get_family_by_user_id(self, user_id: uuid.UUID) -> FamilyProfile:
-        stmt = select(FamilyProfile).where(FamilyProfile.user_id == user_id)
+        stmt = select(FamilyProfile).join(User, FamilyProfile.user_id == User.id).where(User.id == user_id)
         result = await self.db.execute(stmt)
         return result.scalars().first()
+    
     
     async def get_family_by_id(self, family_id: uuid.UUID) -> FamilyProfile:
         stmt = select(FamilyProfile).where(FamilyProfile.id == family_id)

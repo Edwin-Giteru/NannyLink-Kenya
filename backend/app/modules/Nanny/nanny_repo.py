@@ -54,4 +54,8 @@ class NannyRepository:
         stmt = select(User).join(NannyProfile, User.id == NannyProfile.user_id).where(NannyProfile.id == nanny_id)
         result = await self.db.execute(stmt)
         return result.scalars().first() 
-       
+    
+    async def get_nanny_by_id(self, nanny_id: uuid.UUID) -> NannyProfile | None:
+        stmt = select(NannyProfile).where(NannyProfile.id == nanny_id)
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()

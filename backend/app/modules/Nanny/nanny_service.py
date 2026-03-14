@@ -142,3 +142,12 @@ class NannyService:
                 f"Failed to load user with this error: {str(e)}",
                 status_code=500
             )
+    
+    async def get_nanny_by_profile_id(self, nanny_id: uuid.UUID) -> Result:
+        try:
+            nanny = await self.nanny_repo.get_nanny_by_id(nanny_id)
+            if not nanny:
+                return Result.fail(f"Nanny {nanny_id} not found.", status_code=404)
+            return Result.ok(data=nanny, status_code=200)
+        except Exception as e:
+            return Result.fail(str(e), status_code=500)

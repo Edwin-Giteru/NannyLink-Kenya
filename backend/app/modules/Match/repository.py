@@ -68,3 +68,18 @@ class MatchRepository:
         )
         result = await self.db.execute(match_stmt)
         return list(result.scalars().all())
+
+    async def get_matches_by_family_id(self, family_id: UUID) -> list[Match]:
+        """
+        Returns all matches where Match.family_id == family_id.
+        job_post and family relations are eagerly loaded.
+        """
+        stmt = (
+            select(Match)
+            .where(Match.family_id == family_id)
+            .options(*self._load_opts)
+            .order_by(Match.created_at.desc())
+        )
+        result = await self.db.execute(stmt)
+        return list(result.scalars().all())
+    

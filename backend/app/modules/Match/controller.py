@@ -36,11 +36,11 @@ async def list_matches(
     current_user: User = Depends(get_current_user)
 ):
     match_service = MatchService(db)
-    result = await match_service.list_matches(current_user.id)
+    result = await match_service.list_matches(current_user.id, current_user.role)
     if not result.success:
         raise HTTPException(
             status_code=result.status_code,
             detail=result.error
         )
-    
     return result.data
+ 
