@@ -6,6 +6,7 @@ from app.modules.Job.controller import router as job_router
 from app.modules.Application.controller import router as application_router
 from app.modules.Match.controller import router as match_router
 from app.modules.payments.controller import router as payments_router
+from app.modules.Contract.controller import router as contract_router
 
 router = APIRouter()
 
@@ -16,3 +17,4 @@ router.include_router(job_router)
 router.include_router(application_router)
 router.include_router(match_router)
 router.include_router(payments_router)
+router.include_router(contract_router)

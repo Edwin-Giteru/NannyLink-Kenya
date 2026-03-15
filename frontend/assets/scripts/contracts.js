@@ -87,7 +87,7 @@ async function fetchContracts() {
 // PATCH /contracts/{id}/accept  — adjust to your actual route
 async function acceptContract(contractId) {
   const res = await fetch(`${API_URL}/contracts/${contractId}/accept`, {
-    method: "PATCH",
+    method: "POST",
     headers: authHeaders(),
   });
   if (!res.ok) {

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Contracts</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
+  <link rel="stylesheet" href="../styles/familycontracts.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html"><i class="fas fa-plus-circle"></i><span>Post a Job</span></a>
+      <a href="familyjobs.html"><i class="fas fa-briefcase"></i><span>My Job Posts</span></a>
+      <a href="familyapplications.html"><i class="fas fa-inbox"></i><span>Applications</span></a>
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="familycontracts.html" class="active"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html"><i class="fas fa-house-user"></i><span>Profile</span></a>
+      <a href="familysettings.html"><i class="fas fa-gear"></i><span>Settings</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <div class="breadcrumb">
+          <a href="familydashboard.html">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>Contracts</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-icon-btn" id="btnRefresh" title="Refresh">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- Heading -->
+      <div class="fc-heading-row">
+        <div>
+          <h1 class="fc-title">Contracts</h1>
+          <p class="fc-subtitle" id="fcSubtitle">Loading…</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="fc-stats-grid">
+        <div class="fc-stat-card">
+          <div class="fc-stat-icon navy"><i class="fas fa-file-contract"></i></div>
+          <div class="fc-stat-body">
+            <p>Total</p>
+            <h3 id="stTotal">—</h3>
+          </div>
+        </div>
+        <div class="fc-stat-card">
+          <div class="fc-stat-icon green"><i class="fas fa-circle-check"></i></div>
+          <div class="fc-stat-body">
+            <p>Both Signed</p>
+            <h3 id="stActive">—</h3>
+          </div>
+        </div>
+        <div class="fc-stat-card">
+          <div class="fc-stat-icon amber"><i class="fas fa-signature"></i></div>
+          <div class="fc-stat-body">
+            <p>Awaiting Sign</p>
+            <h3 id="stPending">—</h3>
+          </div>
+        </div>
+        <div class="fc-stat-card">
+          <div class="fc-stat-icon blue"><i class="fas fa-hourglass-half"></i></div>
+          <div class="fc-stat-body">
+            <p>Your Signature</p>
+            <h3 id="stNeedsSig">—</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="fc-toolbar">
+        <div class="fc-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="fcSearch" placeholder="Search by match or job…">
+          <button class="fc-search-clear" id="fcSearchClear" style="display:none">
+            <i class="fas fa-xmark"></i>
+          </button>
+        </div>
+        <div class="fc-filter-tabs" id="fcFilterTabs">
+          <button class="fc-tab active" data-filter="all">All</button>
+          <button class="fc-tab" data-filter="active">Both Signed</button>
+          <button class="fc-tab" data-filter="pending">Awaiting</button>
+          <button class="fc-tab" data-filter="needs_my_sig">Needs My Sig</button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="fc-results-row">
+        <span id="fcResultsCount" class="fc-results-count"></span>
+      </div>
+
+      <!-- Contracts list -->
+      <div class="fc-list" id="fcList">
+        <!-- populated by JS -->
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ═══════ CONTRACT VIEWER DRAWER ═══════ -->
+<div class="fc-drawer-overlay" id="drawerOverlay"></div>
+<aside class="fc-drawer" id="contractDrawer">
+  <div class="fc-drawer-header">
+    <div class="fc-drawer-header-info">
+      <h3 id="drawerTitle">Contract</h3>
+      <span class="fc-drawer-badge" id="drawerBadge"></span>
+    </div>
+    <button class="fc-drawer-close" id="closeDrawer"><i class="fas fa-xmark"></i></button>
+  </div>
+
+  <div class="fc-drawer-tabs">
+    <button class="fc-drawer-tab active" data-tab="text">
+      <i class="fas fa-file-lines"></i> Contract Text
+    </button>
+    <button class="fc-drawer-tab" data-tab="signatures">
+      <i class="fas fa-signature"></i> Signatures
+    </button>
+  </div>
+
+  <div class="fc-drawer-body" id="drawerBody">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="fc-drawer-footer" id="drawerFooter">
+    <!-- populated by JS -->
+  </div>
+</aside>
+
+<!-- ═══════ GENERATE MODAL ═══════ -->
+<div class="fc-modal" id="generateModal">
+  <div class="fc-modal-content">
+    <div class="fc-modal-header">
+      <h3><i class="fas fa-wand-magic-sparkles"></i> Generate Contract</h3>
+      <button class="fc-modal-close" id="closeGenerateModal"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="fc-modal-body">
+      <p class="fc-modal-desc">
+        NannyLink will automatically generate a standard contract for your match.
+        You can review and edit the text before finalising.
+      </p>
+      <div class="fc-modal-field">
+        <label>Match</label>
+        <p id="generateMatchLabel" class="fc-modal-value">—</p>
+      </div>
+      <div class="fc-modal-field">
+        <label>Custom notes <span class="fc-optional">(optional)</span></label>
+        <textarea id="customContractText" rows="4"
+          placeholder="Add any custom terms or notes to include in the contract…"></textarea>
+      </div>
+    </div>
+    <div class="fc-modal-footer">
+      <button class="fc-modal-cancel" id="cancelGenerateModal">Cancel</button>
+      <button class="fc-modal-confirm" id="btnConfirmGenerate">
+        <i class="fas fa-wand-magic-sparkles"></i> Generate
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ ACCEPT CONFIRM MODAL ═══════ -->
+<div class="fc-modal" id="acceptModal">
+  <div class="fc-modal-content fc-modal-sm">
+    <div class="fc-modal-header">
+      <h3><i class="fas fa-signature"></i> Sign Contract</h3>
+      <button class="fc-modal-close" id="closeAcceptModal"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="fc-modal-body">
+      <p class="fc-modal-desc">
+        By signing, you confirm you have read and agree to all terms in this contract.
+        This action cannot be undone.
+      </p>
+    </div>
+    <div class="fc-modal-footer">
+      <button class="fc-modal-cancel" id="cancelAcceptModal">Cancel</button>
+      <button class="fc-modal-confirm green" id="btnConfirmAccept">
+        <i class="fas fa-pen-nib"></i> Sign Contract
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../scripts/familycontracts.js"></script>
+</body>
+</html>
