@@ -859,7 +859,8 @@ body { font-family: 'Ubuntu', sans-serif !important; font-size: 17px; }
   border-radius: 99px;
   padding: 9px 16px;
   flex: 1;
-  min-width: 200px;
+  min-width: 0;          /* allow shrinking below 200px on mobile */
+  max-width: 100%;       /* never exceed container */
   box-sizing: border-box;
   transition: border-color var(--transition);
 }
@@ -870,7 +871,7 @@ body { font-family: 'Ubuntu', sans-serif !important; font-size: 17px; }
 .pcs-search-wrap input {
   flex: 1; border: none; background: transparent;
   font-family: 'Ubuntu', sans-serif; font-size: .95rem;
-  color: var(--text-dark); outline: none;
+  color: var(--text-dark); outline: none; min-width: 0;
 }
 
 .pcs-search-wrap input::placeholder { color: var(--text-light); }
@@ -886,6 +887,8 @@ body { font-family: 'Ubuntu', sans-serif !important; font-size: 17px; }
   outline: none;
   cursor: pointer;
   transition: border-color var(--transition);
+  max-width: 100%;       /* never overflow container */
+  box-sizing: border-box;
 }
 
 .pcs-filter-select:focus { border-color: var(--navy-light); }
@@ -1071,6 +1074,7 @@ body { font-family: 'Ubuntu', sans-serif !important; font-size: 17px; }
   }
 }
 
+/* ── DESKTOP (≥ 960px) ── */
 @media (min-width: 960px) {
   /* Desktop sidebar nav panel — fixed width, sticky */
   .settings-layout > .panel:first-child {
@@ -1091,4 +1095,53 @@ body { font-family: 'Ubuntu', sans-serif !important; font-size: 17px; }
   .btn-save-settings {
     min-width: 160px;
   }
+}
+
+/* ══════════════════════════════════════
+   MOBILE TOOLBAR & FILTER FIXES
+   Prevent selects and search from overflowing viewport
+══════════════════════════════════════ */
+@media (max-width: 600px) {
+  /* Stack toolbar vertically on mobile */
+  .pcs-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Full-width search on mobile */
+  .pcs-search-wrap {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Full-width selects on mobile */
+  .pcs-filter-select {
+    width: 100%;
+    font-size: .88rem;
+  }
+
+  /* Prevent browse-jobs sort select overflowing */
+  .sort-select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: .88rem;
+  }
+
+  /* Nanny applications/matches sort select */
+  #appSort, #matchSort, #contractStatusFilter, #contractSort {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: .88rem;
+  }
+
+  /* Panel body padding reduction */
+  .panel-body { padding: 14px; }
+
+  /* History table — hide less critical columns */
+  .pcs-history-table th:nth-child(2),
+  .pcs-history-table td:nth-child(2),
+  .pcs-history-table th:nth-child(6),
+  .pcs-history-table td:nth-child(6) { display: none; }
 }

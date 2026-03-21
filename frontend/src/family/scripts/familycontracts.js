@@ -50,6 +50,8 @@ const State = {
   openContractId: null,
   drawerTab:     "text",
   pendingGenerateMatchId: null,
+  currentContractHTML:  null,
+  currentContractTitle: null,
 };
 
 /* ─── API ─── */
@@ -280,6 +282,283 @@ function buildCard(c) {
 }
 
 /* ─── DRAWER ─── */
+/* ─── CONTRACT HTML BUILDER ─── */
+function buildContractHTML({ refNo, genDate, job, fam, nanny, availLabel, salary,
+  famSigned, nannySigned, famDate, nannyDate, matchId }) {
+
+  const famName   = fam?.name || "Family";
+  const famLoc    = fam?.location || "Kenya";
+  const nannyName = nanny?.name || "Nanny (see NannyLink profile)";
+  const exp       = job.required_experience != null ? `${job.required_experience} year(s)` : "Not specified";
+
+  const sigFam = famSigned
+    ? `<div class="doc-sig-box signed">
+         <div class="doc-sig-label">Employer (Family)</div>
+         <div class="doc-sig-stamp"><i class="fas fa-circle-check"></i> Digitally Signed</div>
+         <div style="font-size:.72rem;color:#065f46;margin-top:3px">${famDate}</div>
+       </div>`
+    : `<div class="doc-sig-box">
+         <div class="doc-sig-label">Employer (Family)</div>
+         <div class="doc-sig-line">Signature &amp; Date</div>
+       </div>`;
+
+  const sigNanny = nannySigned
+    ? `<div class="doc-sig-box signed">
+         <div class="doc-sig-label">Employee (Nanny)</div>
+         <div class="doc-sig-stamp"><i class="fas fa-circle-check"></i> Digitally Signed</div>
+         <div style="font-size:.72rem;color:#065f46;margin-top:3px">${nannyDate}</div>
+       </div>`
+    : `<div class="doc-sig-box">
+         <div class="doc-sig-label">Employee (Nanny)</div>
+         <div class="doc-sig-line">Signature &amp; Date</div>
+       </div>`;
+
+  return `
+    <div class="doc-header">
+      <div class="doc-logo">NannyLink Kenya</div>
+      <div class="doc-title">Employment Contract</div>
+      <div class="doc-ref">Ref: ${refNo} &nbsp;·&nbsp; Generated: ${genDate} &nbsp;·&nbsp; Match: ${matchId}</div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Section 1 — Parties</div>
+      <div class="doc-row"><span class="doc-label">Employer (Family)</span><span class="doc-val">${famName}, ${famLoc}</span></div>
+      <div class="doc-row"><span class="doc-label">Employee (Nanny)</span><span class="doc-val">${nannyName}</span></div>
+      <div class="doc-row"><span class="doc-label">Facilitated By</span><span class="doc-val">NannyLink Kenya</span></div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Section 2 — Position Details</div>
+      <div class="doc-row"><span class="doc-label">Position</span><span class="doc-val">${job.title || "Childcare / Nanny"}</span></div>
+      <div class="doc-row"><span class="doc-label">Work Location</span><span class="doc-val">${job.location || "As agreed"}</span></div>
+      <div class="doc-row"><span class="doc-label">Schedule</span><span class="doc-val">${availLabel}</span></div>
+      <div class="doc-row"><span class="doc-label">Monthly Salary</span><span class="doc-val">${salary}</span></div>
+      <div class="doc-row"><span class="doc-label">Experience Required</span><span class="doc-val">${exp}</span></div>
+      <div class="doc-row"><span class="doc-label">Commencement</span><span class="doc-val">Upon acceptance by both parties</span></div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Section 3 — Duties &amp; Responsibilities</div>
+      <p style="line-height:1.7">${(job.duties || "As agreed between both parties.").replace(/\n/g,"<br>")}</p>
+    </div>
+
+    ${job.care_needs ? `
+    <div class="doc-section">
+      <div class="doc-section-title">Section 4 — Special Care Requirements</div>
+      <p style="line-height:1.7">${job.care_needs.replace(/\n/g,"<br>")}</p>
+    </div>` : ""}
+
+    <div class="doc-section">
+      <div class="doc-section-title">Section 5 — Terms &amp; Conditions</div>
+      <div class="doc-clause"><strong>1. Engagement.</strong> This contract is binding upon digital acceptance by both parties on the NannyLink platform and takes effect from the date the second party signs.</div>
+      <div class="doc-clause"><strong>2. Remuneration.</strong> The monthly salary of ${salary} shall be paid by the Family to the Nanny on a mutually agreed schedule. NannyLink Kenya is not responsible for salary disbursements.</div>
+      <div class="doc-clause"><strong>3. Termination.</strong> Either party may terminate employment with a minimum of fourteen (14) days written notice. Immediate termination may apply in cases of gross misconduct.</div>
+      <div class="doc-clause"><strong>4. Conduct.</strong> The Nanny agrees to maintain professional conduct, keep household affairs confidential, and prioritise the safety and wellbeing of children in their care.</div>
+      <div class="doc-clause"><strong>5. Connection Fee.</strong> The NannyLink connection fee is non-refundable once both parties have accepted this contract.</div>
+      <div class="doc-clause"><strong>6. Dispute Resolution.</strong> Disputes shall first be submitted to NannyLink Kenya for mediation. If unresolved, parties may seek remedies under Kenyan law.</div>
+      <div class="doc-clause"><strong>7. Governing Law.</strong> This contract is governed by the laws of the Republic of Kenya.</div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Section 6 — Digital Signatures</div>
+      <p style="font-size:.8rem;color:var(--text-mid);margin-bottom:10px">
+        By accepting on the NannyLink platform, both parties confirm they have read, understood,
+        and agreed to all terms stated in this contract.
+      </p>
+      <div class="doc-sig-grid">
+        ${sigFam}
+        ${sigNanny}
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      NannyLink Kenya &nbsp;·&nbsp; Premium Childcare Matching &nbsp;·&nbsp; www.nannylink.co.ke<br>
+      This document was generated electronically and is legally binding upon digital acceptance by both parties.
+    </div>`;
+}
+
+function printContract() {
+  const html  = State.currentContractHTML;
+  const title = State.currentContractTitle || "NannyLink Contract";
+  if (!html) { showToast("No contract to print.", "info"); return; }
+
+  const win = window.open("", "_blank", "width=900,height=700");
+  win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${title}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Georgia', serif;
+      font-size: 10.5pt;
+      line-height: 1.7;
+      color: #000;
+      background: #fff;
+      padding: 20mm 25mm;
+    }
+    .doc-header { text-align:center; margin-bottom:18pt; padding-bottom:12pt; border-bottom:2pt solid #000; }
+    .doc-logo   { font-size:14pt; font-weight:700; margin-bottom:3pt; letter-spacing:.02em; }
+    .doc-title  { font-size:12pt; font-weight:700; text-transform:uppercase; letter-spacing:.1em; }
+    .doc-ref    { font-size:8pt; color:#555; margin-top:5pt; }
+    .doc-section { margin-bottom:14pt; page-break-inside:avoid; }
+    .doc-section-title {
+      font-size:9pt; font-weight:800; text-transform:uppercase;
+      letter-spacing:.1em; border-bottom:1pt solid #000;
+      padding-bottom:3pt; margin-bottom:7pt;
+    }
+    .doc-row { display:flex; gap:8pt; margin-bottom:3pt; }
+    .doc-row .doc-label { font-weight:600; min-width:130pt; font-size:9pt; color:#333; }
+    .doc-row .doc-val   { font-size:10pt; }
+    .doc-clause { margin-bottom:6pt; text-align:justify; }
+    .doc-clause strong { font-weight:700; }
+    .doc-sig-grid { display:grid; grid-template-columns:1fr 1fr; gap:16pt; margin-top:8pt; }
+    .doc-sig-box { border:1pt solid #999; padding:10pt; }
+    .doc-sig-label { font-size:8pt; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:18pt; }
+    .doc-sig-line  { border-top:1pt solid #000; padding-top:3pt; font-size:8pt; color:#555; }
+    .doc-sig-box.signed { border-color:#2e7d4f; background:#f0fdf4; }
+    .doc-sig-stamp { font-size:9pt; font-weight:700; color:#2e7d4f; display:flex; align-items:center; gap:4pt; }
+    .doc-footer {
+      margin-top:16pt; padding-top:10pt; border-top:2pt solid #000;
+      text-align:center; font-size:8pt; color:#555;
+    }
+    p { margin-bottom:6pt; }
+    @media print { @page { margin:0; size:A4; } body { padding:18mm 22mm; } }
+  </style>
+</head>
+<body>
+  ${html}
+  <script>
+    window.onload = function() {
+      window.print();
+      // window.close(); // optionally close after print
+    };
+  <\/script>
+</body>
+</html>`);
+  win.document.close();
+}
+
+function downloadContract() {
+  const html  = State.currentContractHTML;
+  const title = State.currentContractTitle || "NannyLink Contract";
+  if (!html) { showToast("No contract to download.", "info"); return; }
+
+  // Build a self-contained HTML file — same styles as the print window
+  const fullHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title} — NannyLink Kenya</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 11pt;
+      line-height: 1.75;
+      color: #111;
+      background: #fff;
+      padding: 20mm 25mm;
+      max-width: 210mm;
+      margin: 0 auto;
+    }
+    .doc-header {
+      text-align: center;
+      margin-bottom: 24pt;
+      padding-bottom: 14pt;
+      border-bottom: 2.5pt solid #1a3557;
+    }
+    .doc-logo {
+      font-size: 15pt; font-weight: 700;
+      color: #1a3557; margin-bottom: 3pt;
+      letter-spacing: .03em;
+    }
+    .doc-title {
+      font-size: 12pt; font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em; color: #1a3557;
+    }
+    .doc-ref { font-size: 8.5pt; color: #666; margin-top: 6pt; }
+    .doc-section { margin-bottom: 18pt; page-break-inside: avoid; }
+    .doc-section-title {
+      font-size: 9pt; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .12em;
+      border-bottom: 1.5pt solid #1a3557;
+      padding-bottom: 3pt; margin-bottom: 9pt;
+      color: #1a3557;
+    }
+    .doc-row { display: flex; gap: 10pt; margin-bottom: 4pt; }
+    .doc-label { font-weight: 600; min-width: 140pt; font-size: 9.5pt; color: #444; }
+    .doc-val { font-size: 10.5pt; color: #111; }
+    .doc-clause { margin-bottom: 8pt; text-align: justify; font-size: 10pt; }
+    .doc-clause strong { font-weight: 700; color: #1a3557; }
+    .doc-sig-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16pt; margin-top: 10pt;
+    }
+    .doc-sig-box {
+      border: 1pt solid #bbb;
+      border-radius: 4pt; padding: 12pt;
+    }
+    .doc-sig-box.signed {
+      border-color: #2e7d4f;
+      background: #f0fdf4;
+    }
+    .doc-sig-label {
+      font-size: 8pt; font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: #666; margin-bottom: 20pt;
+    }
+    .doc-sig-line {
+      border-top: 1pt solid #333;
+      padding-top: 4pt;
+      font-size: 8pt; color: #666;
+    }
+    .doc-sig-stamp {
+      font-size: 9pt; font-weight: 700;
+      color: #2e7d4f;
+      display: flex; align-items: center; gap: 5pt;
+    }
+    .doc-footer {
+      margin-top: 20pt; padding-top: 12pt;
+      border-top: 2pt solid #1a3557;
+      text-align: center;
+      font-size: 8.5pt; color: #777;
+      line-height: 1.6;
+    }
+    p { margin-bottom: 7pt; }
+    /* Font Awesome icons replaced with text equivalents for offline */
+    .fas { display: none; }
+    .doc-sig-stamp::before { content: "✓ "; }
+    @media print {
+      @page { size: A4; margin: 20mm 25mm; }
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  ${html.replace(/<i class="fas[^"]*"><\/i>/g, '')}
+</body>
+</html>`;
+
+  // Create a Blob and trigger download
+  const blob = new Blob([fullHTML], { type: "text/html;charset=utf-8" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  const safeName = (title || "contract").replace(/[^a-z0-9]/gi, "_").toLowerCase();
+  a.href     = url;
+  a.download = `NannyLink_${safeName}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Contract downloaded. Open in any browser to view or print.", "success");
+}
+
 function openDrawer(contractId) {
   const c     = State.contracts.find(c => String(c.id) === String(contractId));
   if (!c) return;
@@ -318,12 +597,40 @@ function renderDrawerTab(c, match, nanny) {
 
   if (State.drawerTab === "text") {
     const job = match?.job_post || {};
+    const fam = match?.family   || {};
+    const acc = c.acceptance    || {};
+
+    const AVAIL_LABELS = {
+      full_time:"Full Time", part_time:"Part Time",
+      evenings:"Evenings Only", weekends:"Weekends Only",
+    };
+
+    // Normalise availability — strips enum prefix like "NannyAvailability.full_time"
+    const rawAvail = (job.availability || "").toString().toLowerCase()
+      .replace(/nannyavailability\./g,"").replace(/\s+/g,"_");
+    const availLabel = AVAIL_LABELS[rawAvail] || rawAvail.replace(/_/g," ")
+      .replace(/\b\w/g, l => l.toUpperCase()) || "Not specified";
+
+    const salary   = job.salary ? `Ksh ${Number(job.salary).toLocaleString("en-KE")}` : "As negotiated";
+    const refNo    = `NL-${String(c.id).toUpperCase().slice(0,8)}`;
+    const genDate  = fmtDate(c.generation_date || c.created_at);
+
+    const famSigned   = acc.family_accepted;
+    const nannySigned = acc.nanny_accepted;
+
+    // Build printable HTML contract
+    const contractHTML = buildContractHTML({
+      refNo, genDate, job, fam, nanny, availLabel, salary,
+      famSigned, nannySigned,
+      famDate:   fmtDateTime(acc.family_acceptance_date),
+      nannyDate: fmtDateTime(acc.nanny_acceptance_date),
+      matchId:   String(c.match_id).toUpperCase().slice(0,8),
+    });
+
     body.innerHTML = `
-      <!-- Match info -->
+      <!-- Match info summary -->
       <div>
-        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-light);padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:10px">
-          Match Details
-        </div>
+        <div class="fc-drawer-section-title">Match Details</div>
         <div class="fc-drawer-grid">
           <div class="fc-drawer-item">
             <label>Nanny</label>
@@ -331,7 +638,7 @@ function renderDrawerTab(c, match, nanny) {
           </div>
           <div class="fc-drawer-item">
             <label>Generated</label>
-            <span>${fmtDate(c.generation_date || c.created_at)}</span>
+            <span>${genDate}</span>
           </div>
           <div class="fc-drawer-item full">
             <label>Job Post</label>
@@ -343,21 +650,19 @@ function renderDrawerTab(c, match, nanny) {
           </div>
           <div class="fc-drawer-item">
             <label>Salary</label>
-            <span>${fmtKsh(job.salary)}/mo</span>
+            <span>${salary}/mo</span>
           </div>
         </div>
       </div>
-      <!-- Contract text -->
+      <!-- Styled contract document -->
       <div>
-        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-light);padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:10px">
-          Contract Text
-        </div>
-        <div class="fc-contract-text-wrap">${
-          c.contract_text
-            ? c.contract_text.replace(/</g, "&lt;").replace(/>/g, "&gt;")
-            : "<em style='color:var(--text-light)'>No contract text generated yet.</em>"
-        }</div>
+        <div class="fc-drawer-section-title">Contract Document</div>
+        <div class="fc-contract-doc">${contractHTML}</div>
       </div>`;
+
+    // Store current contract HTML for printing
+    State.currentContractHTML = contractHTML;
+    State.currentContractTitle = job.title || "Employment Contract";
   } else {
     // Signatures tab
     const a = c.acceptance;
@@ -586,6 +891,12 @@ function setupEvents() {
 
   $("closeDrawer")?.addEventListener("click",   closeDrawer);
   $("drawerOverlay")?.addEventListener("click", closeDrawer);
+
+  // Print + Download (delegated — buttons are always in DOM)
+  document.addEventListener("click", e => {
+    if (e.target.closest("#btnPrintContract"))    printContract();
+    if (e.target.closest("#btnDownloadContract")) downloadContract();
+  });
 
   // Generate modal
   $("closeGenerateModal")?.addEventListener("click",  () => $("generateModal").classList.remove("open"));

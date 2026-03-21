@@ -249,7 +249,7 @@ function setupPhotoUpload() {
 function signOutAll() {
   localStorage.removeItem("access_token");
   showToast("Signed out from all devices.", "info");
-  setTimeout(() => window.location.href = "/login.html", 1500);
+  setTimeout(() => window.location.href = "../../src/views/login.html", 1500);
 }
 
 /* ─── Delete account flow ─── */

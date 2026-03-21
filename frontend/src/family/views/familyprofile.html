@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – My Profile</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
+  <link rel="stylesheet" href="../styles/familyprofile.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html"><i class="fas fa-plus-circle"></i><span>Post a Job</span></a>
+      <a href="familyjobs.html"><i class="fas fa-briefcase"></i><span>My Job Posts</span></a>
+      <a href="familyapplications.html"><i class="fas fa-inbox"></i><span>Applications</span></a>
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="familycontracts.html"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html" class="active"><i class="fas fa-house-user"></i><span>Profile</span></a>
+      <a href="familysettings.html"><i class="fas fa-gear"></i><span>Settings</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <div class="breadcrumb">
+          <a href="familydashboard.html">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>My Profile</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-icon-btn" id="btnRefresh" title="Refresh">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- ── PROFILE HERO ── -->
+      <div class="fp-hero" id="profileHero">
+        <div class="fp-hero-avatar-wrap">
+          <div class="fp-hero-avatar" id="heroAvatar">F</div>
+          <div class="fp-completeness-ring-wrap" id="heroCompleteness">
+            <svg viewBox="0 0 36 36" class="fp-completeness-ring">
+              <path class="fp-ring-bg"   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="fp-ring-fill" id="ringFill" stroke-dasharray="0,100"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            </svg>
+            <span id="completenessLabel">0%</span>
+          </div>
+        </div>
+        <div class="fp-hero-info">
+          <h1 class="fp-hero-name" id="heroName">Loading…</h1>
+          <p class="fp-hero-email" id="heroEmail">—</p>
+          <div class="fp-hero-tags">
+            <span class="fp-tag fp-tag-location" id="heroLocationTag" style="display:none">
+              <i class="fas fa-map-pin"></i>
+              <span id="heroLocationText">—</span>
+            </span>
+            <span class="fp-tag fp-tag-role">
+              <i class="fas fa-house-user"></i> Family Account
+            </span>
+          </div>
+        </div>
+        <div class="fp-hero-actions">
+          <button class="fp-btn-edit-hero" id="btnEditProfile">
+            <i class="fas fa-pen"></i> Edit Profile
+          </button>
+        </div>
+      </div>
+
+      <!-- ── TWO-COLUMN LAYOUT ── -->
+      <div class="fp-layout">
+
+        <!-- LEFT: profile details -->
+        <div class="fp-left">
+
+          <!-- Household Info Card -->
+          <div class="fp-card" id="cardHousehold">
+            <div class="fp-card-header">
+              <h3><i class="fas fa-house-chimney"></i> Household Information</h3>
+              <button class="fp-card-edit-btn" data-section="household">
+                <i class="fas fa-pen"></i> Edit
+              </button>
+            </div>
+
+            <!-- View mode -->
+            <div class="fp-card-view" id="viewHousehold">
+              <div class="fp-field-row">
+                <span class="fp-field-label">Family Name</span>
+                <span class="fp-field-value" id="viewName">—</span>
+              </div>
+              <div class="fp-field-row">
+                <span class="fp-field-label">Location</span>
+                <span class="fp-field-value" id="viewLocation">—</span>
+              </div>
+              <div class="fp-field-row">
+                <span class="fp-field-label">Address</span>
+                <span class="fp-field-value" id="viewAddress">—</span>
+              </div>
+              <div class="fp-field-row">
+                <span class="fp-field-label">Household Details</span>
+                <span class="fp-field-value fp-multiline" id="viewDetails">—</span>
+              </div>
+            </div>
+
+            <!-- Edit mode -->
+            <form class="fp-card-edit" id="editHousehold" style="display:none" novalidate>
+              <div class="fp-form-grid">
+
+                <div class="fp-form-group fp-full">
+                  <label for="editName">Family Name <span class="req">*</span></label>
+                  <div class="fp-input-wrap">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="editName" placeholder="e.g. The Johnson Family" maxlength="255" autocomplete="off">
+                  </div>
+                  <span class="fp-field-error" id="errName"></span>
+                </div>
+
+                <div class="fp-form-group">
+                  <label for="editLocation">Location <span class="req">*</span></label>
+                  <div class="fp-input-wrap">
+                    <i class="fas fa-map-pin"></i>
+                    <input type="text" id="editLocation" placeholder="e.g. Westlands, Nairobi" maxlength="255">
+                  </div>
+                  <span class="fp-field-error" id="errLocation"></span>
+                </div>
+
+                <div class="fp-form-group">
+                  <label for="editAddress">Full Address <span class="fp-optional">(optional)</span></label>
+                  <div class="fp-input-wrap">
+                    <i class="fas fa-location-dot"></i>
+                    <input type="text" id="editAddress" placeholder="e.g. 42 Parklands Road" maxlength="1024">
+                  </div>
+                </div>
+
+                <div class="fp-form-group fp-full">
+                  <label for="editDetails">Household Details <span class="req">*</span></label>
+                  <textarea id="editDetails" rows="4"
+                    placeholder="Describe your household: number of children, ages, any special needs, pets, live-in arrangement…"></textarea>
+                  <span class="fp-field-error" id="errDetails"></span>
+                </div>
+
+              </div>
+              <div class="fp-edit-actions">
+                <button type="button" class="fp-btn-cancel" data-section="household">Cancel</button>
+                <button type="submit" class="fp-btn-save" id="btnSaveHousehold">
+                  <i class="fas fa-floppy-disk"></i> Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Account Info Card -->
+          <div class="fp-card">
+            <div class="fp-card-header">
+              <h3><i class="fas fa-shield-halved"></i> Account Information</h3>
+              <a href="familysettings.html" class="fp-card-link">
+                <i class="fas fa-gear"></i> Settings
+              </a>
+            </div>
+            <div class="fp-card-view">
+              <div class="fp-field-row">
+                <span class="fp-field-label">Email Address</span>
+                <span class="fp-field-value" id="accountEmail">—</span>
+              </div>
+              <div class="fp-field-row">
+                <span class="fp-field-label">Account Role</span>
+                <span class="fp-field-value">
+                  <span class="fp-badge fp-badge-family">
+                    <i class="fas fa-house-user"></i> Family
+                  </span>
+                </span>
+              </div>
+              <div class="fp-field-row">
+                <span class="fp-field-label">Member Since</span>
+                <span class="fp-field-value" id="memberSince">—</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /fp-left -->
+
+        <!-- RIGHT: completeness + stats + quick links -->
+        <div class="fp-right">
+
+          <!-- Profile Completeness -->
+          <div class="fp-card fp-completeness-card">
+            <div class="fp-card-header">
+              <h3><i class="fas fa-circle-check"></i> Profile Completeness</h3>
+            </div>
+            <div class="fp-completeness-body">
+              <div class="fp-completeness-score-wrap">
+                <span class="fp-completeness-score" id="completenessScore">0%</span>
+                <span class="fp-completeness-status" id="completenessStatus">Incomplete</span>
+              </div>
+              <div class="fp-bar-wrap">
+                <div class="fp-bar">
+                  <div class="fp-bar-fill" id="completenessFill"></div>
+                </div>
+              </div>
+              <ul class="fp-checklist" id="fpChecklist">
+                <!-- populated by JS -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Activity Summary -->
+          <div class="fp-card">
+            <div class="fp-card-header">
+              <h3><i class="fas fa-chart-simple"></i> Activity Summary</h3>
+            </div>
+            <div class="fp-activity-grid">
+              <div class="fp-activity-item">
+                <span class="fp-activity-num" id="actJobs">—</span>
+                <span class="fp-activity-lbl">Job Posts</span>
+              </div>
+              <div class="fp-activity-item">
+                <span class="fp-activity-num" id="actApps">—</span>
+                <span class="fp-activity-lbl">Applications</span>
+              </div>
+              <div class="fp-activity-item">
+                <span class="fp-activity-num" id="actMatches">—</span>
+                <span class="fp-activity-lbl">Matches</span>
+              </div>
+              <div class="fp-activity-item">
+                <span class="fp-activity-num" id="actContracts">—</span>
+                <span class="fp-activity-lbl">Contracts</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="fp-card">
+            <div class="fp-card-header">
+              <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            </div>
+            <div class="fp-quick-links">
+              <a href="postjob.html" class="fp-quick-link fp-ql-navy">
+                <i class="fas fa-plus-circle"></i>
+                <span>Post a Job</span>
+              </a>
+              <a href="familyapplications.html" class="fp-quick-link fp-ql-gold">
+                <i class="fas fa-inbox"></i>
+                <span>Applications</span>
+              </a>
+              <a href="familymatches.html" class="fp-quick-link fp-ql-green">
+                <i class="fas fa-handshake"></i>
+                <span>My Matches</span>
+              </a>
+              <a href="familysettings.html" class="fp-quick-link fp-ql-blue">
+                <i class="fas fa-gear"></i>
+                <span>Settings</span>
+              </a>
+            </div>
+          </div>
+
+        </div><!-- /fp-right -->
+      </div><!-- /fp-layout -->
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../scripts/familyprofile.js"></script>
+</body>
+</html>
