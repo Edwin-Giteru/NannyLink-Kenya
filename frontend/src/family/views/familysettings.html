@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NannyLink – Settings</title>
+  <link rel="stylesheet" href="../styles/dashboard.css">
+  <link rel="stylesheet" href="../styles/familysettings.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-baby-carriage"></i></div>
+      <div><h3>NannyLink</h3><p>Premium Care Services</p></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="familydashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <div class="sidebar-section-label">Jobs</div>
+      <a href="postjob.html"><i class="fas fa-plus-circle"></i><span>Post a Job</span></a>
+      <a href="familyjobs.html"><i class="fas fa-briefcase"></i><span>My Job Posts</span></a>
+      <a href="familyapplications.html"><i class="fas fa-inbox"></i><span>Applications</span></a>
+      <div class="sidebar-section-label">Nannies</div>
+      <a href="familymatches.html"><i class="fas fa-handshake"></i><span>Matches</span></a>
+      <div class="sidebar-section-label">Finance</div>
+      <a href="familypayments.html"><i class="fas fa-wallet"></i><span>Payments</span></a>
+      <a href="familycontracts.html"><i class="fas fa-file-contract"></i><span>Contracts</span></a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="familyprofile.html"><i class="fas fa-house-user"></i><span>Profile</span></a>
+      <a href="familysettings.html" class="active"><i class="fas fa-gear"></i><span>Settings</span></a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebarAvatar">F</div>
+      <div class="sidebar-user-info">
+        <strong id="sidebarName">Loading…</strong>
+        <span>Premium Member</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <main class="main-content">
+
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <div class="breadcrumb">
+          <a href="familydashboard.html">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>Settings</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- Mobile tabs (shown < 960px) -->
+      <div class="fs-mobile-tabs" id="fsMobileTabs">
+        <button class="fs-tab active" data-section="account">
+          <i class="fas fa-user"></i><span>Account</span>
+        </button>
+        <button class="fs-tab" data-section="household">
+          <i class="fas fa-house-chimney"></i><span>Household</span>
+        </button>
+        <button class="fs-tab" data-section="security">
+          <i class="fas fa-lock"></i><span>Security</span>
+        </button>
+        <button class="fs-tab" data-section="notifications">
+          <i class="fas fa-bell"></i><span>Alerts</span>
+        </button>
+        <button class="fs-tab fs-tab-danger" data-section="danger">
+          <i class="fas fa-triangle-exclamation"></i><span>Danger</span>
+        </button>
+      </div>
+
+      <!-- Two-col layout -->
+      <div class="fs-layout">
+
+        <!-- Desktop nav panel -->
+        <aside class="fs-nav-panel">
+          <div class="fs-nav-header">
+            <i class="fas fa-sliders"></i> Settings
+          </div>
+          <nav class="fs-nav">
+            <button class="fs-nav-item active" data-section="account">
+              <i class="fas fa-user"></i> Account
+            </button>
+            <button class="fs-nav-item" data-section="household">
+              <i class="fas fa-house-chimney"></i> Household
+            </button>
+            <button class="fs-nav-item" data-section="security">
+              <i class="fas fa-lock"></i> Security
+            </button>
+            <button class="fs-nav-item" data-section="notifications">
+              <i class="fas fa-bell"></i> Notifications
+            </button>
+            <div class="fs-nav-divider"></div>
+            <button class="fs-nav-item fs-nav-danger" data-section="danger">
+              <i class="fas fa-triangle-exclamation"></i> Danger Zone
+            </button>
+          </nav>
+        </aside>
+
+        <!-- Panels -->
+        <div class="fs-panels">
+
+          <!-- ══ ACCOUNT ══ -->
+          <section class="fs-panel active" id="section-account">
+            <div class="fs-card">
+              <div class="fs-card-header">
+                <h2><i class="fas fa-user"></i> Account Information</h2>
+                <p>Update your NannyLink account details</p>
+              </div>
+              <div class="fs-card-body">
+                <div class="fs-form-grid">
+                  <div class="fs-form-group fs-full">
+                    <label for="settingFamilyName">Family Name</label>
+                    <div class="fs-input-wrap">
+                      <i class="fas fa-user"></i>
+                      <input type="text" id="settingFamilyName"
+                        placeholder="e.g. The Johnson Family"
+                        maxlength="255" autocomplete="name">
+                    </div>
+                  </div>
+                  <div class="fs-form-group fs-full">
+                    <label for="settingEmail">Email Address</label>
+                    <div class="fs-input-wrap fs-input-disabled">
+                      <i class="fas fa-envelope"></i>
+                      <input type="email" id="settingEmail"
+                        autocomplete="off" disabled>
+                    </div>
+                    <span class="fs-hint">
+                      <i class="fas fa-circle-info"></i>
+                      Email cannot be changed here. Contact support if needed.
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="fs-card-footer">
+                <button class="fs-btn-save" id="btnSaveAccount">
+                  <i class="fas fa-floppy-disk"></i> Save Account
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══ HOUSEHOLD ══ -->
+          <section class="fs-panel" id="section-household">
+            <div class="fs-card">
+              <div class="fs-card-header">
+                <h2><i class="fas fa-house-chimney"></i> Household Details</h2>
+                <p>Keep your household info accurate for nanny matching</p>
+              </div>
+              <div class="fs-card-body">
+                <div class="fs-form-grid">
+
+                  <div class="fs-form-group">
+                    <label for="settingLocation">
+                      Location <span class="fs-req">*</span>
+                    </label>
+                    <div class="fs-input-wrap">
+                      <i class="fas fa-map-pin"></i>
+                      <input type="text" id="settingLocation"
+                        placeholder="e.g. Westlands, Nairobi"
+                        maxlength="255">
+                    </div>
+                  </div>
+
+                  <div class="fs-form-group">
+                    <label for="settingAddress">Full Address</label>
+                    <div class="fs-input-wrap">
+                      <i class="fas fa-location-dot"></i>
+                      <input type="text" id="settingAddress"
+                        placeholder="e.g. 42 Parklands Road"
+                        maxlength="1024">
+                    </div>
+                  </div>
+
+                  <div class="fs-form-group fs-full">
+                    <label for="settingDetails">
+                      Household Details <span class="fs-req">*</span>
+                    </label>
+                    <textarea id="settingDetails" rows="4"
+                      placeholder="Describe your household: number of children, ages, any special needs, pets, live-in arrangement…"></textarea>
+                  </div>
+
+                </div>
+              </div>
+              <div class="fs-card-footer">
+                <button class="fs-btn-save" id="btnSaveHousehold">
+                  <i class="fas fa-floppy-disk"></i> Save Household
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══ SECURITY ══ -->
+          <section class="fs-panel" id="section-security">
+            <div class="fs-card">
+              <div class="fs-card-header">
+                <h2><i class="fas fa-lock"></i> Change Password</h2>
+                <p>Use a strong password of at least 8 characters</p>
+              </div>
+              <div class="fs-card-body">
+                <div class="fs-form-grid">
+
+                  <div class="fs-form-group fs-full">
+                    <label for="currentPassword">Current Password</label>
+                    <div class="fs-input-wrap">
+                      <i class="fas fa-lock"></i>
+                      <input type="password" id="currentPassword"
+                        autocomplete="current-password"
+                        placeholder="Your current password">
+                      <button type="button" class="fs-pw-toggle"
+                        data-target="currentPassword" title="Show/hide">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="fs-form-group">
+                    <label for="newPassword">New Password</label>
+                    <div class="fs-input-wrap">
+                      <i class="fas fa-key"></i>
+                      <input type="password" id="newPassword"
+                        autocomplete="new-password"
+                        placeholder="At least 8 characters">
+                      <button type="button" class="fs-pw-toggle"
+                        data-target="newPassword" title="Show/hide">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                    <div class="fs-strength-bar" id="strengthBar" style="display:none">
+                      <div class="fs-strength-fill" id="strengthFill"></div>
+                    </div>
+                    <span class="fs-strength-label" id="strengthLabel"></span>
+                  </div>
+
+                  <div class="fs-form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <div class="fs-input-wrap">
+                      <i class="fas fa-key"></i>
+                      <input type="password" id="confirmPassword"
+                        autocomplete="new-password"
+                        placeholder="Repeat new password">
+                      <button type="button" class="fs-pw-toggle"
+                        data-target="confirmPassword" title="Show/hide">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="fs-card-footer">
+                <button class="fs-btn-save" id="btnSavePassword">
+                  <i class="fas fa-lock"></i> Change Password
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══ NOTIFICATIONS ══ -->
+          <section class="fs-panel" id="section-notifications">
+            <div class="fs-card">
+              <div class="fs-card-header">
+                <h2><i class="fas fa-bell"></i> Notification Preferences</h2>
+                <p>Choose what updates you receive from NannyLink</p>
+              </div>
+              <div class="fs-card-body">
+                <div class="fs-toggle-list">
+
+                  <div class="fs-toggle-row">
+                    <div class="fs-toggle-info">
+                      <strong>New Applications</strong>
+                      <span>When a nanny applies to one of your job posts</span>
+                    </div>
+                    <label class="fs-switch">
+                      <input type="checkbox" id="notifApplications" checked>
+                      <span class="fs-switch-track"></span>
+                    </label>
+                  </div>
+
+                  <div class="fs-toggle-row">
+                    <div class="fs-toggle-info">
+                      <strong>Match Updates</strong>
+                      <span>When a match is created or its status changes</span>
+                    </div>
+                    <label class="fs-switch">
+                      <input type="checkbox" id="notifMatches" checked>
+                      <span class="fs-switch-track"></span>
+                    </label>
+                  </div>
+
+                  <div class="fs-toggle-row">
+                    <div class="fs-toggle-info">
+                      <strong>Payment Reminders</strong>
+                      <span>Reminders about pending connection fee payments</span>
+                    </div>
+                    <label class="fs-switch">
+                      <input type="checkbox" id="notifPayments" checked>
+                      <span class="fs-switch-track"></span>
+                    </label>
+                  </div>
+
+                  <div class="fs-toggle-row">
+                    <div class="fs-toggle-info">
+                      <strong>Contract Updates</strong>
+                      <span>When a nanny signs or a contract is updated</span>
+                    </div>
+                    <label class="fs-switch">
+                      <input type="checkbox" id="notifContracts" checked>
+                      <span class="fs-switch-track"></span>
+                    </label>
+                  </div>
+
+                  <div class="fs-toggle-row">
+                    <div class="fs-toggle-info">
+                      <strong>NannyLink Newsletter</strong>
+                      <span>Tips, updates and childcare advice from NannyLink</span>
+                    </div>
+                    <label class="fs-switch">
+                      <input type="checkbox" id="notifNewsletter">
+                      <span class="fs-switch-track"></span>
+                    </label>
+                  </div>
+
+                </div>
+              </div>
+              <div class="fs-card-footer">
+                <button class="fs-btn-save" id="btnSaveNotifications">
+                  <i class="fas fa-floppy-disk"></i> Save Preferences
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══ DANGER ZONE ══ -->
+          <section class="fs-panel" id="section-danger">
+            <div class="fs-card fs-card-danger">
+              <div class="fs-card-header">
+                <h2><i class="fas fa-triangle-exclamation"></i> Danger Zone</h2>
+                <p>These actions are irreversible — proceed with caution</p>
+              </div>
+              <div class="fs-card-body">
+
+                <div class="fs-danger-item">
+                  <div class="fs-danger-info">
+                    <strong>Deactivate Account</strong>
+                    <span>
+                      Your profile and job posts will be hidden from nannies.
+                      You can reactivate any time by logging back in.
+                    </span>
+                  </div>
+                  <button class="fs-btn-outline-danger" id="btnDeactivate">
+                    <i class="fas fa-pause-circle"></i> Deactivate
+                  </button>
+                </div>
+
+                <div class="fs-danger-divider"></div>
+
+                <div class="fs-danger-item">
+                  <div class="fs-danger-info">
+                    <strong>Delete Account</strong>
+                    <span>
+                      Permanently deletes your account, all job posts, matches
+                      and associated data. <strong>This cannot be undone.</strong>
+                    </span>
+                  </div>
+                  <button class="fs-btn-danger" id="btnDeleteAccount">
+                    <i class="fas fa-trash"></i> Delete Account
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Confirm delete panel -->
+            <div class="fs-card fs-confirm-panel" id="deleteConfirmPanel" style="display:none">
+              <div class="fs-card-body">
+                <p class="fs-confirm-msg">
+                  <i class="fas fa-circle-exclamation"></i>
+                  This will permanently delete your account and all your data.
+                  Type <strong>DELETE</strong> below to confirm.
+                </p>
+                <div class="fs-input-wrap" style="margin:14px 0 8px">
+                  <i class="fas fa-keyboard"></i>
+                  <input type="text" id="deleteConfirmInput"
+                    placeholder='Type "DELETE" to confirm'
+                    autocomplete="off">
+                </div>
+                <div class="fs-confirm-actions">
+                  <button class="fs-btn-cancel" id="btnCancelDelete">
+                    Cancel
+                  </button>
+                  <button class="fs-btn-danger" id="btnConfirmDelete" disabled>
+                    <i class="fas fa-trash"></i> Permanently Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+        </div><!-- /fs-panels -->
+      </div><!-- /fs-layout -->
+    </div><!-- /page-body -->
+  </main>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script type="module" src="../scripts/familysettings.js"></script>
+</body>
+</html>

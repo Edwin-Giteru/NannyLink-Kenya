@@ -1,5 +1,5 @@
-import { createNannyProfile } from "../../src/service/nanny-creation-service.js";
-import { CLOUDINARY_URL, UPLOAD_PRESET } from "../../src/utils/config.js";
+import { createNannyProfile } from "../../service/nanny-creation-service.js";
+import { CLOUDINARY_URL, UPLOAD_PRESET } from "../../utils/config.js";
 
 const photoInput = document.getElementById('profile_photo');
 if (photoInput) {
