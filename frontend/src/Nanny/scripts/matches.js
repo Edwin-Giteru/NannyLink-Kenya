@@ -116,7 +116,6 @@ async function fetchMatches() {
     throw new Error(err.detail || `Matches fetch failed: ${res.status}`);
   }
   const data = await res.json();
-  console.log("[matches] raw response:", data); // remove after confirming
   return Array.isArray(data) ? data : (data.matches || data.data || []);
 }
 
