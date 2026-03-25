@@ -248,8 +248,16 @@ function setupPhotoUpload() {
 /* ─── Sign out all devices ─── */
 function signOutAll() {
   localStorage.removeItem("access_token");
+  
+  // Optional: clear user_id if you stored it during login
+  localStorage.removeItem("user_id"); 
+
   showToast("Signed out from all devices.", "info");
-  setTimeout(() => window.location.href = "../../src/views/login.html", 1500);
+
+  // Use a path relative to the server root to avoid the "src/src" nesting error
+  setTimeout(() => {
+    window.location.href = "../../views/login.html"
+  }, 1500);
 }
 
 /* ─── Delete account flow ─── */

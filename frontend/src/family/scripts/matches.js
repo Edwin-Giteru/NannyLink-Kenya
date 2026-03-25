@@ -44,7 +44,7 @@ function timeAgo(d) {
 /* ─── Status normaliser ─── */
 function normalizeStatus(raw) {
   const s = (raw || "pending").toLowerCase().replace(/[\s-]/g, "_");
-  if (["active","confirmed"].includes(s))                    return "active";
+  if (["active","confirmed"].includes(s))                       return "active";
   if (["both_paid","bothpaid"].includes(s))                  return "both_paid";
   if (["awaiting_payment","awaitingpayment","nanny_paid",
        "nannypaid","pending","partially_paid"].includes(s))  return "pending";
@@ -56,10 +56,10 @@ function normalizeStatus(raw) {
 }
 
 const STATUS_META = {
-  active:     { label:"Active",           icon:"fa-circle-dot",    cls:"active" },
-  both_paid:  { label:"Both Paid",        icon:"fa-circle-check",  cls:"both_paid" },
-  pending:    { label:"Awaiting Payment", icon:"fa-clock",         cls:"pending" },
-  matched:    { label:"Matched",          icon:"fa-handshake",     cls:"matched" },
+  active:     { label:"Active",         icon:"fa-circle-dot",    cls:"active" },
+  both_paid:  { label:"Both Paid",      icon:"fa-circle-check",  cls:"both_paid" },
+  pending:    { label:"Awaiting Payment", icon:"fa-clock",          cls:"pending" },
+  matched:    { label:"Matched",          icon:"fa-handshake",      cls:"matched" },
   ended:      { label:"Ended",            icon:"fa-circle-xmark",  cls:"ended" },
 };
 
@@ -95,7 +95,12 @@ async function apiFetch(path, fallback = null) {
 
 async function fetchMatches() {
   const data = await apiFetch("/matches/", []);
-  return Array.isArray(data) ? data : (data?.matches || data?.data || []);
+  // Enhanced check: ensure we extract the array regardless of wrapping
+  console.log("Raw matches data from API:", data);
+  if (Array.isArray(data)) return data;
+  if (data?.data && Array.isArray(data.data)) return data.data;
+  if (data?.matches && Array.isArray(data.matches)) return data.matches;
+  return [];
 }
 
 async function fetchPaymentsForMatch(matchId) {
@@ -140,7 +145,7 @@ function renderStats() {
   const byStatus = s => matches.filter(m => normalizeStatus(m.status) === s).length;
 
   safeText("stTotal",    matches.length);
-  safeText("stActive",   byStatus("active") + byStatus("both_paid"));
+  safeText("stActive",    byStatus("active") + byStatus("both_paid"));
   safeText("stPending",  byStatus("pending"));
   safeText("stBothPaid", byStatus("both_paid"));
   safeText("stEnded",    byStatus("ended"));
@@ -215,6 +220,8 @@ function renderGrid() {
   applyFilters();
   const grid = $("mmGrid");
   if (!grid) return;
+
+  console.log("Rendering grid with matches:", State.filtered);
 
   if (State.filtered.length === 0) {
     const hasFilter = State.search || State.tabFilter !== "all";
@@ -322,11 +329,11 @@ function buildCard(match) {
         <span class="mm-card-date"><i class="fas fa-calendar"></i>${timeAgo(match.match_date || match.created_at)}</span>
         ${myPending
           ? `<a class="mm-card-btn pay" href="familypayments.html?match=${match.id}">
-               <i class="fas fa-wallet"></i> Pay Now
-             </a>`
+                <i class="fas fa-wallet"></i> Pay Now
+              </a>`
           : `<button class="mm-card-btn" onclick="openDrawer('${match.id}')">
-               <i class="fas fa-eye"></i> Details
-             </button>`
+                <i class="fas fa-eye"></i> Details
+              </button>`
         }
       </div>
     </div>`;
@@ -400,7 +407,6 @@ async function openDrawer(matchId) {
       }).join("");
 
   body.innerHTML = `
-    <!-- Nanny hero -->
     <div class="mm-drawer-section">
       <div class="mm-drawer-nanny-hero">
         <div class="mm-drawer-avatar">${avatarHTML}</div>
@@ -416,7 +422,6 @@ async function openDrawer(matchId) {
       </div>
     </div>
 
-    <!-- Match Info -->
     <div class="mm-drawer-section">
       <div class="mm-drawer-section-title">Match Info</div>
       <div class="mm-drawer-grid">
@@ -453,7 +458,6 @@ async function openDrawer(matchId) {
       </div>
     </div>
 
-    <!-- Nanny skills -->
     ${skills.length > 0 ? `
     <div class="mm-drawer-section">
       <div class="mm-drawer-section-title">Nanny Skills</div>
@@ -465,7 +469,6 @@ async function openDrawer(matchId) {
       </div>
     </div>` : ""}
 
-    <!-- Connection fee payment -->
     <div class="mm-drawer-section">
       <div class="mm-drawer-section-title">Connection Fee</div>
       <div class="mm-drawer-pay-grid">
@@ -480,7 +483,6 @@ async function openDrawer(matchId) {
       </div>
     </div>
 
-    <!-- Payment history -->
     <div class="mm-drawer-section">
       <div class="mm-drawer-section-title">Payment History</div>
       <div style="overflow-x:auto">
@@ -641,6 +643,8 @@ async function loadData() {
     safeText("sidebarName", profile.name || "Family");
     const av = $("sidebarAvatar");
     if (av) av.textContent = initials(profile.name || "F");
+    // Ensure currentUserId is set correctly from profile if not in token
+    if (!State.currentUserId) State.currentUserId = profile.user_id;
   }
 
   State.matches = matches;

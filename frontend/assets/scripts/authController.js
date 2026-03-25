@@ -65,8 +65,8 @@ if (loginForm) {
                     window.location.href = "/frontend/src/views/nannydashboard.html"; 
                 } else if (role === "family") {
                     window.location.href = "/frontend/src/family/views/familydashboard.html"; 
-                } else {
-                    window.location.href = "/frontend/src/views/dashboard.html"; 
+                // } else {
+                    // window.location.href = "/frontend/src/views/dashboard.html"; 
                 }
                
                 // console.log("Attempting redirect to:", new URL("/frontend/src/family/views/familydashboard.html", window.location.href).href);

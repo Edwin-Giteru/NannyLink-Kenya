@@ -503,7 +503,29 @@ function startPolling() {
         } catch (e) { /* silent */ }
     }, 60_000);
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.getElementById('btnLogout');
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent page jump
+            
+            // 1. Clear Auth Data
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            localStorage.removeItem("user_role");
+            localStorage.removeItem("user_id");
+            
+            // 2. Redirect to landing/login
+            showToast("You have been signed out.", "info");
 
+            // 3. Redirect to login page after a short delay to allow the toast to be seen
+            setTimeout(() => {
+            window.location.href = "../../views/login.html"; // Use a path relative to the server root
+            }, 1500); 
+        });
+    }
+});
 /* ═══════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════ */

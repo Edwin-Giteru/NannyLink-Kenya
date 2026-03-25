@@ -20,30 +20,35 @@ class MatchService:
         try:
             application = await self.application_repo.get_application_by_id(application_id)
             if not application:
-                return Result.fail(
-                    f"Application with id {application_id} not found.",
-                    status_code=404,
-                )
+                return Result.fail(f"Application {application_id} not found.", status_code=404)
+
             job = await self.job_repo.get_job_by_id(application.job_id)
             if not job:
-                return Result.fail(
-                    f"Job with id {application.job_id} not found.",
-                    status_code=404,
-                )
+                return Result.fail(f"Job {application.job_id} not found.", status_code=404)
+
+            # CHECK FOR EXISTING MATCH
+            # Use your repository to see if this job already has a match
+            existing_matches = await self.match_repo.get_matches_by_family_id(job.family_id)
+            for m in existing_matches:
+                if m.job_id == job.id:
+                    # If it exists, just return the existing one instead of crashing
+                    return Result.ok(data=MatchResponse.model_validate(m), status_code=200)
+
             if job.status == "FILLED":
-                return Result.fail(
-                    f"Job with id {application.job_id} is already filled.",
-                    status_code=400,
-                )
-            new_match = await self.match_repo.create_match(
+                return Result.fail(f"Job {application.job_id} is already filled.", status_code=400)
+
+            # Create new match if none exists
+            created_match = await self.match_repo.create_match(
                 application.job_id, application.nanny_id, family_id=job.family_id
             )
+            
+            # Re-fetch to load relationships for Pydantic validation
+            new_match = await self.match_repo.get_match_by_id(created_match.id)
             return Result.ok(data=MatchResponse.model_validate(new_match), status_code=201)
+
         except Exception as e:
             await self.match_repo.db.rollback()
-            return Result.fail(
-                f"An error occurred while creating match: {str(e)}", status_code=500
-            )
+            return Result.fail(f"Match creation failed: {str(e)}", status_code=500)
 
     async def get_match_by_id(self, match_id: UUID) -> Result:
         try:

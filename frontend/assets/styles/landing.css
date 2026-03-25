@@ -1,0 +1,453 @@
+/* =============================================
+   NannyLink – Landing Page Styles
+   Theme: Navy · Cream · Gold (Consistent System)
+   ============================================= */
+
+/* ───────────── FONTS ───────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:wght@400;600&display=swap');
+
+/* ───────────── VARIABLES ───────────── */
+:root{
+  --navy:#1a3557;
+  --navy-light:#2a6496;
+
+  --cream:#faf8f5;
+  --cream-2:#f3efe8;
+
+  --gold:#e9a840;
+  --gold-light:#fdf3dc;
+
+  --text-dark:#1a2436;
+  --text-mid:#4b5563;
+  --text-light:#9ca3af;
+
+  --border:#e8e4dc;
+
+  --radius:12px;
+  --radius-sm:8px;
+
+  --shadow:0 4px 24px rgba(26,53,87,.12);
+  --transition:.25s ease;
+}
+
+/* ───────────── RESET ───────────── */
+*,
+*::before,
+*::after{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--text-dark);
+  line-height:1.6;
+}
+
+/* ───────────── NAVBAR ───────────── */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 40px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.logo-container{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo-img{
+  width:40px;
+}
+
+.company-name{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  color:var(--navy);
+}
+
+/* NAV LINKS */
+.nav-links{
+  display:flex;
+  gap:25px;
+}
+
+.nav-links a{
+  text-decoration:none;
+  color:var(--text-mid);
+  font-weight:500;
+  position:relative;
+}
+
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  width:0;
+  height:2px;
+  background:var(--gold);
+  left:0;
+  bottom:-5px;
+  transition:var(--transition);
+}
+
+.nav-links a:hover::after{
+  width:100%;
+}
+
+/* HAMBURGER */
+.hamburger{
+  display:none;
+  flex-direction:column;
+  gap:4px;
+  border:none;
+  background:none;
+}
+
+.hamburger span{
+  width:22px;
+  height:2px;
+  background:var(--navy);
+}
+
+/* ───────────── HERO ───────────── */
+.full-page-container{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  padding:60px 40px;
+  gap:40px;
+}
+
+.card-content .name{
+  font-family:'Fraunces',serif;
+  color:var(--gold);
+}
+
+.title{
+  font-size:2.5rem;
+  font-family:'Fraunces',serif;
+  color:var(--navy);
+  margin:10px 0;
+}
+
+.description{
+  color:var(--text-mid);
+  margin-bottom:20px;
+}
+
+/* BUTTONS */
+.button-group{
+  display:flex;
+  gap:15px;
+}
+
+.btn{
+  padding:12px 20px;
+  border-radius:var(--radius-sm);
+  text-decoration:none;
+  font-weight:600;
+  background:var(--navy);
+  color:#fff;
+  transition:var(--transition);
+}
+
+.btn:hover{
+  background:var(--navy-light);
+}
+
+.profile-image-section img{
+  width:100%;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+/* ───────────── ABOUT ───────────── */
+.about-section{
+  padding:80px 40px;
+}
+
+.section-title{
+  font-family:'Fraunces',serif;
+  color:var(--navy);
+  margin-bottom:20px;
+}
+
+.badge{
+  display:inline-block;
+  background:var(--gold-light);
+  color:var(--gold);
+  padding:5px 12px;
+  border-radius:999px;
+  font-size:.75rem;
+  margin-bottom:10px;
+}
+
+/* MISSION */
+.mission-container{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  align-items:center;
+}
+
+.main-mission-img{
+  width:100%;
+  border-radius:var(--radius);
+}
+
+.stat-card{
+  position:absolute;
+  background:#fff;
+  padding:10px 20px;
+  border-radius:var(--radius-sm);
+  box-shadow:var(--shadow);
+  margin-top:-40px;
+}
+
+.mission-checks{
+  margin-top:15px;
+}
+
+.check-item{
+  margin-bottom:8px;
+  color:var(--navy);
+}
+
+/* ───────────── VETTING ───────────── */
+.vetting-process{
+  margin-top:60px;
+}
+
+.vetting-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+
+.vetting-card{
+  background:#fff;
+  padding:20px;
+  border-radius:var(--radius);
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+
+.icon-box{
+  font-size:1.5rem;
+  color:var(--gold);
+  margin-bottom:10px;
+}
+
+/* ───────────── SERVICES ───────────── */
+.services-container{
+  padding:80px 40px;
+  background:#fff;
+}
+
+.services-header{
+  text-align:center;
+  margin-bottom:40px;
+}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+}
+
+.service-card{
+  background:var(--cream);
+  padding:25px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  transition:var(--transition);
+}
+
+.service-card:hover{
+  transform:translateY(-5px);
+}
+
+.service-icon{
+  font-size:1.5rem;
+  color:var(--navy);
+  margin-bottom:10px;
+}
+
+.service-list{
+  list-style:none;
+  margin:15px 0;
+}
+
+.service-list li{
+  margin-bottom:8px;
+  font-size:.9rem;
+}
+
+.service-btn{
+  display:inline-block;
+  padding:10px 15px;
+  background:var(--navy);
+  color:#fff;
+  border-radius:var(--radius-sm);
+  text-decoration:none;
+}
+
+.btn-alt{
+  background:var(--gold);
+  color:#fff;
+}
+
+/* ───────────── TESTIMONIALS ───────────── */
+.testimonials-wrapper{
+  padding:80px 40px;
+}
+
+.marquee-container{
+  overflow:hidden;
+}
+
+.marquee-content{
+  display:flex;
+  gap:20px;
+  animation:scroll 20s linear infinite;
+}
+
+@keyframes scroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+
+.testimonial-card{
+  min-width:280px;
+  background:#fff;
+  padding:20px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.stars{
+  color:var(--gold);
+}
+
+.user-info{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+}
+
+.user-info img{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+}
+
+/* ───────────── FOOTER ───────────── */
+.main-footer{
+  background:var(--navy);
+  color:#fff;
+  padding:60px 40px 20px;
+}
+
+.footer-container{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:30px;
+}
+
+.footer-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.footer-logo img{
+  width:40px;
+}
+
+.footer-bio{
+  margin:15px 0;
+  font-size:.9rem;
+  color:#ddd;
+}
+
+.footer-socials a{
+  margin-right:10px;
+  color:#fff;
+  font-size:1rem;
+}
+
+.footer-links h3{
+  margin-bottom:10px;
+}
+
+.footer-links ul{
+  list-style:none;
+}
+
+.footer-links a{
+  text-decoration:none;
+  color:#ddd;
+  font-size:.85rem;
+}
+
+.footer-bottom{
+  text-align:center;
+  margin-top:30px;
+  border-top:1px solid rgba(255,255,255,.1);
+  padding-top:10px;
+  font-size:.8rem;
+}
+
+/* ───────────── RESPONSIVE ───────────── */
+@media(max-width:900px){
+
+  .nav-links{
+    display:none;
+    flex-direction:column;
+    position:absolute;
+    right:20px;
+    top:60px;
+    background:#fff;
+    padding:15px;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+
+  .nav-links.active{
+    display:flex;
+  }
+
+  .hamburger{
+    display:flex;
+  }
+
+  .full-page-container{
+    grid-template-columns:1fr;
+  }
+
+  .mission-container{
+    grid-template-columns:1fr;
+  }
+
+  .vetting-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .services-grid{
+    grid-template-columns:1fr;
+  }
+
+  .footer-container{
+    grid-template-columns:1fr;
+  }
+}

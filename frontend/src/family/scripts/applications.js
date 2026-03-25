@@ -42,7 +42,7 @@ function fmtDate(d) {
 
 function normalizeStatus(raw) {
   const s = (raw||"new").toLowerCase().replace(/[_\s]/g,"");
-  if (["new","pending"].includes(s))               return "new";
+  if (["new","pending"].includes(s))                return "new";
   if (["reviewing","review"].includes(s))          return "reviewing";
   if (["shortlisted","shortlist"].includes(s))     return "shortlisted";
   if (["accepted","hired","approved"].includes(s)) return "accepted";
@@ -60,12 +60,12 @@ function statusBadge(raw) {
 const State = {
   applications: [],
   filtered:     [],
-  selected:     new Set(),
-  search:       "",
+  selected:      new Set(),
+  search:        "",
   statusFilter: ["new","reviewing","shortlisted","accepted"],
   jobFilter:    "all",
   expFilter:    "all",
-  sortBy:       "newest",
+  sortBy:        "newest",
   openDrawerId: null,
   pendingAction: null,
 };
@@ -97,7 +97,6 @@ async function fetchNannyProfile(nannyId) {
   try {
     const res = await fetch(`${API_URL}/Nanny/${nannyId}`, { headers: authHeaders() });
     if (res.status === 403) {
-      // Backend not yet updated — gracefully return null, drawer still works with app data
       console.info(`GET /Nanny/${nannyId} returned 403 — apply the nanny router fix to enable full profile view`);
       return null;
     }
@@ -106,16 +105,36 @@ async function fetchNannyProfile(nannyId) {
 }
 
 async function updateApplicationStatus(appId, newStatus) {
+  // 1. Update the application status first
   const res = await fetch(`${API_URL}/application/${appId}/status`, {
     method: "PATCH",
     headers: authHeaders(),
     body: JSON.stringify({ status: newStatus }),
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.detail || "Update failed.");
+
+  // 2. If accepted, try to create the Match record
+  if (newStatus === "accepted") {
+    try {
+      // Your backend expects application_id in the URL query string
+      const matchRes = await fetch(`${API_URL}/matches/?application_id=${appId}`, {
+        method: "POST",
+        headers: authHeaders()
+      });
+
+      if (!matchRes.ok) {
+        const errorData = await matchRes.json();
+        // Log the 500 error for debugging, but don't break the UI
+        console.error("Match record creation failed on backend:", errorData.detail);
+      }
+    } catch (e) {
+      console.error("Network error during Match creation:", e);
+    }
+  }
   return data;
 }
-
 /* ── STATS ── */
 function renderStats() {
   const apps = State.applications;
@@ -143,7 +162,6 @@ function setupCustomSelect(wrapId, btnId, labelId, listId, onChange) {
 
   btn.addEventListener("click", e => {
     e.stopPropagation();
-    // Close all other open custom selects first
     document.querySelectorAll(".ap-custom-select.open").forEach(el => {
       if (el !== wrap) el.classList.remove("open");
     });
@@ -178,7 +196,6 @@ function populateJobFilter() {
     if (!jobs.has(id)) jobs.set(id, title);
   });
 
-  // Rebuild list — keep "All Jobs" first
   list.innerHTML = `<div class="ap-custom-option selected" data-value="all">All Jobs</div>`;
   jobs.forEach((title, id) => {
     const opt = document.createElement("div");
@@ -189,24 +206,19 @@ function populateJobFilter() {
     list.appendChild(opt);
   });
 
-  // Wire option clicks
   list.querySelectorAll(".ap-custom-option").forEach(opt => {
     opt.addEventListener("click", e => {
       e.stopPropagation();
       const val = opt.dataset.value;
       State.jobFilter = val;
-      // Update button label
       $("jobSelectLabel").textContent = opt.textContent;
-      // Mark selected
       list.querySelectorAll(".ap-custom-option").forEach(o => o.classList.remove("selected"));
       opt.classList.add("selected");
-      // Close dropdown
       $("jobSelectWrap")?.classList.remove("open");
       renderList();
     });
   });
 
-  // Pre-select from ?job= URL param
   const jobParam = new URLSearchParams(window.location.search).get("job");
   if (jobParam && jobs.has(jobParam)) {
     State.jobFilter = jobParam;
@@ -220,8 +232,6 @@ function populateJobFilter() {
 }
 
 function setupJobDropdown() {
-  // Wire the static "All Jobs" option and the toggle button
-  // Dynamic options are added by populateJobFilter after data loads
   setupCustomSelect("jobSelectWrap", "jobSelectBtn", "jobSelectLabel", "jobSelectList",
     val => { State.jobFilter = val; renderList(); });
 }
@@ -586,7 +596,6 @@ async function executeAction() {
   renderList();
   updateBulkBar();
 
-  // Refresh open drawer
   if (State.openDrawerId && ids.map(String).includes(State.openDrawerId)) {
     openDrawer(State.openDrawerId);
   }
@@ -661,7 +670,6 @@ function setupEvents() {
 
   $("filterSort")?.addEventListener("change", e => { State.sortBy    = e.target.value; renderList(); });
 
-  // Custom dropdowns for Exp and Sort (native selects break inside fixed panels)
   setupCustomSelect("expSelectWrap",  "expSelectBtn",  "expSelectLabel",  "expSelectList",
     val => { State.expFilter = val; renderList(); });
   setupCustomSelect("sortSelectWrap", "sortSelectBtn", "sortSelectLabel", "sortSelectList",
@@ -672,7 +680,6 @@ function setupEvents() {
     State.statusFilter=["new","reviewing","shortlisted","accepted"];
     $("apSearch").value="";
 
-    // Reset all three custom dropdowns
     [
       { listId:"jobSelectList",  labelId:"jobSelectLabel",  defaultVal:"all",    defaultLabel:"All Jobs" },
       { listId:"expSelectList",  labelId:"expSelectLabel",  defaultVal:"all",    defaultLabel:"Any Experience" },
@@ -689,7 +696,6 @@ function setupEvents() {
     renderList();
   });
 
-  // Mobile filter back button
   $("btnFiltersBack")?.addEventListener("click", closeMobileFilters);
 
   $("btnToggleFilters")?.addEventListener("click", () => {
@@ -702,7 +708,6 @@ function setupEvents() {
     } else {
       panel?.classList.add("mobile-open");
       toggle?.classList.add("active");
-      // Create backdrop if not present
       if (!$("filterBackdrop")) {
         const bd = document.createElement("div");
         bd.id = "filterBackdrop";
@@ -716,18 +721,15 @@ function setupEvents() {
   $("btnBulkShortlist")?.addEventListener("click", () => triggerAction("shortlist", [...State.selected]));
   $("btnBulkReject")?.addEventListener("click",    () => triggerAction("reject",    [...State.selected]));
 
-  // Drawer
   $("closeDrawer")?.addEventListener("click",    closeDrawer);
   $("drawerOverlay")?.addEventListener("click",  closeDrawer);
 
-  // View buttons (delegated — cards are re-rendered)
   $("apList")?.addEventListener("click", e => {
     const btn = e.target.closest(".view-btn");
     if (btn) { e.stopPropagation(); openDrawer(btn.dataset.appId); }
   });
 
-  // Confirm modal
-  $("confirmOk")?.addEventListener("click",     executeAction);
+  $("confirmOk")?.addEventListener("click",      executeAction);
   $("confirmCancel")?.addEventListener("click", () => $("confirmModal")?.classList.remove("open"));
   $("confirmModal")?.addEventListener("click",  e => { if (e.target === $("confirmModal")) $("confirmModal")?.classList.remove("open"); });
 
@@ -748,7 +750,6 @@ function setupEvents() {
   });
 }
 
-/* ── AUTH GUARD ── */
 function authGuard() {
   const token = localStorage.getItem("access_token");
   if (!token) { window.location.href = "/frontend/src/views/login.html"; return false; }
@@ -759,7 +760,6 @@ function authGuard() {
   return true;
 }
 
-/* ── INIT ── */
 async function init() {
   if (!authGuard()) return;
   setupActiveNav();

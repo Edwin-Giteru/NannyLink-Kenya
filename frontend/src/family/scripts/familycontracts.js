@@ -446,117 +446,48 @@ function downloadContract() {
   const title = State.currentContractTitle || "NannyLink Contract";
   if (!html) { showToast("No contract to download.", "info"); return; }
 
-  // Build a self-contained HTML file — same styles as the print window
-  const fullHTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} — NannyLink Kenya</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 11pt;
-      line-height: 1.75;
-      color: #111;
-      background: #fff;
-      padding: 20mm 25mm;
-      max-width: 210mm;
-      margin: 0 auto;
-    }
-    .doc-header {
-      text-align: center;
-      margin-bottom: 24pt;
-      padding-bottom: 14pt;
-      border-bottom: 2.5pt solid #1a3557;
-    }
-    .doc-logo {
-      font-size: 15pt; font-weight: 700;
-      color: #1a3557; margin-bottom: 3pt;
-      letter-spacing: .03em;
-    }
-    .doc-title {
-      font-size: 12pt; font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .12em; color: #1a3557;
-    }
-    .doc-ref { font-size: 8.5pt; color: #666; margin-top: 6pt; }
-    .doc-section { margin-bottom: 18pt; page-break-inside: avoid; }
-    .doc-section-title {
-      font-size: 9pt; font-weight: 800;
-      text-transform: uppercase; letter-spacing: .12em;
-      border-bottom: 1.5pt solid #1a3557;
-      padding-bottom: 3pt; margin-bottom: 9pt;
-      color: #1a3557;
-    }
-    .doc-row { display: flex; gap: 10pt; margin-bottom: 4pt; }
-    .doc-label { font-weight: 600; min-width: 140pt; font-size: 9.5pt; color: #444; }
-    .doc-val { font-size: 10.5pt; color: #111; }
-    .doc-clause { margin-bottom: 8pt; text-align: justify; font-size: 10pt; }
-    .doc-clause strong { font-weight: 700; color: #1a3557; }
-    .doc-sig-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 16pt; margin-top: 10pt;
-    }
-    .doc-sig-box {
-      border: 1pt solid #bbb;
-      border-radius: 4pt; padding: 12pt;
-    }
-    .doc-sig-box.signed {
-      border-color: #2e7d4f;
-      background: #f0fdf4;
-    }
-    .doc-sig-label {
-      font-size: 8pt; font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .07em;
-      color: #666; margin-bottom: 20pt;
-    }
-    .doc-sig-line {
-      border-top: 1pt solid #333;
-      padding-top: 4pt;
-      font-size: 8pt; color: #666;
-    }
-    .doc-sig-stamp {
-      font-size: 9pt; font-weight: 700;
-      color: #2e7d4f;
-      display: flex; align-items: center; gap: 5pt;
-    }
-    .doc-footer {
-      margin-top: 20pt; padding-top: 12pt;
-      border-top: 2pt solid #1a3557;
-      text-align: center;
-      font-size: 8.5pt; color: #777;
-      line-height: 1.6;
-    }
-    p { margin-bottom: 7pt; }
-    /* Font Awesome icons replaced with text equivalents for offline */
-    .fas { display: none; }
-    .doc-sig-stamp::before { content: "✓ "; }
-    @media print {
-      @page { size: A4; margin: 20mm 25mm; }
-      body { padding: 0; }
-    }
-  </style>
-</head>
-<body>
-  ${html.replace(/<i class="fas[^"]*"><\/i>/g, '')}
-</body>
-</html>`;
+  // Create a temporary container to hold the content for conversion
+  const element = document.createElement('div');
+  element.innerHTML = `
+    <style>
+      body { font-family: Georgia, serif; color: #111; padding: 20mm; }
+      .doc-header { text-align: center; margin-bottom: 24pt; border-bottom: 2.5pt solid #1a3557; padding-bottom: 14pt; }
+      .doc-logo { font-size: 15pt; font-weight: 700; color: #1a3557; }
+      .doc-title { font-size: 12pt; font-weight: 700; text-transform: uppercase; color: #1a3557; }
+      .doc-section { margin-bottom: 18pt; }
+      .doc-section-title { font-size: 9pt; font-weight: 800; text-transform: uppercase; border-bottom: 1.5pt solid #1a3557; padding-bottom: 3pt; margin-bottom: 9pt; color: #1a3557; }
+      .doc-row { display: flex; margin-bottom: 4pt; }
+      .doc-label { font-weight: 600; width: 180pt; font-size: 9.5pt; color: #444; }
+      .doc-val { font-size: 10.5pt; color: #111; }
+      .doc-clause { margin-bottom: 8pt; text-align: justify; font-size: 10pt; }
+      .doc-sig-grid { display: flex; gap: 20pt; margin-top: 10pt; }
+      .doc-sig-box { flex: 1; border: 1pt solid #bbb; border-radius: 4pt; padding: 12pt; min-height: 100pt; }
+      .doc-sig-box.signed { border-color: #2e7d4f; background: #f0fdf4; }
+      .doc-sig-label { font-size: 8pt; font-weight: 700; text-transform: uppercase; color: #666; margin-bottom: 20pt; }
+      .doc-sig-stamp { font-size: 9pt; font-weight: 700; color: #2e7d4f; }
+      .doc-footer { margin-top: 20pt; margin-bottom: 20pt; padding-top: 12pt; border-top: 2pt solid #1a3557; text-align: center; font-size: 8.5pt; color: #777; }
+    </style>
+    ${html.replace(/<i class="fas[^"]*"><\/i>/g, '')}
+  `;
 
-  // Create a Blob and trigger download
-  const blob = new Blob([fullHTML], { type: "text/html;charset=utf-8" });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement("a");
   const safeName = (title || "contract").replace(/[^a-z0-9]/gi, "_").toLowerCase();
-  a.href     = url;
-  a.download = `NannyLink_${safeName}.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast("Contract downloaded. Open in any browser to view or print.", "success");
+  
+  const opt = {
+    margin:       10,
+    filename:     `NannyLink_${safeName}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  // New implementation using html2pdf
+  showToast("Preparing PDF...", "info");
+  html2pdf().set(opt).from(element).save().then(() => {
+    showToast("Contract downloaded as PDF.", "success");
+  }).catch(err => {
+    console.error("PDF Error:", err);
+    showToast("Failed to generate PDF.", "error");
+  });
 }
 
 function openDrawer(contractId) {

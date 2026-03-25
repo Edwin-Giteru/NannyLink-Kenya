@@ -137,16 +137,28 @@ async function fetchActivityCounts() {
 }
 
 async function saveProfile(payload) {
-  const response = await fetch(
-    `${API_URL}/Family/${profileState.currentUserId}`,
-    {
-      method: "PATCH",
-      headers: authHeaders(),
-      body: JSON.stringify(payload),
-    }
-  );
+  // Check if we are creating new or updating existing
+  const isExisting = !!profileState.familyProfile;
+  
+  // URL for POST is just /Family/, URL for PATCH includes the ID
+  const url = isExisting 
+    ? `${API_URL}/Family/${profileState.currentUserId}` 
+    : `${API_URL}/Family/`;
+    
+  const method = isExisting ? "PATCH" : "POST";
+
+  const response = await fetch(url, {
+    method: method,
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+
   const data = await response.json();
-  if (!response.ok) throw new Error(data.detail || "Update failed.");
+  
+  if (!response.ok) {
+    throw new Error(data.detail || "Operation failed.");
+  }
+  
   return data;
 }
 
@@ -363,6 +375,7 @@ async function handleSaveHousehold(submitEvent) {
 
   const saveButton = getElement("btnSaveHousehold");
   saveButton.disabled = true;
+  const originalLabel = saveButton.innerHTML;
   saveButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Saving…`;
 
   try {
@@ -370,38 +383,34 @@ async function handleSaveHousehold(submitEvent) {
       name:               getElement("editName")?.value.trim(),
       household_location: getElement("editLocation")?.value.trim(),
       household_address:  getElement("editAddress")?.value.trim() || null,
+      household_details:  getElement("editDetails")?.value.trim() || null,
     };
 
-    // FamilyUpdate also accepts household_details via the details field
-    // Map to correct field name
-    const detailsValue = getElement("editDetails")?.value.trim();
-    if (detailsValue) payload.household_details = detailsValue;
+    const resultData = await saveProfile(payload);
 
-    const updatedProfile = await saveProfile(payload);
+    // Update the global state with the returned data
+    // This ensures profileState.familyProfile is no longer null
+    profileState.familyProfile = resultData;
 
-    // Merge into state (backend may return partial data)
-    profileState.familyProfile = {
-      ...profileState.familyProfile,
-      ...updatedProfile,
-      // Ensure we keep household_details if backend doesn't echo it back
-      household_details: detailsValue || profileState.familyProfile?.household_details,
-    };
-
-    // Re-render all sections
+    // Re-render the UI
     renderHero(profileState.familyProfile);
     renderHouseholdView(profileState.familyProfile);
     renderCompleteness(profileState.familyProfile);
 
     hideEditSection("household");
-    showToast("Profile updated successfully.", "success");
+    showToast(
+      !!profileState.familyProfile ? "Profile updated!" : "Profile created!", 
+      "success"
+    );
 
   } catch (error) {
-    showToast(error.message || "Failed to save. Please try again.", "error");
+    showToast(error.message || "Failed to save.", "error");
   } finally {
     saveButton.disabled = false;
-    saveButton.innerHTML = `<i class="fas fa-floppy-disk"></i> Save Changes`;
+    saveButton.innerHTML = originalLabel;
   }
 }
+
 
 /* ─────────────────────────────────────────────
    ACTIVE NAV

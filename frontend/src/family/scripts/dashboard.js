@@ -591,6 +591,21 @@ function setupSidebar() {
   overlay?.addEventListener("click", close);
 }
 
+document.getElementById('btnLogout')?.addEventListener('click', () => {
+    // 1. Clear the authentication tokens
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user_id"); // Optional: clear user_id if stored
+
+    // 2. Show a toast notification
+    showToast("You have been signed out.", "info");
+
+    // 3. Redirect to login page after a short delay to allow the toast to be seen
+    setTimeout(() => {
+      window.location.href = "../../views/login.html"; // Use a path relative to the server root
+    }, 1500); 
+});
+
 /* ─────────────────────────────────────────────
    INIT
 ───────────────────────────────────────────── */

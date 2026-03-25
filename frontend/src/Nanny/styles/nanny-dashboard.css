@@ -1070,3 +1070,22 @@ body {
   .job-price { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
   .header-left h2 { font-size: 1.1rem; }
 }
+
+/* Sidebar Logout Styling */
+.sidebar-nav .logout-link {
+    margin-top: auto; /* Pushes it to the bottom if the nav is a flexbox */
+    color: #ff6b6b;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 15px;
+}
+
+.sidebar-nav .logout-link:hover {
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff4747;
+}
+
+/* Optional: If you want it to look like a fixed bottom button */
+#btnLogout i {
+    width: 20px;
+    text-align: center;
+}

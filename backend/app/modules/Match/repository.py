@@ -17,6 +17,7 @@ class MatchRepository:
     _load_opts = [
         selectinload(Match.job_post),
         selectinload(Match.family),
+        selectinload(Match.selected_nanny),
     ]
 
     async def save(self, match: Match) -> Match:
