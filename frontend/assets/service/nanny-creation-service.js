@@ -1,4 +1,4 @@
-import { API_URL } from "../utils/config.js";
+import { API_URL } from "../../src/utils/config.js";
 export async function createNannyProfile(profileData, token) {
   try {
     const token = localStorage.getItem("access_token");

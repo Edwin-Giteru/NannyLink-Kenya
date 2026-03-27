@@ -1,4 +1,4 @@
-import { login, signup } from "../../src/service/authService.js";
+import { login, signup } from "../service/nannyProfileService.js";
 
 const showModal = (message, type = "info") => {
     // Create notification element if it doesn't exist
@@ -151,3 +151,95 @@ if (signupForm) {
         }
     });
 }
+
+const API_BASE = "http://localhost:8000"; // adjust if needed
+
+// 🔷 FETCH STATS
+async function fetchStats() {
+    try {
+        const res = await fetch(`${API_BASE}/stats/`);
+        const stats = await res.json();
+        
+       
+        document.getElementById("stat-nannies").innerText = stats.nannies || 0;
+        document.getElementById("stat-families").innerText = stats.families || 0;
+        document.getElementById("stat-matches").innerText = stats.matches || 0;
+
+    } catch (err) {
+        console.warn("Stats failed to load:", err);
+        // Optional: Set defaults on failure
+        document.getElementById("stat-nannies").innerText = "-";
+        document.getElementById("stat-families").innerText = "-";
+        document.getElementById("stat-matches").innerText = "-";
+    }
+}
+/// Fetch featured nannies
+async function fetchFeaturedNannies() {
+    try {
+        const res = await fetch("http://127.0.0.1:8000/Nanny/public"); 
+        const data = await res.json();
+
+        const container = document.getElementById("nanny-list");
+        if (!container) return;
+        container.innerHTML = "";
+
+        data.forEach(nanny => {
+            // --- REQUIREMENT 7: Compute hourly rate on the fly ---
+            // Logic: Base 250 + 50 for every year of experience
+            const baseRate = 250;
+            const computedRate = baseRate + (nanny.experience_years * 50);
+
+            const card = document.createElement("div");
+            card.className = "nanny-card";
+            
+            // Map the backend keys correctly here:
+            card.innerHTML = `
+                <div class="card-image">
+                    <img src="${nanny.profile_image || './assets/images/default-avatar.png'}" alt="${nanny.full_name}" />
+                </div>
+                <div class="card-body">
+                    <h3>${nanny.full_name}</h3>
+                    <p><strong>Location:</strong> ${nanny.current_location}</p>
+                    <p><strong>Preferred Working Location:</strong> ${nanny.preferred_location}</p>
+                    <p><strong>Experience:</strong> ${nanny.experience_years} years</p>
+                    <p><strong>Skills:</strong> ${nanny.skills || 'General Childcare'}</p>
+                    <p><strong>Availability:</strong> <span class="badge">${nanny.availability}</span></p>
+                    <p class="rate-text">Rate: <strong>KES ${computedRate.toLocaleString()}/hr</strong></p>
+                    
+                    <button class="view-btn" data-id="${nanny.id}">View Profile</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Attach click listeners
+        document.querySelectorAll(".view-btn").forEach(btn => {
+            btn.addEventListener("click", () => handleView(btn.dataset.id));
+        });
+
+    } catch (err) {
+        console.error("Failed to fetch nannies:", err);
+        document.getElementById("nanny-list").innerHTML = "<p>Unable to load nannies at this time.</p>";
+    }
+}
+
+// 4 & 5. Redirect Logic
+function handleView(nannyId) {
+    const token = localStorage.getItem('token'); // Check your auth storage
+    if (!token) {
+        // Store intended destination
+        sessionStorage.setItem('redirect_after_login', `/views/nanny-profile.html?id=${nannyId}`);
+        window.location.href = "../frontend/src/views/login.html";
+    } else {
+        window.location.href = `/views/nanny-profile.html?id=${nannyId}`;
+    }
+}
+
+
+// INIT
+document.addEventListener("DOMContentLoaded", () => {
+    fetchStats();
+    fetchFeaturedNannies();
+});
+
+

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nanny Profile Setup | NannyLink</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary": "#835500",
+                        "primary": "#00152f",
+                        "primary-container": "#0f2a4a",
+                        "surface": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c4c6cf"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { min-height: 100vh; }
+    </style>
+</head>
+
+<body class="bg-surface font-body text-primary min-h-screen">
+    <header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-white border-b border-gray-100">
+        <div class="flex items-center gap-3">
+            <span class="text-xl font-extrabold text-primary font-headline tracking-tight">NannyLink</span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 pt-24 pb-12">
+        <div class="flex flex-col md:flex-row gap-12 items-start">
+            <div class="w-full md:w-1/3 space-y-8 md:sticky md:top-24">
+                <div class="space-y-2">
+                    <span class="text-[11px] font-bold tracking-widest text-secondary uppercase">Management</span>
+                    <h1 class="text-4xl font-extrabold font-headline leading-tight text-primary">Edit Profile</h1>
+                </div>
+            </div>
+
+            <div class="w-full md:w-2/3">
+                <form id="nannyForm" class="bg-white rounded-[1.5rem] p-8 md:p-10 shadow-lg space-y-10">
+                    
+                    <input type="hidden" id="profile_photo_url" name="profile_photo_url">
+                    <input type="hidden" id="id_photo_url" name="id_photo_url">
+
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-bold font-headline">Personal Details</h2>
+                        
+                        <div class="flex items-center gap-6">
+                            <div class="relative">
+                                <div class="w-24 h-24 rounded-[1.5rem] bg-surface-container overflow-hidden border-2 border-dashed border-outline-variant flex items-center justify-center">
+                                    <img id="profile_preview" alt="Preview" class="w-full h-full object-cover" src="https://via.placeholder.com/150" />
+                                </div>
+                                <label class="absolute -bottom-2 -right-2 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer shadow-lg">
+                                    <span class="material-symbols-outlined text-sm">photo_camera</span>
+                                    <input class="hidden" id="profile_photo_input" type="file" accept="image/*" />
+                                </label>
+                            </div>
+                            <p class="text-xs text-slate-500 italic">Tap camera to update photo</p>
+                        </div>
+
+                        <input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm" id="full_name" placeholder="Full Name" type="text" required />
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm" id="experience" placeholder="Years of Experience" type="number" required />
+                            <select class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm" id="availability">
+                                <option value="full_time">Full-time</option>
+                                <option value="part_time">Part-time</option>
+                                <option value="evenings">Evenings</option>
+                                <option value="weekends">Weekends</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-bold font-headline">Expertise & Location</h2>
+                        <input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm" id="location" placeholder="Preferred Location" type="text" required />
+                        <textarea class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm" id="skills" placeholder="Skills & Specialized Care" rows="4" required></textarea>
+                    </div>
+
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-bold font-headline">Identity Verification</h2>
+                        <input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm" id="national_id" placeholder="National ID Number" type="text" required />
+                        
+                        <label class="w-full h-32 rounded-xl bg-surface-container-low border-2 border-dashed border-outline-variant flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-slate-100 transition-colors">
+                            <span class="material-symbols-outlined text-3xl text-outline">upload_file</span>
+                            <p class="text-xs font-bold mt-2" id="id_status_text">Update National ID Photo</p>
+                            <input class="hidden" id="id_photo_input" type="file" accept="image/*" />
+                        </label>
+                    </div>
+
+                    <button class="w-full bg-primary text-white py-4 rounded-full font-bold text-sm hover:opacity-90 transition-opacity" type="submit" id="submitBtn">
+                        Save Profile Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- CONFIGURATION ---
+        const API_BASE = "http://127.0.0.1:8000/nannies";
+        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dql4taq0c/image/upload";
+        const UPLOAD_PRESET = "Nanny_ids";
+        const token = localStorage.getItem("access_token");
+
+        // --- UTILS ---
+        function toggleLoading(show, text = "Saving...") {
+            const btn = document.getElementById('submitBtn');
+            if (show) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="animate-pulse">${text}</span>`;
+            } else {
+                btn.disabled = false;
+                btn.innerText = "Save Profile Changes";
+            }
+        }
+
+        // --- 1. CLOUDINARY UPLOAD ---
+        async function uploadToCloudinary(file, typeName) {
+            const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
+            try {
+                const compressedFile = await imageCompression(file, options);
+                const formData = new FormData();
+                formData.append('file', compressedFile);
+                formData.append('upload_preset', UPLOAD_PRESET);
+
+                const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.error?.message || "Upload failed");
+                return data.secure_url;
+            } catch (error) {
+                console.error("Upload Error:", error);
+                alert(`Failed to upload ${typeName}`);
+                throw error;
+            }
+        }
+
+        // --- 2. LOAD DATA ---
+        async function loadCurrentProfile() {
+            if (!token) { window.location.href = "login.html"; return; }
+
+            try {
+                const response = await fetch(`${API_BASE}/profile/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('full_name').value = data.full_name || "";
+                    document.getElementById('experience').value = data.experience || 0;
+                    document.getElementById('location').value = data.location || "";
+                    document.getElementById('skills').value = data.skills || "";
+                    document.getElementById('availability').value = data.availability || "full_time";
+                    document.getElementById('national_id').value = data.national_id || "";
+                    
+                    if (data.profile_photo_url) {
+                        document.getElementById('profile_preview').src = data.profile_photo_url;
+                        document.getElementById('profile_photo_url').value = data.profile_photo_url;
+                    }
+                    if (data.id_photo_url) {
+                        document.getElementById('id_photo_url').value = data.id_photo_url;
+                        document.getElementById('id_status_text').innerText = "ID Photo Uploaded ✅";
+                    }
+                }
+            } catch (err) {
+                console.error("Fetch error:", err);
+            }
+        }
+
+        // --- 3. PHOTO HANDLERS ---
+        document.getElementById('profile_photo_input').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('profile_preview').src = URL.createObjectURL(file);
+            
+            toggleLoading(true, "Uploading Photo...");
+            const url = await uploadToCloudinary(file, "Profile Photo");
+            document.getElementById('profile_photo_url').value = url;
+            toggleLoading(false);
+        };
+
+        document.getElementById('id_photo_input').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            toggleLoading(true, "Uploading ID...");
+            const url = await uploadToCloudinary(file, "ID Photo");
+            document.getElementById('id_photo_url').value = url;
+            document.getElementById('id_status_text').innerText = "ID Updated ✅";
+            toggleLoading(false);
+        };
+
+        // --- 4. SUBMIT ---
+        document.getElementById('nannyForm').onsubmit = async (e) => {
+            e.preventDefault();
+            toggleLoading(true, "Saving Profile...");
+
+            const payload = {
+                full_name: document.getElementById('full_name').value,
+                experience: parseInt(document.getElementById('experience').value),
+                location: document.getElementById('location').value,
+                skills: document.getElementById('skills').value,
+                availability: document.getElementById('availability').value,
+                national_id: document.getElementById('national_id').value,
+                profile_photo_url: document.getElementById('profile_photo_url').value,
+                id_photo_url: document.getElementById('id_photo_url').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert("Profile updated!");
+                    window.location.href = "nannydashboard.html";
+                } else {
+                    alert("Update failed.");
+                }
+            } catch (err) {
+                alert("Connection error.");
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        loadCurrentProfile();
+    </script>
+</body>
+</html>

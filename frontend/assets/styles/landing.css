@@ -124,7 +124,7 @@ body{
   grid-template-columns:1fr 1fr;
   align-items:center;
   padding:60px 40px;
-  gap:40px;
+  gap: 80px;
 }
 
 .card-content .name{
@@ -165,9 +165,10 @@ body{
 }
 
 .profile-image-section img{
-  width:100%;
+  width:80%;
   border-radius:var(--radius);
   box-shadow:var(--shadow);
+  height: 500px;
 }
 
 /* ───────────── ABOUT ───────────── */
@@ -199,22 +200,41 @@ body{
   align-items:center;
 }
 
-.main-mission-img{
-  width:100%;
-  border-radius:var(--radius);
+.mission-visual {
+    position: relative; /* CRITICAL: This acts as the anchor for the stat-card */
+    width: 80%;         /* Matches your image width */
+    display: inline-block; 
 }
 
-.stat-card{
-  position:absolute;
-  background:#fff;
-  padding:10px 20px;
-  border-radius:var(--radius-sm);
-  box-shadow:var(--shadow);
-  margin-top:-40px;
+.main-mission-img {
+    width: 100%;        /* Image fills the container */
+    border-radius: var(--radius);
+    height: 500px;
+    object-fit: cover;  /* Prevents stretching */
+    display: block;
+}
+
+.stat-card {
+    position: absolute;
+    background: #fff;
+    padding: 15px 25px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    
+    /* Alignment to bottom right */
+    bottom: -15px;      /* Distance from the bottom edge */
+    right: -60px;      /* Overlaps slightly off the right edge for a modern look */
+    
+    z-index: 2;       /* Ensures it stays on top */
 }
 
 .mission-checks{
   margin-top:15px;
+}
+
+.stats-section h3 {
+  font-size: medium;
+  text-align: center;
 }
 
 .check-item{
@@ -450,4 +470,100 @@ body{
   .footer-container{
     grid-template-columns:1fr;
   }
+}
+/* ───────────── STATS ───────────── */
+.stats-section{
+  background:#fff;
+  padding:50px 40px;
+}
+
+.stats-container{
+  display:flex;
+  justify-content:space-around;
+  text-align:center;
+}
+
+.stat-box h2{
+  font-size:2rem;
+  color:var(--navy);
+}
+
+.stat-box p{
+  color:var(--text-mid);
+}
+
+/* ───────────── NANNY GRID ───────────── */
+.featured-nannies{
+  padding:80px 40px;
+}
+
+.section-header{
+  text-align:center;
+  margin-bottom:30px;
+}
+.nanny-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+  gap:20px;
+}
+
+
+
+.nanny-card{
+  background:#fff;
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow);
+  text-align:left;
+  transition:var(--transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+}
+
+.nanny-card:hover{
+  transform:translateY(-5px);
+}
+
+.nanny-card img{
+  width:100%;
+  height:100px;
+  /* border-radius:50%; */
+  object-fit:cover;
+  margin-bottom:10px;
+}
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Takes up all available vertical space */
+}
+
+.nanny-name{
+  font-weight:600;
+  color:var(--navy);
+}
+
+.nanny-meta{
+  font-size:.85rem;
+  color:var(--text-mid);
+}
+
+.nanny-rate{
+  margin:10px 0;
+  color:var(--gold);
+  font-weight:600;
+}
+
+.view-btn {
+  margin-top: auto; /* Pushes the button to the very bottom of the card-body */
+  display: block;   /* Changed to block for easier width control */
+  width: 100%;      /* Optional: makes the button full width of the card */
+  text-align: center;
+  padding: 10px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
 }

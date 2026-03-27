@@ -1,4 +1,4 @@
-import { API_URL } from "../../src/utils/config.js";
+import { API_URL } from "../../../src/utils/config.js";
 
 /* ─── utils ─── */
 const $ = id => document.getElementById(id);

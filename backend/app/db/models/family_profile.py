@@ -27,7 +27,5 @@ class FamilyProfile(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     # relationships
-    user: Mapped["User"] = relationship("User", back_populates="family_profile", foreign_keys=[user_id])
-    job_posts: Mapped[list["JobPost"]] = relationship("JobPost", back_populates="family_profile", cascade="all, delete-orphan")
-    matches: Mapped[list["Match"]] = relationship("Match", back_populates="family")
-
+    user: Mapped["User"] = relationship("User", back_populates="family_profile")
+    matches: Mapped[list["Match"]] = relationship("Match", back_populates="family", cascade="all, delete-orphan")

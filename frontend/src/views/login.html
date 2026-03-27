@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NannyLink – Welcome</title>
+  <title>Welcome</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
@@ -25,52 +25,34 @@ html{font-size:16px;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-dark);min-height:100vh;overflow-x:hidden;}
 
 /* ── LAYOUT ── */
-.page-wrap{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
+.page-wrap{
+  display: absolute; 
+  justify-content: center;
+  min-height:100vh; 
+  border-radius: 10px;
+  border: 1px solid black;
+  box-shadow: 0 0 15px 5px blue;;
+}
 
-/* ── BRAND LEFT ── */
-.brand{background:linear-gradient(155deg,var(--navy) 0%,#1a3f6e 50%,var(--navy-mid) 100%);display:flex;flex-direction:column;justify-content:space-between;padding:44px 52px;position:relative;overflow:hidden;}
-.brand-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
-.brand-blob{position:absolute;border-radius:50%;animation:blobDrift 14s ease-in-out infinite alternate;}
-.brand-blob-1{width:480px;height:480px;background:radial-gradient(circle,rgba(233,168,64,.18),transparent 70%);top:-160px;right:-160px;}
-.brand-blob-2{width:320px;height:320px;background:radial-gradient(circle,rgba(16,185,129,.1),transparent 70%);bottom:-80px;left:-80px;animation-delay:-5s;}
-.brand-blob-3{width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%);top:45%;left:-60px;animation-delay:-9s;}
-.brand-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:48px 48px;}
-@keyframes blobDrift{from{transform:translate(0,0) scale(1);}to{transform:translate(20px,30px) scale(1.08);}}
-
-.brand-logo{display:flex;align-items:center;gap:12px;position:relative;z-index:1;}
-.brand-logo-mark{width:46px;height:46px;background:var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--navy);box-shadow:0 4px 18px rgba(233,168,64,.45);flex-shrink:0;}
-.brand-logo-text h1{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:600;color:#fff;line-height:1;}
-.brand-logo-text p{font-size:.62rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;margin-top:2px;}
-
-.brand-content{position:relative;z-index:1;}
-.brand-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(233,168,64,.18);border:1px solid rgba(233,168,64,.3);color:var(--gold);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:5px 12px;border-radius:99px;margin-bottom:20px;}
-.brand-headline{font-family:'Fraunces',serif;font-size:clamp(1.75rem,3vw,2.6rem);font-weight:600;color:#fff;line-height:1.18;margin-bottom:16px;}
-.brand-headline em{font-style:italic;color:var(--gold);}
-.brand-sub{font-size:.9rem;color:rgba(255,255,255,.55);line-height:1.7;max-width:340px;margin-bottom:28px;}
-
-.brand-stats{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:26px;}
-.brand-stat{flex:1;padding:14px 16px;text-align:center;border-right:1px solid rgba(255,255,255,.08);}
-.brand-stat:last-child{border-right:none;}
-.brand-stat-num{display:block;font-family:'Fraunces',serif;font-size:1.45rem;font-weight:600;color:var(--gold);line-height:1;margin-bottom:3px;}
-.brand-stat-lbl{font-size:.62rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;}
-
-.brand-badges{display:flex;flex-direction:column;gap:10px;}
-.brand-badge{display:flex;align-items:center;gap:12px;}
-.brand-badge-icon{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:.82rem;flex-shrink:0;}
-.brand-badge-info strong{display:block;font-size:.8rem;font-weight:600;color:rgba(255,255,255,.88);margin-bottom:1px;}
-.brand-badge-info span{font-size:.7rem;color:rgba(255,255,255,.4);}
-
-.brand-testimonial{position:relative;z-index:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:18px 20px;backdrop-filter:blur(8px);}
-.brand-testimonial-stars{color:var(--gold);font-size:.75rem;margin-bottom:8px;letter-spacing:2px;}
-.brand-testimonial p{font-size:.82rem;color:rgba(255,255,255,.7);line-height:1.65;font-style:italic;margin-bottom:12px;}
-.brand-testimonial-author{display:flex;align-items:center;gap:10px;}
-.brand-testimonial-author .tav{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#f0b840);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:.75rem;font-weight:600;color:var(--navy);flex-shrink:0;}
-.brand-testimonial-author strong{display:block;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.85);}
-.brand-testimonial-author span{font-size:.68rem;color:rgba(255,255,255,.4);}
 
 /* ── FORM RIGHT ── */
-.form-panel{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:48px 40px;background:#fff;position:relative;overflow-y:auto;}
-.form-panel::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--navy) 0%,var(--gold) 50%,var(--green) 100%);}
+.form-panel{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding: 10px 10px;
+  background:#fff;
+  position:relative;
+  overflow-y:auto;
+  width: 30%;
+  /* width: 400px;         */
+  border-radius: 10px;
+  margin: 40px auto;
+  border: 1px black; 
+  box-shadow: 0 0 15px 5px #F5F5F5;
+}
+.form-panel::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
 
 .mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--navy);align-items:center;justify-content:space-between;padding:0 20px;z-index:100;box-shadow:0 2px 12px rgba(26,53,87,.25);}
 .mobile-header-logo{display:flex;align-items:center;gap:9px;}
@@ -78,7 +60,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-d
 .mobile-header-logo span{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:#fff;}
 .mobile-header-badge{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.45);}
 
-.form-box{width:100%;max-width:440px;}
+.form-box{
+  width:100%;
+  max-width:440px;
+
+}
 
 /* ── MODE TOGGLE ── */
 .mode-toggle{display:flex;background:var(--cream-2);border:1.5px solid var(--border);border-radius:99px;padding:4px;margin-bottom:28px;position:relative;}
@@ -178,17 +164,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-d
 .mini-trust-item i{color:var(--gold);width:16px;flex-shrink:0;}
 
 /* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .page-wrap{grid-template-columns:1fr;}
-  .brand{display:none;}
-  .form-panel{padding:82px 24px 40px;align-items:flex-start;justify-content:flex-start;}
-  .form-box{max-width:100%;}
-  .mobile-header{display:flex;}
-  .mini-trust{display:flex;}
-  .form-panel::after{display:none;}
+@media(max-width: 900px) {
+  .page-wrap { 
+    display: flex; 
+    flex-direction: column; 
+    width: 100%; 
+
+  }
+  
+  .form-panel {
+    width: 100%; /* Change from 30% to 100% */
+    margin: 0 -0.5x;   /* Remove large margins if necessary */
+    padding: 20px 30px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px 5px #F5F5F5;
+  }
+
+  .form-box {
+    max-width: 100%;
+    width: 100%;
+  }
+  
 }
 @media(max-width:480px){
-  .form-panel{padding:76px 16px 36px;}
+  .form-panel{display: flex; max-width: 100%; flex-direction: column;}
   .field-row{grid-template-columns:1fr;}
   .mode-btn{font-size:.78rem;padding:8px 10px;}
 }
@@ -208,48 +208,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-d
 </header>
 
 <div class="page-wrap">
-
-  <!-- ══ LEFT BRAND ══ -->
-  <aside class="brand">
-    <div class="brand-bg">
-      <div class="brand-blob brand-blob-1"></div>
-      <div class="brand-blob brand-blob-2"></div>
-      <div class="brand-blob brand-blob-3"></div>
-      <div class="brand-grid"></div>
-    </div>
-
-    <div class="brand-logo">
-      <div class="brand-logo-mark"><i class="fas fa-baby-carriage"></i></div>
-      <div class="brand-logo-text"><h1>NannyLink</h1><p>Premium Care Services</p></div>
-    </div>
-
-    <div class="brand-content">
-      <div class="brand-pill"><i class="fas fa-shield-halved"></i> Trusted in Kenya</div>
-      <h2 class="brand-headline">Where <em>great families</em><br>find <em>great nannies</em></h2>
-      <p class="brand-sub">NannyLink connects vetted professional nannies with families who care. Safe, transparent, and built for Kenya — from Nairobi to Mombasa.</p>
-
-      <div class="brand-stats">
-        <div class="brand-stat"><span class="brand-stat-num">2,400+</span><span class="brand-stat-lbl">Nannies</span></div>
-        <div class="brand-stat"><span class="brand-stat-num">1,800+</span><span class="brand-stat-lbl">Families</span></div>
-        <div class="brand-stat"><span class="brand-stat-num">96%</span><span class="brand-stat-lbl">Satisfaction</span></div>
-      </div>
-
-      <div class="brand-badges">
-        <div class="brand-badge"><div class="brand-badge-icon"><i class="fas fa-user-shield"></i></div><div class="brand-badge-info"><strong>Verified Profiles</strong><span>Every nanny is background-checked</span></div></div>
-        <div class="brand-badge"><div class="brand-badge-icon"><i class="fas fa-wallet"></i></div><div class="brand-badge-info"><strong>M-Pesa Payments</strong><span>Secure connection fee via Safaricom</span></div></div>
-        <div class="brand-badge"><div class="brand-badge-icon"><i class="fas fa-file-contract"></i></div><div class="brand-badge-info"><strong>Digital Contracts</strong><span>Binding agreements included</span></div></div>
-      </div>
-    </div>
-
-    <div class="brand-testimonial">
-      <div class="brand-testimonial-stars">★★★★★</div>
-      <p>"Found our nanny within a week. The contract and M-Pesa payment system made everything feel professional and completely safe."</p>
-      <div class="brand-testimonial-author">
-        <div class="tav">AK</div>
-        <div><strong>Amina Kariuki</strong><span>Family in Westlands, Nairobi</span></div>
-      </div>
-    </div>
-  </aside>
 
   <!-- ══ RIGHT FORMS ══ -->
   <main class="form-panel">
@@ -678,24 +636,53 @@ function validateSignupForm() {
 /* ─────────────────────────────────────────────
    REDIRECT AFTER AUTH
 ───────────────────────────────────────────── */
-function redirectAfterAuth(accessToken, fallbackRole) {
+/* ─────────────────────────────────────────────
+   REDIRECT AFTER AUTH (Updated for Profile Check)
+───────────────────────────────────────────── */
+async function redirectAfterAuth(accessToken, fallbackRole) {
   localStorage.setItem("access_token", accessToken);
 
   let detectedRole = fallbackRole;
+  let userId = null;
+
   try {
     const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
     detectedRole = tokenPayload.role || fallbackRole;
-    if (tokenPayload.sub) localStorage.setItem("user_id", tokenPayload.sub);
+    userId = tokenPayload.sub;
+    if (userId) localStorage.setItem("user_id", userId);
   } catch (decodeError) {
     console.warn("[login] Could not decode JWT payload:", decodeError);
   }
 
-  // Updated logic to point specifically to frontend/src/...
+  // 1. Handle Family Redirection
   if (detectedRole === "family") {
     window.location.href = "../family/views/familydashboard.html";
-  } else {
-    // This now points to the path you requested
-    window.location.href = "../Nanny/views/nannydashboard.html";
+    return;
+  }
+
+  // 2. Handle Nanny Redirection
+  if (detectedRole === "nanny") {
+    try {
+      // Use your backend URL (Ensure the port is correct)
+      const response = await fetch(`http://127.0.0.1:8000/nannies/profile/me`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+
+      if (response.ok) {
+        // If status is 200-299, the profile exists
+        window.location.href = "../nanny/nannydashboard.html";
+      } else if (response.status === 404) {
+        // If status is 404, they need to create a profile
+        window.location.href = "../nanny/profilecreation.html";
+      } else {
+        // Handle other errors (500, etc.)
+        console.error("Server error checking profile:", response.status);
+        window.location.href = "../nanny/profilecreation.html";
+      }
+    } catch (error) {
+      console.error("Network error checking profile status:", error);
+      window.location.href = "../nanny/profilecreation.html";
+    }
   }
 }
 

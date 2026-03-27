@@ -13,9 +13,14 @@ class AuthRepository:
         await self.db.flush()
         return user
 
-    async def create_user(self, user: UserCreate,) -> User:
-        user = User(**user.model_dump())
-        return await self.save(user)
+    # app/modules/Auth/auth_repository.py
+
+    async def create_user(self, user_schema: UserCreate) -> User:
+        # Convert Pydantic model to dict
+        user_data = user_schema.model_dump()       
+        new_user = User(**user_data) 
+        
+        return await self.save(new_user)
     
     async def get_user_by_email(self, email: str) -> User | None:
         stmt = select(User).where(User.email == email)

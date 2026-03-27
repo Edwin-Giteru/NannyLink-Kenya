@@ -1,113 +1,64 @@
 from app.db.models.family_profile import FamilyProfile
-from app.modules.Family.repository import FamilyRepo
+from app.modules.Family.repository import FamilyRepository
+from app.modules.Match.repository import MatchRepository
 from app.utils.results import Result
 from app.modules.Family.schema import FamilyCreate, FamilyUpdate, FamilyResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
 class FamilyService:
-    """
-    This is a service responsible mainly for the CRUD operations of a Family
-    """
     def __init__(self, db: AsyncSession):
         self.db = db
-        self.family_repo = FamilyRepo(db)
+        self.family_repository = FamilyRepository(db)
+        self.match_repository = MatchRepository(db)
 
-    async def create_family(self, family: FamilyCreate, user_id: uuid.UUID) -> Result:
-        """
-        A method for creating family with their respective user_id's
-        """
+    async def create_family(self, family_create: FamilyCreate, user_id: uuid.UUID) -> Result:
         try:
-            family_exist = await self.family_repo.get_family_by_user_id(user_id)
-            if family_exist:
-                return Result.fail(
-                    f"Family with user_id:{user_id} already exists",
-                    status_code=400
-                )
-            new_family = await self.family_repo.create_family(family, user_id)
+            existing_family = await self.family_repository.get_family_by_user_id(user_id)
+            if existing_family:
+                return Result.fail(f"Family with user_id: {user_id} already exists", status_code=400)
+            
+            new_family = await self.family_repository.create_family(family_create, user_id)
             await self.db.commit()
             await self.db.refresh(new_family)
 
-            response = FamilyResponse.from_orm(new_family).model_dump()
-            return Result.ok(
-                data=response,
-                status_code=201
-            )
-        
+            return Result.ok(data=FamilyResponse.model_validate(new_family), status_code=201)
         except Exception as e:
             await self.db.rollback()
-            return Result.fail(
-                f"Creation of a family failed due to this error: {str(e)}",
-                status_code=500
-            )
-        
-    async def update_family(self, family_update: FamilyUpdate, user_id: uuid.UUID) -> Result:
-        """
-        This is a method for updating details of a family
-        """
-        try:
-            family_exist = await self.family_repo.get_family_by_user_id(user_id)
-            if not family_exist:
-                return Result.fail(
-                    f"Family with user_id: {user_id} doesnot exist",
-                    status_code=404
-                )
-            family = await self.db.get(FamilyProfile, family_exist.id)
+            return Result.fail(f"Family creation failed: {str(e)}", status_code=500)
 
-            to_update = family_update.model_dump(exclude_unset=True)
-            for field, value in to_update.items():
-                if value is not None or value != "":
-                    if field != "":
-                        setattr(family, field, value)
+    async def update_family(self, family_update: FamilyUpdate, user_id: uuid.UUID) -> Result:
+        try:
+            family = await self.family_repository.get_family_by_user_id(user_id)
+            if not family:
+                return Result.fail("Family profile not found", status_code=404)
+
+            update_data = family_update.model_dump(exclude_unset=True)
+            for field, value in update_data.items():
+                if value is not None:
+                    setattr(family, field, value)
 
             await self.db.commit()
             await self.db.refresh(family)
-
-            response = await self.family_repo.get_family_by_id(family.id)
-
-            return Result.ok(
-                data=response,
-                status_code=200
-            )
-        
+            return Result.ok(data=FamilyResponse.model_validate(family))
         except Exception as e:
-            return Result.fail(
-                f"Failed to update user do to the following error: {str(e)}",
-                status_code=500
-            )
-    
+            await self.db.rollback()
+            return Result.fail(str(e), status_code=500)
+
     async def get_family(self, user_id: uuid.UUID) -> Result:
+        family = await self.family_repository.get_family_by_user_id(user_id)
+        if not family:
+            return Result.fail("Family not found", status_code=404)
+        return Result.ok(data=FamilyResponse.model_validate(family))
+
+    async def get_family_connections(self, user_id: uuid.UUID) -> Result:
+        """Fetch all nannies this family has connected with."""
         try:
-            family = await self.family_repo.get_family_by_user_id(user_id)
+            family = await self.family_repository.get_family_by_user_id(user_id)
             if not family:
-                return Result.fail(
-                    f"Family with user_id {user_id} doesnot exist",
-                    status_code=404
-                )
-            return Result.ok(
-                data=family,
-                status_code=500
-            )
+                return Result.fail("Family profile not found", status_code=404)
+            
+            connections = await self.match_repository.get_matches_for_family(family.id)
+            return Result.ok(data=connections)
         except Exception as e:
-            return Result.fail(
-                f"Failed to update user do to the following error: {str(e)}",
-                status_code=500
-            )
-    
-    async def get_user_id_by_family_id(self, family_id: uuid.UUID) -> Result:
-        try:
-            user = await self.family_repo.get_user_id_by_family_id(family_id)
-            if not user:
-                return Result.fail(
-                    f"User with family_id {family_id} doesnot exist",
-                    status_code=404
-                )
-            return Result.ok(
-                data=user,
-                status_code=500
-            )
-        except Exception as e:
-            return Result.fail(
-                f"Failed to update user do to the following error: {str(e)}",
-                status_code=500
-            )
+            return Result.fail(f"Error fetching connections: {str(e)}", status_code=500)

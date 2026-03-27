@@ -1,5 +1,6 @@
-import { API_URL } from "../../utils/config.js";
-import { applyToJob } from "../../service/nannyDashboardService.js";
+import { API_URL } from "../../../src/utils/config.js";
+import { applyToJob } from "../../../assets/service/nannyDashboardService.js";
+
 
 /* ═══════════════════════════════════════════
    UTILITIES

@@ -1,153 +1,87 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+import uuid
 from app.modules.Nanny.nanny_repo import NannyRepository
+from app.modules.Match.repository import MatchRepository
 from app.modules.Nanny.nanny_schema import NannyCreate, NannyUpdate, NannyResponse
 from app.db.models.nanny_profile import NannyProfile
-from app.db.models.types import VettingStatus
-import uuid
-from typing import List
 from app.utils.results import Result
 
 class NannyService:
     def __init__(self, db: AsyncSession):
         self.db = db
-        self.nanny_repo = NannyRepository(db)
+        self.nanny_repository = NannyRepository(db)
+        self.match_repository = MatchRepository(db)
 
-    async def create_nanny(self, nanny_create: NannyCreate, user_id: uuid.UUID) -> Result:
-        try: 
-            existing_profile = await self.nanny_repo.get_nanny_by_user_id(user_id)
+    async def get_nanny_connections(self, user_id: uuid.UUID) -> Result:
+        try:
+            nanny = await self.nanny_repository.get_nanny_by_user_id(user_id)
+            if not nanny:
+                return Result.fail("Nanny profile not found", status_code=404)
+            
+            connections = await self.match_repository.get_matches_for_nanny(nanny.id)
+            return Result.ok(data=connections)
+        except Exception as e:
+            return Result.fail(f"Error fetching connections: {str(e)}", status_code=500)
+        
+    
+    async def create_nanny_profile(self, nanny_create: NannyCreate, user_id: uuid.UUID) -> Result:
+        try:
+            # 1. Check if the user already has a profile
+            existing_profile = await self.nanny_repository.get_nanny_by_user_id(user_id)
             if existing_profile:
-                return Result.fail("A nanny profile already exists for this account.", status_code=400)
+                return Result.fail("Nanny profile already exists for this user", status_code=400)
 
-            new_nanny = await self.nanny_repo.create_nanny(nanny_create, user_id)
+            # 2. Create the profile
+            # We pass user_id explicitly to link the profile to the logged-in account
+            new_nanny = await self.nanny_repository.create_nanny(nanny_create, user_id)
             
+            # 3. Commit the transaction
             await self.db.commit()
-            await self.db.refresh(new_nanny)
-
-            response_data = NannyResponse.model_validate(new_nanny)
             
-            return Result.ok(data=response_data, status_code=201)
-
+            return Result.ok(data=NannyResponse.model_validate(new_nanny))
         except Exception as e:
             await self.db.rollback()
-            return Result.fail(f"Database error: {str(e)}", status_code=500)
-            
-    async def update_nanny(self, nanny_update: NannyUpdate, user_id: uuid.UUID) -> Result:
+            return Result.fail(f"Could not create profile: {str(e)}", status_code=500)
+
+    async def update_nanny_profile(self, nanny_update: NannyUpdate, user_id: uuid.UUID) -> Result:
         try:
-            nanny_profile = await self.nanny_repo.get_nanny_by_user_id(user_id)
-            if not nanny_profile:
-                return Result.fail(
-                    f"Nanny with the user id:[{user_id}] provided doesnot exist",
-                    status_code=404
-                )
-          
-            nanny = await self.db.get(NannyProfile, nanny_profile.id)
+            # 1. Fetch the existing profile
+            nanny = await self.nanny_repository.get_nanny_by_user_id(user_id)
+            if not nanny:
+                return Result.fail("Nanny profile not found", status_code=404)
 
-            to_update = nanny_update.model_dump(exclude_unset=True)
-            for field, value in to_update.items():
-                if value is not None and value !="":
-                    if field != "id":
-                        setattr(nanny, field, value)
+            # 2. Extract update data
+            # CRITICAL: Ensure your NannyUpdate schema actually has profile_photo_url: str | None = None
+            update_data = nanny_update.model_dump(exclude_unset=True)
 
+            # 3. Apply all fields to the database object
+            for field, value in update_data.items():
+                if hasattr(nanny, field):
+                    setattr(nanny, field, value)
+
+            # 4. Commit and Refresh
             await self.db.commit()
             await self.db.refresh(nanny)
-
-            result = await self.nanny_repo.get_nanny_by_id(nanny.id)
-            return Result.ok(
-                data=result,
-                status_code=200
-            )
+            
+            return Result.ok(data=NannyResponse.model_validate(nanny))
         except Exception as e:
             await self.db.rollback()
-            return Result.fail(
-                f"Failed to update user with this error: {str(e)}",
-                status_code=500
-            )
-    
-    async def get_nanny(self, user_id: uuid.UUID) -> Result:
-        try: 
-            nanny = await self.nanny_repo.get_nanny_by_user_id(user_id)
-            if not nanny:
-                return Result.fail(
-                    f"Nanny with user_id: {user_id} doesnot exist",
-                    status_code=404
-                )
-            
-            return Result.ok(
-                data=nanny,
-                status_code=200
-            )
-        except Exception as e:
-            return Result.fail(
-                f"Failed to load a nanny with this error: {str(e)}",
-                status_code=500
-            )
-    
-    async def get_applications_for_nanny(self, user_id: uuid.UUID) -> Result:
-        try:
-            nanny = await self.nanny_repo.get_nanny_by_user_id(user_id)
-            if not nanny:
-                return Result.fail(
-                    f"Nanny with user_id: {user_id} doesnot exist",
-                    status_code=404
-                )
-            
-            applications = await self.nanny_repo.get_applications_for_nanny(nanny.id)
-            return Result.ok(
-                data=applications,
-                status_code=200
-            )
-        except Exception as e:
-            return Result.fail(
-                f"Failed to load applications for nanny with this error: {str(e)}",
-                status_code=500
-            )
-    
-    async def delete_nanny(self, user_id: uuid.UUID) -> Result:
-        try:
-            nanny = await self.nanny_repo.get_nanny_by_user_id(user_id)
-            if not nanny:
-                return Result.fail(
-                    f"Nanny with user_id: {user_id} doesnot exist",
-                    status_code=404
-                )
-            
-            await self.nanny_repo.delete_nanny(nanny)
-            await self.db.commit()
+            return Result.fail(str(e), status_code=500)
 
-            return Result.ok(
-                data=None,
-                status_code=204
-            )
-        except Exception as e:
-            await self.db.rollback()
-            return Result.fail(
-                f"Failed to delete nanny with this error: {str(e)}",
-                status_code=500
-            )
+    async def get_full_nanny_details(self, nanny_id: uuid.UUID) -> Result:
+        """Fetch nanny with user/account details for protected views."""
+        nanny = await self.nanny_repository.get_nanny_by_id(nanny_id, include_user=True)
+        if not nanny:
+            return Result.fail("Nanny not found", status_code=404)
+        return Result.ok(data=nanny)
     
-    async def get_user_id_by_nanny_id(self, nanny_id: uuid.UUID) -> Result:
+    async def get_nanny_by_user(self, user_id: uuid.UUID) -> Result:
+        """Fetch profile using the User's ID instead of the Profile ID."""
         try:
-            user = await self.nanny_repo.get_user_id_by_nanny_id(nanny_id)
-            if not user:
-                return Result.fail(
-                    f"User with nanny_id {nanny_id} doesnot exist",
-                    status_code=404
-                )
-            return Result.ok(
-                data=user,
-                status_code=200
-            )
-        except Exception as e:
-            return Result.fail(
-                f"Failed to load user with this error: {str(e)}",
-                status_code=500
-            )
-    
-    async def get_nanny_by_profile_id(self, nanny_id: uuid.UUID) -> Result:
-        try:
-            nanny = await self.nanny_repo.get_nanny_by_id(nanny_id)
+            nanny = await self.nanny_repository.get_nanny_by_user_id(user_id)
             if not nanny:
-                return Result.fail(f"Nanny {nanny_id} not found.", status_code=404)
-            return Result.ok(data=nanny, status_code=200)
+                return Result.fail("Nanny profile not found", status_code=404)
+            
+            return Result.ok(data=NannyResponse.model_validate(nanny))
         except Exception as e:
             return Result.fail(str(e), status_code=500)

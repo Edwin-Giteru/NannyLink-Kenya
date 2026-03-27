@@ -1,13 +1,11 @@
-from app.db.models.nanny_profile import NannyProfile
-from app.db.models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.modules.Nanny.nanny_schema import NannyCreate, NannyUpdate
-from typing import List
+from sqlalchemy.orm import selectinload
+from sqlalchemy import func
 import uuid
-from app.db.models.user import User
-from app.db.models.application import Application
-from sqlalchemy.orm import joinedload
+
+from app.db.models.nanny_profile import NannyProfile
+from app.modules.Nanny.nanny_schema import NannyCreate
 
 class NannyRepository:
     def __init__(self, db: AsyncSession):
@@ -28,34 +26,18 @@ class NannyRepository:
         result = await self.db.execute(stmt)
         return result.scalars().first()
     
-    async def get_nanny_by_id(self, nanny_id: uuid.UUID) -> NannyProfile | None:
+    async def get_nanny_by_id(self, nanny_id: uuid.UUID, include_user: bool = False) -> NannyProfile | None:
         stmt = select(NannyProfile).where(NannyProfile.id == nanny_id)
+        if include_user:
+            stmt = stmt.options(selectinload(NannyProfile.user))
         result = await self.db.execute(stmt)
-        return result.scalars().first()
+        return result.scalar_one_or_none()
     
-    async def get_nannies(self) -> list[NannyProfile]:
-        stmt = select(NannyProfile)
+    async def get_public_nannies(self) -> list[NannyProfile]:
+        # Only get nannies that are vetted (optional logic you can add here)
+        stmt = select(NannyProfile).order_by(NannyProfile.created_at.desc())
         result = await self.db.execute(stmt)
-        return result.scalars().all()
-    
-    async def get_applications_for_nanny(self, nanny_id: uuid.UUID) -> List[Application]:
-        stmt = (select(Application)
-                .options(joinedload(Application.job_post))
-                .where(Application.nanny_id == nanny_id)
-            )
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
+        return list(result.scalars().all())
     
     async def delete_nanny(self, nanny: NannyProfile):
         await self.db.delete(nanny)
-        await self.db.flush()
-    
-    async def get_user_id_by_nanny_id(self, nanny_id: uuid.UUID) -> User:
-        stmt = select(User).join(NannyProfile, User.id == NannyProfile.user_id).where(NannyProfile.id == nanny_id)
-        result = await self.db.execute(stmt)
-        return result.scalars().first() 
-    
-    async def get_nanny_by_id(self, nanny_id: uuid.UUID) -> NannyProfile | None:
-        stmt = select(NannyProfile).where(NannyProfile.id == nanny_id)
-        result = await self.db.execute(stmt)
-        return result.scalar_one_or_none()

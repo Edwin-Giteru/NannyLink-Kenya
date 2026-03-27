@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />   
+  <meta http-equiv="Content-Security-Policy" 
+      content="default-src 'self'; 
+               script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; 
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; 
+               font-src 'self' https://fonts.gstatic.com; 
+               connect-src 'self' http://127.0.0.1:8000; 
+               img-src 'self' data: http://googleusercontent.com https://via.placeholder.com https://res.cloudinary.com;">            
+ <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00152f",
+            "secondary": "#835500",
+            "surface": "#f8f9fa",
+            "on-surface": "#191c1d",
+            "on-surface-variant": "#43474e",
+            "surface-container-low": "#f3f4f5",
+            "surface-container-lowest": "#ffffff",
+            "outline-variant": "#c4c6cf",
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Inter"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+    .ambient-shadow { box-shadow: 0px 20px 40px rgba(0, 21, 47, 0.06); }
+    [shadow-fill] { font-variation-settings: 'FILL' 1; }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface font-body min-h-screen pb-24 md:pb-0 md:pt-16">
+
+  <header class="fixed top-0 w-full z-50 bg-[#f8f9fa] border-b border-outline-variant/30 flex items-center justify-between px-6 h-16">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10">
+        <img id="nav_profile_img" alt="Nanny" class="w-full h-full object-cover" src="https://via.placeholder.com/150" />
+      </div>
+      <h1 class="font-headline font-extrabold text-xl tracking-tight text-primary">NannyLink</h1>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 pt-20 pb-12">
+    <section class="mb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div class="lg:col-span-7">
+        <p class="text-xs font-semibold tracking-widest text-secondary uppercase mb-3">DASHBOARD</p>
+        <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-primary leading-tight tracking-tighter mb-4">
+          Welcome back, <br /><span id="nanny_name">...</span>
+        </h2>
+        <p id="nanny_location_text" class="text-on-surface-variant text-lg max-w-md">Loading your profile details...</p>
+      </div>
+      <div class="lg:col-span-5 relative hidden md:block">
+        <div class="aspect-[4/3] rounded-xl overflow-hidden ambient-shadow">
+          <img id="hero_profile_img" class="w-full h-full object-cover" src="https://via.placeholder.com/400" />
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div class="bg-surface-container-lowest p-8 rounded-xl ambient-shadow flex flex-col justify-between h-44 border border-outline-variant/20">
+        <div class="flex justify-between items-start">
+          <div class="p-3 rounded-lg bg-surface-container-low text-primary">
+            <span class="material-symbols-outlined">verified_user</span>
+          </div>
+          <span id="vetting_badge" class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase">LOADING</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-on-surface-variant">Vetting Status</h3>
+          <p id="vetting_text" class="font-headline text-xl font-bold text-primary">...</p>
+        </div>
+      </div>
+
+      <div class="bg-surface-container-lowest p-8 rounded-xl ambient-shadow flex flex-col justify-between h-44 border border-outline-variant/20">
+        <div class="p-3 w-fit rounded-lg bg-surface-container-low text-primary">
+          <span class="material-symbols-outlined">group</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-on-surface-variant">Total Connections</h3>
+          <p id="connection_count" class="font-headline text-4xl font-extrabold text-primary">0</p>
+        </div>
+      </div>
+
+      <div class="bg-surface-container-lowest p-8 rounded-xl ambient-shadow flex flex-col justify-between h-44 border border-outline-variant/20">
+        <div class="p-3 w-fit rounded-lg bg-surface-container-low text-primary">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-on-surface-variant">Active Contracts</h3>
+          <p id="contract_count" class="font-headline text-4xl font-extrabold text-primary">0</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-surface-container-low rounded-xl p-6 md:p-8">
+          <h3 class="font-headline text-xl font-bold text-primary mb-6">Recent Connections</h3>
+          <div id="activity_list" class="space-y-4">
+            <p class="text-sm text-on-surface-variant italic">No connections yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="bg-surface-container-lowest border border-outline-variant/20 p-6 rounded-xl ambient-shadow">
+          <h4 class="font-headline font-bold text-lg mb-4 text-primary">Current Schedule</h4>
+          <div id="schedule_display" class="space-y-4">
+            <div class="flex gap-4 items-start border-l-2 border-secondary pl-4">
+              <p id="availability_text" class="text-sm font-semibold text-primary capitalize">...</p>
+            </div>
+          </div>
+          <button onclick="window.location.href='./edit-profile.html'" class="w-full mt-6 py-3 rounded-full bg-primary text-white font-semibold text-sm hover:opacity-90 transition-all active:scale-95">
+            Update Availability
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 backdrop-blur-xl border-t border-outline-variant/30 z-50">
+    <a class="flex flex-col items-center justify-center bg-primary text-white rounded-2xl px-5 py-1.5" href="#">
+      <span class="material-symbols-outlined">account_circle</span>
+      <span class="text-[10px] font-bold">PROFILE</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-slate-500" href="/nanny/connections">
+      <span class="material-symbols-outlined">group</span>
+      <span class="text-[10px] font-bold">MATCHES</span>
+    </a>
+  </nav>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000/nannies";
+
+        async function initDashboard() {
+            // 1. Get the token (Make sure this matches your login storage key!)
+            const token = localStorage.getItem("access_token");
+
+            if (!token) {
+                console.error("No token found. Redirecting to login...");
+                window.location.href = "/frontend/src/views/login.html"; // Change to your actual login page
+                return;
+            }
+
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+
+            try {
+                // --- 1. FETCH PROFILE ---
+                const profileRes = await fetch(`${API_BASE}/profile/me`, { headers });
+                
+                if (profileRes.status === 404) {
+                    console.warn("No nanny profile found. Redirecting to setup...");
+                    window.location.href = "profilecreation.html"; // Adjust path if needed
+                    return; 
+                }
+
+                const profile = await profileRes.json();
+                if (profileRes.ok) {
+                    updateUI(profile);
+                }
+
+                // --- 2. FETCH CONNECTIONS ---
+                // Only run this if the profile actually exists!
+                const connRes = await fetch(`${API_BASE}/connections`, { headers });
+                const connectionsData = await connRes.json();
+
+                if (connRes.ok) {
+                    const actualConnections = connectionsData.data || connectionsData;
+                    updateStats(actualConnections);
+                }
+
+            } catch (err) {
+                console.error("Critical Dashboard Failure:", err);
+            }
+        }
+
+        function updateUI(data) {
+            const defaultAvatar = "https://via.placeholder.com/150?text=No+Image";
+            const profilePic = data.profile_photo_url || defaultAvatar;
+
+            // Update images
+            document.getElementById('nav_profile_img').src = profilePic;
+            document.getElementById('hero_profile_img').src = profilePic;
+
+            // Standard error handling if the URL itself is broken
+            document.getElementById('hero_profile_img').onerror = function() {
+                this.src = defaultAvatar;
+            };
+
+            document.getElementById('nanny_name').innerText = data.name || "Nanny";
+            document.getElementById('nanny_location_text').innerText = `Your profile is active in ${data.address || 'your area'}.`;
+            
+            if (data.profile_photo_url) {
+                document.getElementById('nav_profile_img').src = data.profile_photo_url;
+                document.getElementById('hero_profile_img').src = data.profile_photo_url;
+            }
+            
+            const badge = document.getElementById('vetting_badge');
+            const vText = document.getElementById('vetting_text');
+            
+            // Normalize status to lowercase for comparison
+            const status = (data.vetting_status || "pending").toLowerCase();
+            
+            if(status === "verified") {
+                badge.className = "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-green-100 text-green-700";
+                badge.innerText = "VERIFIED";
+                vText.innerText = "Profile Secured";
+            } else {
+                badge.className = "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-yellow-100 text-yellow-700";
+                badge.innerText = "PENDING";
+                vText.innerText = "Review in Progress";
+            }
+
+            document.getElementById('availability_text').innerText = (data.availability || "Not Set").replace('_', ' ');
+        }
+
+        function updateStats(connections) {
+            const list = document.getElementById('activity_list');
+            const connArray = Array.isArray(connections) ? connections : [];
+            
+            const count = connArray.length;
+            document.getElementById('connection_count').innerText = count;
+            
+            // Logic: If status is 'accepted', it counts as an active contract
+            const activeContracts = connArray.filter(c => c.status === 'accepted' || c.status === 'active').length;
+            document.getElementById('contract_count').innerText = activeContracts;
+
+            if (count > 0) {
+                list.innerHTML = connArray.slice(0, 3).map(conn => `
+                    <div class="bg-surface-container-lowest p-4 rounded-lg flex items-center justify-between border border-outline-variant/10">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined">family_restroom</span>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-primary">${conn.family_name || 'Family Match'}</p>
+                                <p class="text-xs text-on-surface-variant">Connected successfully</p>
+                            </div>
+                        </div>
+                        <button class="text-secondary font-semibold text-sm hover:underline">Details</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        initDashboard();
+  </script>
+</body>
+</html>

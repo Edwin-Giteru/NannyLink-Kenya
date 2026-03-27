@@ -29,25 +29,57 @@
     </header>
     
     <div class="full-page-container">
-    <div class="card-content">
-        <h1 class="name">NannyLink Kenya</h1>
-        <h2 class="title">Find Trusted Nannies<br>Near You</h2>
-        <p class="description">
-            Connecting Kenyan families with professional, background-checked nannies. 
-            Our platform ensures peace of mind through a rigorous vetting process, 
-            integrated M-Pesa payments for secure connections, and automated digital 
-            contracts to protect both parties.
-        </p>
-        <div class="button-group">
-            <a href="../frontend/src/views/login.html" class="btn">Search for Nanny</a>
-            <a href="../frontend/src/views/login.html" class="btn">Apply as a Nanny</a>
+        <div class="card-content">
+            <h1 class="name">NannyLink Kenya</h1>
+            <h2 class="title">Find Trusted Nannies<br>Near You</h2>
+            <p class="description">
+                Connecting Kenyan families with professional, background-checked nannies. 
+                Our platform ensures peace of mind through a rigorous vetting process, 
+                integrated M-Pesa payments for secure connections, and automated digital 
+                contracts to protect both parties.
+            </p>
+            <div class="button-group">
+                <a href="../frontend/src/views/login.html" class="btn">Search for Nanny</a>
+                <a href="../frontend/src/views/login.html" class="btn">Apply as a Nanny</a>
+            </div>
+        </div>
+
+        <div class="profile-image-section">
+            <img src="./assets/images/cover image.jpg" alt="Childcare Support">
         </div>
     </div>
 
-    <div class="profile-image-section">
-        <img src="./assets/images/cover image.jpg" alt="Childcare Support">
-    </div>
-</div>
+        <!-- 🔷 PLATFORM STATS -->
+    <section class="stats-section">
+        <h3><strong>Here is the number of families, nannies with accounts and matches that have been successful through our platform so far</strong></h3>
+        <div class="stats-container">
+            <div class="stat-box">
+                <h2 id="stat-nannies">0</h2>
+                <p>Nannies</p>
+            </div>
+            <div class="stat-box">
+                <h2 id="stat-families">0</h2>
+                <p>Families</p>
+            </div>
+            <div class="stat-box">
+                <h2 id="stat-matches">0</h2>
+                <p>Successful Matches</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🔷 FEATURED NANNIES -->
+    <section class="featured-nannies">
+        <div class="section-header">
+            <h2>Featured Nannies</h2>
+            <p>Browse trusted caregivers near you</p>
+        </div>
+
+        <div id="nanny-list" class="nanny-grid">
+            <!-- Dynamic nanny cards will be inserted here -->
+        </div>
+    </section>
+
 
 <div id="about" class="about-section">
     <div class="its-us">
@@ -144,7 +176,7 @@
         </div>
     </div>
 
-    <div id="testimonials" class="testimonials-wrapper">
+    <!-- <div id="testimonials" class="testimonials-wrapper">
     <div class="its-us">
         <h2 class="section-title">What connected Nannies and Families say </h2>
     </div>
@@ -203,9 +235,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
-    <script src="./assets/scripts/landingController.js"></script>
+    <script type="module" src="../frontend/assets/scripts/authController.js"></script>
 </body>
 
 <footer class="main-footer">

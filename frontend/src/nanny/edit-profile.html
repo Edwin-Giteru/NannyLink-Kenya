@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Edit Profile</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700" rel="stylesheet" />
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00152f",
+                        "secondary": "#835500",
+                        "surface": "#f8f9fa",
+                        "border-muted": "#e2e8f0"
+                    },
+                    fontFamily: { "headline": ["Manrope"], "body": ["Inter"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .input-focus-ring { @apply focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+    </style>
+</head>
+
+<body class="bg-surface text-primary font-body antialiased">
+
+    <nav class="fixed top-0 w-full z-50 glass-nav border-b border-border-muted/50 h-16 flex items-center px-6 justify-between">
+        <button onclick="window.history.back()" class="flex items-center gap-2 text-primary/70 hover:text-primary transition-colors group">
+            <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            <span class="font-bold text-sm tracking-tight">Back to Dashboard</span>
+        </button>
+        <h1 class="font-headline font-extrabold text-lg tracking-tight lg:absolute lg:left-1/2 lg:-translate-x-1/2">Edit Profile</h1>
+        <div class="w-24"></div> 
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 pt-28 pb-20">
+        <form id="edit_profile_form" class="space-y-8">
+            
+            <section class="bg-white rounded-3xl p-8 border border-border-muted shadow-sm flex flex-col items-center text-center">
+                <div class="relative mb-4">
+                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface shadow-inner ring-1 ring-border-muted bg-slate-100 flex items-center justify-center">
+                        <img id="profile_preview" src="https://via.placeholder.com/150" class="w-full h-full object-cover" />
+                    </div>
+                    <input type="file" id="profile_file_input" accept="image/*" class="hidden" />
+                    
+                    <button id="trigger_upload" type="button" class="absolute bottom-1 right-1 bg-secondary text-white p-2.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                    </button>
+                </div>
+                
+                <h3 id="display_name" class="font-headline font-extrabold text-xl text-slate-400 italic">Loading name...</h3>
+                <p id="upload_status" class="text-sm text-slate-500 font-medium mt-1">Nanny Profile Photo</p>
+                <input type="hidden" id="profile_photo_url" />
+            </section>
+
+            <div class="bg-white rounded-3xl p-8 border border-border-muted shadow-sm space-y-8">
+                <div class="border-b border-border-muted pb-4">
+                    <h4 class="font-headline font-bold text-lg">General Information</h4>
+                    <p class="text-xs text-slate-400 font-semibold tracking-wide uppercase mt-1">Basic identification and location</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-extrabold text-primary/50 uppercase tracking-widest px-1">Full Name</label>
+                        <input type="text" id="name" required class="w-full rounded-2xl border-border-muted bg-surface/50 px-4 py-3.5 text-sm font-medium input-focus-ring" placeholder="Enter full name" />
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-extrabold text-primary/50 uppercase tracking-widest px-1">Residential Address</label>
+                        <input type="text" id="address" required class="w-full rounded-2xl border-border-muted bg-surface/50 px-4 py-3.5 text-sm font-medium input-focus-ring" placeholder="e.g. Njoro, Nakuru" />
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-extrabold text-primary/50 uppercase tracking-widest px-1">Years of Experience</label>
+                        <input type="number" id="years_experience" required class="w-full rounded-2xl border-border-muted bg-surface/50 px-4 py-3.5 text-sm font-medium input-focus-ring" placeholder="0" />
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-extrabold text-primary/50 uppercase tracking-widest px-1">Preferred Working Location</label>
+                        <input type="text" id="preferred_location" required class="w-full rounded-2xl border-border-muted bg-surface/50 px-4 py-3.5 text-sm font-medium input-focus-ring" placeholder="e.g. Nairobi" />
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2 pt-2">
+                    <label class="text-[11px] font-extrabold text-primary/50 uppercase tracking-widest px-1">Skills (Comma separated)</label>
+                    <textarea id="skills" rows="3" required class="w-full rounded-2xl border-border-muted bg-surface/50 px-4 py-3.5 text-sm font-medium input-focus-ring" placeholder="e.g. Cooking, First Aid, Tutoring"></textarea>
+                </div>
+
+                <div class="flex flex-col gap-2 pt-2">
+                    <label class="text-[11px] font-extrabold text-primary/50 uppercase tracking-widest px-1 text-secondary">Availability Status</label>
+                    <div class="relative">
+                        <select id="availability" class="w-full rounded-2xl border-border-muted bg-secondary/5 px-4 py-4 text-sm font-bold text-secondary appearance-none focus:ring-0 focus:border-secondary transition-colors cursor-pointer">
+                            <option value="full_time">Full Time</option>
+                            <option value="part_time">Part Time</option>
+                            <option value="weekends">Weekends</option>
+                            <option value="evenings">Evenings</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 pt-4">
+                <button type="submit" id="save_btn" class="flex-1 bg-primary text-white py-5 rounded-2xl font-bold text-base shadow-xl hover:shadow-primary/20 hover:-translate-y-1 active:translate-y-0 transition-all">
+                    Save Profile Changes
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000/nannies";
+        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dql4taq0c/image/upload";
+        const UPLOAD_PRESET = "Nanny_ids";
+        const token = localStorage.getItem("access_token");
+        let isUploading = false;
+
+        async function loadCurrentProfile() {
+            if (!token) { window.location.href = "login.html"; return; }
+            try {
+                const response = await fetch(`${API_BASE}/profile/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('display_name').innerText = data.name || "Nanny Profile";
+                    document.getElementById('display_name').classList.remove('italic', 'text-slate-400');
+                    document.getElementById('name').value = data.name || "";
+                    document.getElementById('address').value = data.address || "";
+                    document.getElementById('years_experience').value = data.years_experience || 0;
+                    document.getElementById('preferred_location').value = data.preferred_location || "";
+                    document.getElementById('skills').value = data.skills || "";
+                    document.getElementById('availability').value = data.availability || "full_time";
+                    if (data.profile_photo_url) {
+                        document.getElementById('profile_preview').src = data.profile_photo_url;
+                        document.getElementById('profile_photo_url').value = data.profile_photo_url;
+                    }
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function uploadToCloudinary(file) {
+            isUploading = true;
+            document.getElementById('save_btn').disabled = true;
+            const statusText = document.getElementById('upload_status');
+            statusText.innerText = "Optimizing...";
+            
+            try {
+                const compressedFile = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true });
+                statusText.innerText = "Uploading...";
+                const formData = new FormData();
+                formData.append('file', compressedFile);
+                formData.append('upload_preset', UPLOAD_PRESET);
+
+                const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error("Upload failed");
+                statusText.innerText = "Nanny Profile Photo";
+                return data.secure_url;
+            } finally {
+                isUploading = false;
+                document.getElementById('save_btn').disabled = false;
+            }
+        }
+
+        const fileInput = document.getElementById('profile_file_input');
+        document.getElementById('trigger_upload').addEventListener('click', () => fileInput.click());
+
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('profile_preview').src = URL.createObjectURL(file);
+            try {
+                const url = await uploadToCloudinary(file);
+                document.getElementById('profile_photo_url').value = url;
+            } catch (err) { alert("Photo upload failed."); }
+        };
+
+        document.getElementById('edit_profile_form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(isUploading) return;
+            
+            const btn = document.getElementById('save_btn');
+            btn.disabled = true;
+            btn.innerText = "Saving Profile...";
+
+            const updatedData = {
+                name: document.getElementById('name').value,
+                address: document.getElementById('address').value,
+                years_experience: parseInt(document.getElementById('years_experience').value),
+                preferred_location: document.getElementById('preferred_location').value,
+                skills: document.getElementById('skills').value,
+                availability: document.getElementById('availability').value,
+                profile_photo_url: document.getElementById('profile_photo_url').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/profile`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+                if (response.ok) {
+                    alert("Profile updated!");
+                    window.location.href = "nannydashboard.html";
+                } else { alert("Update failed."); }
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Save Profile Changes";
+            }
+        });
+        loadCurrentProfile();
+    </script>
+</body>
+</html>

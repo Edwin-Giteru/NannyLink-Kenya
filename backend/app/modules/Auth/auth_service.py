@@ -21,33 +21,35 @@ class AuthService:
         self.db = db
         self.auth_repo = AuthRepository(db)
     
-    async def register_nanny(self, user: UserCreate) -> Result:
-        # Create Role 
+    # app/modules/Auth/auth_service.py
 
-        existing_user = await self.auth_repo.get_user_by_email(user.email)
-        if existing_user:
-            return Result.fail(
-                "User with this email already exists.",
-                status_code=400
-            )
-        existing_phone = await self.auth_repo.get_user_by_phone(user.phone)
-        if existing_phone:
-            return Result.fail(
-                "User with this phone number already exists.",
-                status_code=400
-            )
-        hashed_pass = hash_password(user.password)
-        user.password = hashed_pass
-        user.role = UserRole.NANNY
-        
-        new_user = await self.auth_repo.create_user(user)
-        await self.db.commit()
-        await self.db.refresh(new_user)
-        
-        return Result.ok(
-            data=new_user,
-            status_code=201
-        )
+    async def register_nanny(self, user: UserCreate) -> Result:
+        try:
+            # Check uniqueness
+            if await self.auth_repo.get_user_by_email(user.email):
+                return Result.fail("Email already exists.", status_code=400)
+            
+            # Hash password
+            hashed_pass = hash_password(user.password)
+            
+            # Prepare data for DB
+            user_data = user.model_dump()
+            user_data["password"] = hashed_pass
+            user_data["role"] = UserRole.NANNY # Ensure this is the Enum expected by your DB model
+            
+            # Create the actual DB instance
+            new_user = User(**user_data)
+            
+            self.db.add(new_user)
+            await self.db.commit()
+            await self.db.refresh(new_user)
+            
+            return Result.ok(data=new_user, status_code=201)
+        except Exception as e:
+            await self.db.rollback()
+            # Log the actual error to your terminal so you can see it!
+            print(f"DEBUG ERROR: {str(e)}") 
+            return Result.fail(f"Internal Database Error: {str(e)}", status_code=500)
 
     async def register_family(self, user: UserCreate) -> Result:
             # Create Role 

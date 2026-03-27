@@ -34,9 +34,6 @@ class NannyProfile(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # relationships
+    matches: Mapped[list["Match"]] = relationship("Match", back_populates="nanny")
     user: Mapped["User"] = relationship("User", back_populates="nanny_profile")
-
-    vetting_documents: Mapped[list["VettingDocument"]] = relationship("VettingDocument", back_populates="nanny",  cascade="all, delete-orphan")
-    applications: Mapped[list["Application"]] = relationship("Application", back_populates="nanny", cascade="all, delete-orphan")
-    applied_jobs: Mapped[list["JobPost"]] = relationship("JobPost", secondary="application", viewonly=True)
-    matches: Mapped[list["Match"]] = relationship("Match", back_populates="selected_nanny")
+    vetting_documents: Mapped[list["VettingDocument"]] = relationship("VettingDocument", back_populates="nanny")

@@ -1,4 +1,4 @@
-import { API_URL } from "../utils/config.js";
+import { API_URL } from "../../src/utils/config.js";
 const getAuthData = () => {
     const token = localStorage.getItem("access_token");
     if (!token) return { token: null, userId: null };

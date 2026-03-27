@@ -1,4 +1,4 @@
-import { API_URL } from "../utils/config.js";
+import { API_URL } from "../../src/utils/config.js";
 
 const getAuthData = () => {
     const token = localStorage.getItem("access_token");
@@ -76,4 +76,31 @@ export async function deleteNannyAccount(userId) {
     } catch (error) {
         return { success: false };
     }
+}
+
+
+// LOGIN
+export async function login(data) {
+    const res = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    return await res.json();
+}
+
+// SIGNUP (example for nanny)
+export async function signup(data) {
+    const res = await fetch(`${API_URL}/nanny`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    return await res.json();
 }

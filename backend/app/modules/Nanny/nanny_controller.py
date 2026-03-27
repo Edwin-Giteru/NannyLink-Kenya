@@ -1,165 +1,115 @@
-from app.db.session import SessionDep
 from fastapi import APIRouter, Depends, HTTPException, status
+from app.db.session import SessionDep
 from app.modules.Nanny.nanny_service import NannyService
 from app.modules.Nanny.nanny_schema import NannyCreate, NannyResponse, NannyUpdate
 from app.utils.security import get_current_user
 from app.db.models.user import User
 from uuid import UUID
-from fastapi.responses import JSONResponse
 
+router = APIRouter(tags=["Nanny"], prefix="/nannies")
 
-router = APIRouter(tags=["Nanny"], prefix="/Nanny", redirect_slashes=False)
+# --- PUBLIC ENDPOINTS ---
 
+@router.get("/", response_model=list[dict])
+async def get_all_nannies(db: SessionDep):
+    """Publicly list nannies for browsing."""
+    service = NannyService(db)
+    nannies = await service.nanny_repository.get_public_nannies()
+    return [
+        {
+            "id": n.id,
+            "name": n.name,
+            "experience": n.years_experience,
+            "location": n.address,
+            "photo": n.profile_photo_url,
+            "skills": n.skills
+        } for n in nannies
+    ]
+
+@router.post("/profile", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
+async def create_my_profile(
+    nanny_data: NannyCreate, 
+    db: SessionDep, 
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Endpoint for a newly registered user with role 'nanny' to create their profile.
+    """
+    # Safety check: Ensure the user actually has the 'nanny' role
+    if current_user.role != "nanny":
+        raise HTTPException(
+            status_code=403, 
+            detail="Only users with the 'nanny' role can create a nanny profile."
+        )
+
+    service = NannyService(db)
+    result = await service.create_nanny_profile(nanny_data, current_user.id)
+    
+    if not result.success:
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+    
+    return result.data
 
 @router.get("/profile/me", response_model=NannyResponse)
-async def get_my_profile(
-    db: SessionDep,
-    current_user: User = Depends(get_current_user)
-):
-    """
-    Returns the full nanny profile for the currently authenticated nanny.
-    Used by the dashboard to display the nanny's name, photo, vetting status, etc.
-    """
-    if current_user.role.lower() != "nanny":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only nanny accounts can access this endpoint."
-        )
-
-    service = NannyService(db)
-    result = await service.get_nanny(current_user.id)
-
-    if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-
-    return result.data
-
-
-
-@router.post("", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
-async def create_nanny(
-    nanny_create: NannyCreate,
-    db: SessionDep,
-    current_user: User = Depends(get_current_user)
-):
-    if current_user.role.upper() != "NANNY":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only users with the nanny role can create nanny profiles."
-        )
-
-    nanny_service = NannyService(db)
-    result = await nanny_service.create_nanny(nanny_create, current_user.id)
-
-    if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-
-    return result.data
-
-@router.patch("/")
-async def update_nanny(
-    nanny_update: NannyUpdate,
-    db: SessionDep,
-    current_user: User = Depends(get_current_user)
-):
+async def get_my_profile(db: SessionDep, current_user: User = Depends(get_current_user)):
     if current_user.role != "nanny":
-        raise HTTPException(
-            status_code=403,
-            detail="Only users with the role of a nanny can perform this action"
-        )
-
-    service = NannyService(db)
-    result = await service.update_nanny(nanny_update, current_user.id)
-
-    if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-    return result.data
-
-@router.get("/{nanny_id}", response_model=NannyResponse)
-async def get_nanny_by_id(
-    nanny_id: UUID,
-    db: SessionDep,
-    current_user: User = Depends(get_current_user)
-):
-    """
-    Returns a nanny profile by id.
-    - Nanny: can only fetch their own profile.
-    - Family: can fetch any nanny profile (needed for reviewing applicants).
-    - Admin: unrestricted.
-    """
-    role = current_user.role.lower()
- 
-    if role == "nanny":
-        # Nannies can only read their own profile
-        service = NannyService(db)
-        result = await service.get_nanny(current_user.id)       # looks up by user_id
-        if not result.success:
-            raise HTTPException(status_code=result.status_code, detail=result.error)
-        # Ensure they're not snooping on someone else's profile
-        if str(result.data.id) != str(nanny_id):
-            raise HTTPException(status_code=403, detail="You can only view your own profile.")
-        return result.data
- 
-    elif role in ("family", "admin"):
-        # Families and admins can look up any nanny by profile id
-        service = NannyService(db)
-        result = await service.get_nanny_by_profile_id(nanny_id)   # see note below
-        if not result.success:
-            raise HTTPException(status_code=result.status_code, detail=result.error)
-        return result.data
- 
-    else:
-        raise HTTPException(status_code=403, detail="Insufficient permissions.")
- 
- 
-
-@router.get("/applications/{nanny_id}")
-async def get_applications_for_nanny(   
-    db: SessionDep,
-    current_user: User = Depends(get_current_user)
-):
-    if current_user.role != "nanny":
-        raise HTTPException(
-            status_code=403,
-            detail="Only users with the role of a nanny can perform this action"
-        )
+        raise HTTPException(status_code=403, detail="Nanny access only.")
     
     service = NannyService(db)
-    result = await service.get_applications_for_nanny(current_user.id)
-
+    result = await service.get_nanny_by_user(current_user.id) 
+    
     if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
+        raise HTTPException(status_code=result.status_code, detail=result.error)
     return result.data
 
-@router.delete("/{nanny_id}")
-async def delete_nanny(
-    db: SessionDep,
+@router.put("/profile", response_model=NannyResponse)
+async def update_my_profile(
+    nanny_update: NannyUpdate, 
+    db: SessionDep, 
     current_user: User = Depends(get_current_user)
 ):
+    service = NannyService(db)
+    result = await service.update_nanny_profile(nanny_update, current_user.id)
+    if not result.success:
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+    return result.data
+
+@router.get("/connections")
+async def get_nanny_matches(db: SessionDep, current_user: User = Depends(get_current_user)):
+    """List of all families this nanny is connected with."""
     if current_user.role != "nanny":
-        raise HTTPException(
-            status_code=403,
-            detail="Only users with the role of a nanny can perform this action"
-        )
+        raise HTTPException(status_code=403, detail="Nanny access only.")
     
     service = NannyService(db)
-    result = await service.delete_nanny(current_user.id)
-
+    result = await service.get_nanny_connections(current_user.id)
     if not result.success:
-        raise HTTPException(
-            status_code=result.status_code,
-            detail=result.error
-        )
-    return JSONResponse(content={"message": "Nanny profile deleted successfully"}, status_code=200)
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+    return result.data
+
+@router.get("/{id}", response_model=NannyResponse)
+async def get_nanny_public_profile(id: UUID, db: SessionDep):
+    """Public detail view for a nanny profile."""
+    service = NannyService(db)
+    result = await service.get_nanny_by_profile_id(id)
+    if not result.success:
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+    return result.data
+
+# --- PROTECTED / PRIVATE ENDPOINTS ---
+
+
+
+@router.get("/{id}/full")
+async def get_nanny_full_details(id: UUID, db: SessionDep, current_user: User = Depends(get_current_user)):
+    """Protected view: Includes contact/ID info for Admins or Connected Families."""
+    if current_user.role not in ["admin", "family"]:
+        raise HTTPException(status_code=403, detail="Unauthorized to view sensitive details.")
+    
+    service = NannyService(db)
+    result = await service.get_full_nanny_details(id)
+    if not result.success:
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+    return result.data
+
+# app/modules/Nanny/router.py
+
