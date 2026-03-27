@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from app.db.models.types import NannyAvailability
+from app.db.models.types import NannyAvailability, VettingStatus
 import uuid
 
 class NannySchema(BaseModel):
@@ -12,6 +12,7 @@ class NannySchema(BaseModel):
     preferred_location: str | None = Field(None, max_length=255)
     availability: NannyAvailability = Field(..., description="Nanny availability status", example=[NannyAvailability.FULL_TIME])
     profile_photo_url: str | None = Field(None, max_length=1024)
+    vetting_status: VettingStatus = Field(..., description="Nanny's vetting status", example=[VettingStatus.APPROVED])
 
     class Config:
         orm_mode = True

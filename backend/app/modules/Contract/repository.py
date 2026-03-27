@@ -48,7 +48,8 @@ class ContractRepository:
         stmt = (
             select(Contract)
             .join(Match, Contract.match_id == Match.id)
-            .where(Match.selected_nanny_id == nanny_profile_id)
+            # CHANGED: Use 'nanny_id' instead of 'selected_nanny_id'
+            .where(Match.nanny_id == nanny_profile_id) 
             .options(*self._load_options)
             .order_by(Contract.created_at.desc())
         )

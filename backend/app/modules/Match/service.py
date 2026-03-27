@@ -12,8 +12,8 @@ class MatchService:
     async def initiate_connection(self, family_user_id: UUID, nanny_id: UUID) -> Result:
         try:
             # 1. Get Family Profile from User ID
-            from app.modules.Family.repository import FamilyRepo
-            family_repo = FamilyRepo(self.match_repo.db)
+            from app.modules.Family.repository import FamilyRepository
+            family_repo = FamilyRepository(self.match_repo.db)
             family = await family_repo.get_family_by_user_id(family_user_id)
             
             if not family:
@@ -36,8 +36,8 @@ class MatchService:
     async def list_user_connections(self, user_id: UUID, role: str) -> Result:
         try:
             if role == "family":
-                from app.modules.Family.repository import FamilyRepo
-                family_repo = FamilyRepo(self.match_repo.db)
+                from app.modules.Family.repository import FamilyRepository
+                family_repo = FamilyRepository(self.match_repo.db)
                 profile = await family_repo.get_family_by_user_id(user_id)
                 matches = await self.match_repo.get_matches_for_family(profile.id)
             else:

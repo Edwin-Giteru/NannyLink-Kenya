@@ -23,7 +23,6 @@ class JobStatus(str, Enum):
     
 class MatchStatus(str, Enum):
     AWAITING_PAYMENT = "awaiting_payment"    
-    PARTIALLY_PAID = "partially_paid"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 

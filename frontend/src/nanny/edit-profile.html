@@ -119,8 +119,10 @@
 
     <script>
         const API_BASE = "http://127.0.0.1:8000/nannies";
+        // Double check this cloud name "dql4taq0c" in your Cloudinary Dashboard
         const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dql4taq0c/image/upload";
-        const UPLOAD_PRESET = "Nanny_ids";
+        const UPLOAD_PRESET = "Nanny_ids"; 
+        
         const token = localStorage.getItem("access_token");
         let isUploading = false;
 
@@ -145,30 +147,51 @@
                         document.getElementById('profile_photo_url').value = data.profile_photo_url;
                     }
                 }
-            } catch (err) { console.error(err); }
+            } catch (err) { console.error("Profile Load Error:", err); }
         }
 
         async function uploadToCloudinary(file) {
             isUploading = true;
-            document.getElementById('save_btn').disabled = true;
+            const saveBtn = document.getElementById('save_btn');
             const statusText = document.getElementById('upload_status');
+            
+            saveBtn.disabled = true;
             statusText.innerText = "Optimizing...";
             
             try {
-                const compressedFile = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true });
-                statusText.innerText = "Uploading...";
+                // Compress image before upload to save bandwidth and prevent timeouts
+                const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true };
+                const compressedFile = await imageCompression(file, options);
+                
+                statusText.innerText = "Uploading to Cloud...";
+                
                 const formData = new FormData();
                 formData.append('file', compressedFile);
                 formData.append('upload_preset', UPLOAD_PRESET);
 
-                const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+                const resp = await fetch(CLOUDINARY_URL, { 
+                    method: 'POST', 
+                    body: formData 
+                });
+
+                if (!resp.ok) {
+                    const errorData = await resp.json();
+                    console.error("Cloudinary Error:", errorData);
+                    throw new Error(errorData.error?.message || "Upload failed");
+                }
+
                 const data = await resp.json();
-                if (!resp.ok) throw new Error("Upload failed");
-                statusText.innerText = "Nanny Profile Photo";
+                statusText.innerText = "Upload successful!";
+                setTimeout(() => statusText.innerText = "Nanny Profile Photo", 2000);
+                
                 return data.secure_url;
+            } catch (err) {
+                console.error("Upload process error:", err);
+                statusText.innerText = "Upload failed. Check connection.";
+                throw err;
             } finally {
                 isUploading = false;
-                document.getElementById('save_btn').disabled = false;
+                saveBtn.disabled = false;
             }
         }
 
@@ -178,16 +201,24 @@
         fileInput.onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
+
+            // Immediate local preview
             document.getElementById('profile_preview').src = URL.createObjectURL(file);
+            
             try {
                 const url = await uploadToCloudinary(file);
                 document.getElementById('profile_photo_url').value = url;
-            } catch (err) { alert("Photo upload failed."); }
+            } catch (err) {
+                alert("Photo upload failed. Please ensure your internet is connected and Cloudinary settings are correct.");
+            }
         };
 
         document.getElementById('edit_profile_form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(isUploading) return;
+            if(isUploading) {
+                alert("Please wait for the photo to finish uploading.");
+                return;
+            }
             
             const btn = document.getElementById('save_btn');
             btn.disabled = true;
@@ -206,18 +237,30 @@
             try {
                 const response = await fetch(`${API_BASE}/profile`, {
                     method: 'PUT',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Authorization': `Bearer ${token}`, 
+                        'Content-Type': 'application/json' 
+                    },
                     body: JSON.stringify(updatedData)
                 });
+                
                 if (response.ok) {
-                    alert("Profile updated!");
+                    alert("Profile updated successfully!");
                     window.location.href = "nannydashboard.html";
-                } else { alert("Update failed."); }
+                } else { 
+                    const errRes = await response.json();
+                    alert("Update failed: " + (errRes.detail || "Server error")); 
+                }
+            } catch (err) {
+                console.error("Submission error:", err);
+                alert("Connection error. Could not reach server.");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Save Profile Changes";
             }
         });
+
+        // Initialize
         loadCurrentProfile();
     </script>
 </body>
