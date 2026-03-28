@@ -1,9 +1,11 @@
 from uuid import UUID
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.Match.repository import MatchRepository
 from app.modules.Match.match_schema import MatchResponse # Assume this is updated to match new fields
 from app.utils.results import Result
 from app.db.models.types import MatchStatus
+from app.db.models.match import Match
 
 class MatchService:
     def __init__(self, db: AsyncSession):
@@ -55,3 +57,39 @@ class MatchService:
         if not match:
             return Result.fail("Connection not found.", status_code=404)
         return Result.ok(data=MatchResponse.model_validate(match))
+    
+    async def get_match_by_id(self, match_id: UUID) -> Result:
+        """Fetches a single match record by its UUID."""
+        try:
+            # Replace 'Match' with your actual model name
+            from app.db.models.match import Match 
+            from sqlalchemy import select
+
+            stmt = select(Match).where(Match.id == match_id)
+            result = await self.db.execute(stmt)
+            match = result.scalar_one_or_none()
+
+            if not match:
+                return Result.fail("Match connection not found", 404)
+            
+            return Result.ok(data=match)
+        except Exception as e:
+            # Use your logger here if you have one
+            return Result.fail(f"Error retrieving match: {str(e)}", 500)
+        
+    async def update_match_status(self, match_id: UUID, new_status: MatchStatus) -> Result:
+        """Updates the status of a specific match/connection."""
+        try:
+            # We use an update statement for efficiency
+            stmt = (
+                update(Match)
+                .where(Match.id == match_id)
+                .values(status=new_status)
+            )
+            await self.db.execute(stmt)
+            # We don't commit here because the PaymentService 
+            # will call db.commit() after processing everything.
+            
+            return Result.ok(data={"match_id": match_id, "new_status": new_status})
+        except Exception as e:
+            return Result.fail(f"Failed to update match status: {str(e)}", 500)

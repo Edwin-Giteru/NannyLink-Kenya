@@ -22,7 +22,8 @@ async def get_all_nannies(db: SessionDep):
             "experience": n.years_experience,
             "location": n.address,
             "photo": n.profile_photo_url,
-            "skills": n.skills
+            "skills": n.skills,
+            "availability": n.availability
         } for n in nannies
     ]
 

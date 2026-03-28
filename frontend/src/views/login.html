@@ -3,806 +3,338 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
+  <title>Welcome to NannyLink</title>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00152f",
+            "secondary": "#835500",
+            "surface": "#f8f9fa",
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+
   <style>
-:root {
-  --navy:#1a3557;--navy-mid:#1e4d7b;--navy-light:#2a6496;
-  --cream:#faf8f5;--cream-2:#f3efe8;
-  --gold:#e9a840;--gold-light:#fdf3dc;
-  --green:#10b981;--green-bg:#d1fae5;
-  --red:#ef4444;--red-bg:#fee2e2;
-  --border:#e8e4dc;--text-dark:#1a2436;--text-mid:#4b5563;--text-light:#9ca3af;
-  --radius:14px;--radius-sm:9px;
-  --shadow:0 2px 16px rgba(26,53,87,.09);
-  --trans:.22s cubic-bezier(.4,0,.2,1);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px;}
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-dark);min-height:100vh;overflow-x:hidden;}
-
-/* ── LAYOUT ── */
-.page-wrap{
-  display: absolute; 
-  justify-content: center;
-  min-height:100vh; 
-  border-radius: 10px;
-  border: 1px solid black;
-  box-shadow: 0 0 15px 5px blue;;
-}
-
-
-/* ── FORM RIGHT ── */
-.form-panel{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding: 10px 10px;
-  background:#fff;
-  position:relative;
-  overflow-y:auto;
-  width: 30%;
-  /* width: 400px;         */
-  border-radius: 10px;
-  margin: 40px auto;
-  border: 1px black; 
-  box-shadow: 0 0 15px 5px #F5F5F5;
-}
-.form-panel::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-
-.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--navy);align-items:center;justify-content:space-between;padding:0 20px;z-index:100;box-shadow:0 2px 12px rgba(26,53,87,.25);}
-.mobile-header-logo{display:flex;align-items:center;gap:9px;}
-.mobile-header-logo .mmark{width:30px;height:30px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.78rem;color:var(--navy);}
-.mobile-header-logo span{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:#fff;}
-.mobile-header-badge{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.45);}
-
-.form-box{
-  width:100%;
-  max-width:440px;
-
-}
-
-/* ── MODE TOGGLE ── */
-.mode-toggle{display:flex;background:var(--cream-2);border:1.5px solid var(--border);border-radius:99px;padding:4px;margin-bottom:28px;position:relative;}
-.mode-toggle-track{position:absolute;top:4px;left:4px;width:calc(50% - 4px);height:calc(100% - 8px);background:var(--navy);border-radius:99px;transition:transform var(--trans);box-shadow:0 2px 8px rgba(26,53,87,.25);}
-.mode-toggle.signup-mode .mode-toggle-track{transform:translateX(100%);}
-.mode-btn{flex:1;padding:9px 18px;border:none;background:none;border-radius:99px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;color:var(--text-light);cursor:pointer;transition:color var(--trans);position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:6px;}
-.mode-btn.active{color:#fff;}
-.mode-btn i{font-size:.78rem;}
-
-/* ── BANNER ── */
-.auth-banner{display:none;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius-sm);font-size:.82rem;line-height:1.5;margin-bottom:14px;animation:slideDown .2s ease;}
-.auth-banner.show{display:flex;}
-.auth-banner.error{background:var(--red-bg);border:1px solid #fca5a5;color:#991b1b;}
-.auth-banner.success{background:var(--green-bg);border:1px solid #6ee7b7;color:#065f46;}
-.auth-banner i{font-size:.82rem;flex-shrink:0;}
-@keyframes slideDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
-
-/* ── VIEWS ── */
-.form-view{display:none;}
-.form-view.active{display:block;animation:viewIn .25s ease;}
-@keyframes viewIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
-
-.form-head{margin-bottom:24px;}
-.form-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-light);margin-bottom:5px;}
-.form-head h2{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:600;color:var(--navy);line-height:1.1;margin-bottom:6px;}
-.form-head p{font-size:.86rem;color:var(--text-mid);}
-
-/* ── ROLE CARDS ── */
-.role-label{font-size:.78rem;font-weight:600;color:var(--text-dark);margin-bottom:8px;}
-.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
-.role-card{display:flex;flex-direction:column;align-items:center;gap:7px;padding:16px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--cream);cursor:pointer;transition:all var(--trans);font-family:'DM Sans',sans-serif;}
-.role-card:hover{border-color:var(--navy-light);background:#fff;}
-.role-card.active{border-color:var(--navy);background:#fff;box-shadow:0 0 0 4px rgba(26,53,87,.07);}
-.role-icon{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all var(--trans);}
-.role-card.nanny .role-icon{background:rgba(16,185,129,.1);color:var(--green);}
-.role-card.family .role-icon{background:rgba(233,168,64,.14);color:#a06800;}
-.role-card.nanny.active .role-icon{background:var(--green);color:#fff;}
-.role-card.family.active .role-icon{background:var(--gold);color:var(--navy);}
-.role-card strong{font-size:.86rem;font-weight:700;color:var(--text-dark);}
-.role-card small{font-size:.68rem;color:var(--text-light);text-align:center;line-height:1.3;}
-.role-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all var(--trans);}
-.role-dot i{font-size:.55rem;color:transparent;transition:color var(--trans);}
-.role-card.active .role-dot{background:var(--navy);border-color:var(--navy);}
-.role-card.active .role-dot i{color:#fff;}
-
-.section-divider{display:flex;align-items:center;gap:10px;font-size:.73rem;color:var(--text-light);font-weight:500;margin-bottom:18px;}
-.section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-
-/* ── FIELDS ── */
-.fields{display:flex;flex-direction:column;gap:14px;margin-bottom:18px;}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.field{display:flex;flex-direction:column;gap:4px;}
-.field-header{display:flex;align-items:center;justify-content:space-between;}
-.field label{font-size:.78rem;font-weight:600;color:var(--text-dark);}
-.forgot-btn{font-size:.74rem;color:var(--navy-light);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;text-decoration:underline;text-underline-offset:2px;transition:color var(--trans);}
-.forgot-btn:hover{color:var(--navy);}
-
-.input-wrap{display:flex;align-items:center;gap:9px;background:var(--cream);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;transition:border-color var(--trans),box-shadow var(--trans),background var(--trans);}
-.input-wrap:focus-within{border-color:var(--navy);background:#fff;box-shadow:0 0 0 4px rgba(26,53,87,.07);}
-.input-wrap.is-error{border-color:var(--red);box-shadow:0 0 0 4px rgba(239,68,68,.07);}
-.input-wrap>i{font-size:.8rem;color:var(--text-light);flex-shrink:0;width:14px;text-align:center;transition:color var(--trans);}
-.input-wrap:focus-within>i{color:var(--navy);}
-.input-wrap input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text-dark);outline:none;min-width:0;width:0;}
-.input-wrap input::placeholder{color:var(--text-light);}
-.pw-eye{background:none;border:none;color:var(--text-light);cursor:pointer;font-size:.82rem;padding:0;flex-shrink:0;transition:color var(--trans);}
-.pw-eye:hover{color:var(--navy);}
-.field-err{font-size:.72rem;color:var(--red);font-weight:500;min-height:14px;}
-
-.strength-wrap{display:none;flex-direction:column;gap:3px;}
-.strength-wrap.visible{display:flex;}
-.strength-bar{height:3px;background:var(--border);border-radius:99px;overflow:hidden;}
-.strength-fill{height:100%;border-radius:99px;width:0;transition:width .3s ease,background .3s ease;}
-.strength-fill.weak{background:var(--red);width:30%;}
-.strength-fill.fair{background:#f59e0b;width:60%;}
-.strength-fill.strong{background:var(--green);width:100%;}
-.strength-text{font-size:.7rem;font-weight:600;}
-.strength-text.weak{color:var(--red);}
-.strength-text.fair{color:#f59e0b;}
-.strength-text.strong{color:var(--green);}
-
-.terms-row{display:flex;align-items:flex-start;gap:10px;font-size:.78rem;color:var(--text-mid);line-height:1.5;}
-.terms-row input[type=checkbox]{width:15px;height:15px;margin-top:1px;flex-shrink:0;accent-color:var(--navy);cursor:pointer;}
-.terms-row a{color:var(--navy-light);text-decoration:none;font-weight:500;}
-.terms-row a:hover{color:var(--navy);text-decoration:underline;}
-
-.submit-btn{width:100%;padding:13px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all var(--trans);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:18px;letter-spacing:.01em;}
-.submit-btn:hover:not(:disabled){background:var(--navy-light);transform:translateY(-1px);box-shadow:0 6px 18px rgba(26,53,87,.28);}
-.submit-btn:active:not(:disabled){transform:none;}
-.submit-btn:disabled{background:var(--text-light);cursor:not-allowed;}
-
-.switch-row{text-align:center;font-size:.83rem;color:var(--text-mid);}
-.switch-row button{background:none;border:none;color:var(--navy);font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
-.switch-row button:hover{color:var(--navy-light);}
-
-.mini-trust{display:none;flex-direction:column;gap:10px;padding:20px 0 0;border-top:1px solid var(--border);margin-top:22px;}
-.mini-trust-item{display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--text-mid);}
-.mini-trust-item i{color:var(--gold);width:16px;flex-shrink:0;}
-
-/* ── RESPONSIVE ── */
-@media(max-width: 900px) {
-  .page-wrap { 
-    display: flex; 
-    flex-direction: column; 
-    width: 100%; 
-
-  }
-  
-  .form-panel {
-    width: 100%; /* Change from 30% to 100% */
-    margin: 0 -0.5x;   /* Remove large margins if necessary */
-    padding: 20px 30px;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 15px 5px #F5F5F5;
-  }
-
-  .form-box {
-    max-width: 100%;
-    width: 100%;
-  }
-  
-}
-@media(max-width:480px){
-  .form-panel{display: flex; max-width: 100%; flex-direction: column;}
-  .field-row{grid-template-columns:1fr;}
-  .mode-btn{font-size:.78rem;padding:8px 10px;}
-}
-@keyframes spin{to{transform:rotate(360deg);}}
-.fa-spin{animation:spin .75s linear infinite;}
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: radial-gradient(circle at top left, #f8f9fa 0%, #e2e8f0 100%);
+      min-height: 100vh; 
+    }
+    .form-view { display: none; }
+    .form-view.active { display: block; animation: slideUp 0.4s ease-out; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .input-wrap.is-error { border-color: #ef4444; background-color: #fef2f2; }
+    .mode-toggle-track { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .signup-mode .mode-toggle-track { transform: translateX(100%); }
+    
+    button:disabled { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
   </style>
 </head>
-<body>
+<body class="antialiased flex items-center justify-center p-4">
 
-<!-- Mobile bar -->
-<header class="mobile-header">
-  <div class="mobile-header-logo">
-    <div class="mmark"><i class="fas fa-baby-carriage"></i></div>
-    <span>NannyLink</span>
-  </div>
-  <span class="mobile-header-badge">Kenya's #1 Care Platform</span>
-</header>
-
-<div class="page-wrap">
-
-  <!-- ══ RIGHT FORMS ══ -->
-  <main class="form-panel">
-    <div class="form-box">
-
-      <div class="mode-toggle" id="modeToggle">
-        <div class="mode-toggle-track"></div>
-        <button class="mode-btn active" id="btnLogin"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-        <button class="mode-btn" id="btnSignup"><i class="fas fa-user-plus"></i> Sign Up</button>
-      </div>
-
-      <div class="auth-banner error" id="bannerError"><i class="fas fa-circle-exclamation"></i><span id="bannerErrorText"></span></div>
-      <div class="auth-banner success" id="bannerSuccess"><i class="fas fa-circle-check"></i><span id="bannerSuccessText"></span></div>
-
-      <!-- LOGIN -->
-      <div class="form-view active" id="viewLogin">
-        <div class="form-head">
-          <p class="form-label">Welcome back</p>
-          <h2>Sign in to NannyLink</h2>
-          <p>Enter your credentials to continue</p>
-        </div>
-
-        <p class="role-label">Signing in as…</p>
-        <div class="role-grid" id="loginRoleGrid">
-          <button type="button" class="role-card nanny active" data-role="nanny">
-            <div class="role-icon"><i class="fas fa-person"></i></div>
-            <strong>Nanny</strong><small>Find employment</small>
-            <div class="role-dot"><i class="fas fa-check"></i></div>
-          </button>
-          <button type="button" class="role-card family" data-role="family">
-            <div class="role-icon"><i class="fas fa-house-user"></i></div>
-            <strong>Family</strong><small>Hire a nanny</small>
-            <div class="role-dot"><i class="fas fa-check"></i></div>
-          </button>
-        </div>
-
-        <div class="section-divider">Your details</div>
-
-        <form id="formLogin" novalidate>
-          <div class="fields">
-            <div class="field">
-              <label for="loginEmail">Email Address</label>
-              <div class="input-wrap" id="wrapLoginEmail">
-                <i class="fas fa-envelope"></i>
-                <input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email" required>
-              </div>
-              <span class="field-err" id="errLoginEmail"></span>
-            </div>
-            <div class="field">
-              <div class="field-header">
-                <label for="loginPw">Password</label>
-                <button type="button" class="forgot-btn" id="btnForgot">Forgot password?</button>
-              </div>
-              <div class="input-wrap" id="wrapLoginPw">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="loginPw" placeholder="Your password" autocomplete="current-password" required>
-                <button type="button" class="pw-eye" data-target="loginPw"><i class="fas fa-eye"></i></button>
-              </div>
-              <span class="field-err" id="errLoginPw"></span>
-            </div>
-          </div>
-          <button type="submit" class="submit-btn" id="btnLoginSubmit">
-            <i class="fas fa-sign-in-alt"></i> Sign In
-          </button>
-        </form>
-
-        <p class="switch-row">Don't have an account? <button type="button" id="toSignup">Create one free</button></p>
-        <div class="mini-trust">
-          <div class="mini-trust-item"><i class="fas fa-user-shield"></i> Verified &amp; background-checked nannies</div>
-          <div class="mini-trust-item"><i class="fas fa-wallet"></i> Secure M-Pesa connection fee</div>
-          <div class="mini-trust-item"><i class="fas fa-file-contract"></i> Digital contracts included</div>
-        </div>
-      </div>
-
-      <!-- SIGNUP -->
-      <div class="form-view" id="viewSignup">
-        <div class="form-head">
-          <p class="form-label">Get started free</p>
-          <h2>Create your account</h2>
-          <p>Join thousands of families and nannies across Kenya</p>
-        </div>
-
-        <p class="role-label">I am joining as a…</p>
-        <div class="role-grid" id="signupRoleGrid">
-          <button type="button" class="role-card nanny active" data-role="nanny">
-            <div class="role-icon"><i class="fas fa-person"></i></div>
-            <strong>Nanny</strong><small>Looking for work</small>
-            <div class="role-dot"><i class="fas fa-check"></i></div>
-          </button>
-          <button type="button" class="role-card family" data-role="family">
-            <div class="role-icon"><i class="fas fa-house-user"></i></div>
-            <strong>Family</strong><small>Hiring a nanny</small>
-            <div class="role-dot"><i class="fas fa-check"></i></div>
-          </button>
-        </div>
-
-        <div class="section-divider">Your details</div>
-
-        <form id="formSignup" novalidate>
-          <div class="fields">
-           <div class="field">
-                <label for="signupPhone">Phone Number</label>
-                <div class="input-wrap" id="wrapSignupPhone">
-                    <i class="fas fa-phone"></i>
-                    <input type="tel" id="signupPhone" placeholder="0712345678" autocomplete="tel" required>
-                </div>
-                <span class="field-err" id="errSignupPhone"></span>
-                </div>
-           </div>
-            <div class="field">
-              <label for="signupEmail">Email Address</label>
-              <div class="input-wrap" id="wrapSignupEmail">
-                <i class="fas fa-envelope"></i>
-                <input type="email" id="signupEmail" placeholder="your@email.com" autocomplete="email" required>
-              </div>
-              <span class="field-err" id="errSignupEmail"></span>
-            </div>
-            <div class="field">
-              <label for="signupPw">Password</label>
-              <div class="input-wrap" id="wrapSignupPw">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="signupPw" placeholder="At least 8 characters" autocomplete="new-password" required>
-                <button type="button" class="pw-eye" data-target="signupPw"><i class="fas fa-eye"></i></button>
-              </div>
-              <div class="strength-wrap" id="strengthWrap">
-                <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
-                <span class="strength-text" id="strengthText"></span>
-              </div>
-              <span class="field-err" id="errSignupPw"></span>
-            </div>
-            <div class="field">
-              <label for="signupConfirm">Confirm Password</label>
-              <div class="input-wrap" id="wrapSignupConfirm">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="signupConfirm" placeholder="Repeat your password" autocomplete="new-password" required>
-                <button type="button" class="pw-eye" data-target="signupConfirm"><i class="fas fa-eye"></i></button>
-              </div>
-              <span class="field-err" id="errSignupConfirm"></span>
-            </div>
-            <label class="terms-row">
-              <input type="checkbox" id="signupTerms" required>
-              <span>I agree to NannyLink's <a href="#" onclick="return false">Terms of Service</a> and <a href="#" onclick="return false">Privacy Policy</a></span>
-            </label>
-          </div>
-          <button type="submit" class="submit-btn" id="btnSignupSubmit">
-            <i class="fas fa-user-plus"></i> Create Account
-          </button>
-        </form>
-
-        <p class="switch-row">Already have an account? <button type="button" id="toLogin">Sign in instead</button></p>
-        <div class="mini-trust">
-          <div class="mini-trust-item"><i class="fas fa-lock"></i> Your data is encrypted and secure</div>
-          <div class="mini-trust-item"><i class="fas fa-circle-check"></i> Free to register — pay only when matched</div>
-        </div>
-      </div>
-
+  <main class="w-full max-w-[480px] bg-white rounded-[2.5rem] shadow-2xl shadow-primary/5 border border-white p-8 sm:p-12 relative overflow-hidden">
+    
+    <div class="flex flex-col items-center mb-8">        
+        <span class="text-2xl font-black text-primary font-headline tracking-tighter italic">NannyLink</span>
+        <p class="text-[10px] font-bold text-secondary uppercase tracking-[0.2em] mt-1">Kenya's Premium Care Network</p>
     </div>
+
+    <div class="bg-slate-100 p-1 rounded-2xl relative flex items-center h-12 border border-slate-200 mb-8" id="modeToggle">
+      <div class="mode-toggle-track absolute left-1 top-1 w-[calc(50%-4px)] h-10 bg-white rounded-xl shadow-sm z-0"></div>
+      <button class="relative z-10 flex-1 text-sm font-bold text-primary transition-colors" id="btnLogin">Sign In</button>
+      <button class="relative z-10 flex-1 text-sm font-bold text-slate-400 transition-colors" id="btnSignup">Sign Up</button>
+    </div>
+
+    <div class="hidden p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-xs font-medium items-center gap-3 mb-6" id="bannerError">
+        <i class="fas fa-circle-exclamation"></i><span id="bannerErrorText"></span>
+    </div>
+    <div class="hidden p-4 rounded-2xl bg-green-50 border border-green-100 text-green-600 text-xs font-medium items-center gap-3 mb-6" id="bannerSuccess">
+        <i class="fas fa-circle-check"></i><span id="bannerSuccessText"></span>
+    </div>
+
+    <div class="form-view active" id="viewLogin">
+      <div class="mb-8 text-center">
+          <h1 class="text-2xl font-extrabold font-headline text-primary tracking-tight">Welcome Back</h1>
+          <p class="text-slate-400 text-sm mt-1">Enter your details to access your dashboard</p>
+      </div>
+
+      <form id="formLogin" class="space-y-4" novalidate>
+        <div class="space-y-1">
+          <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Email Address</label>
+          <div id="wrapLoginEmail" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5">
+            <i class="fas fa-envelope text-slate-400 text-sm mr-3"></i>
+            <input type="email" id="loginEmail" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="name@example.com" required>
+          </div>
+          <span class="text-[10px] text-red-500 font-medium ml-1" id="errLoginEmail"></span>
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex justify-between items-center mb-1">
+              <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Password</label>
+              <button type="button" class="text-[10px] font-bold text-secondary underline" id="btnForgot">Forgot password?</button>
+          </div>
+          <div id="wrapLoginPw" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
+            <i class="fas fa-lock text-slate-400 text-sm mr-3"></i>
+            <input type="password" id="loginPw" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="••••••••" required>
+            <button type="button" class="pw-eye text-slate-400" data-target="loginPw"><i class="fas fa-eye"></i></button>
+          </div>
+          <span class="text-[10px] text-red-500 font-medium ml-1" id="errLoginPw"></span>
+        </div>
+
+        <button type="submit" class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/10 hover:bg-slate-900 transition-all mt-4" id="btnLoginSubmit">
+          Sign In
+        </button>
+      </form>
+    </div>
+
+    <div class="form-view" id="viewSignup">
+      <div class="mb-8 text-center">
+          <h1 class="text-2xl font-extrabold font-headline text-primary tracking-tight">Create Account</h1>
+          <p class="text-slate-400 text-sm mt-1">Join the network for free today</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-6" id="signupRoleGrid">
+          <button type="button" class="role-card active flex flex-col items-center p-3 rounded-2xl border-2 border-primary bg-slate-50 transition-all" data-role="nanny">
+              <span class="text-[11px] font-bold text-primary uppercase">Joining as Nanny</span>
+          </button>
+          <button type="button" class="role-card flex flex-col items-center p-3 rounded-2xl border-2 border-slate-100 transition-all" data-role="family">
+              <span class="text-[11px] font-bold text-slate-400 uppercase">Joining as Family</span>
+          </button>
+      </div>
+
+      <form id="formSignup" class="space-y-4" novalidate>
+        <div class="space-y-1">
+          <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Phone Number</label>
+          <div id="wrapSignupPhone" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
+            <i class="fas fa-phone text-slate-400 text-sm mr-3"></i>
+            <input type="tel" id="signupPhone" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="0712345678" required>
+          </div>
+          <span class="text-[10px] text-red-500 font-medium ml-1" id="errSignupPhone"></span>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Email Address</label>
+          <div id="wrapSignupEmail" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
+            <i class="fas fa-envelope text-slate-400 text-sm mr-3"></i>
+            <input type="email" id="signupEmail" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="your@email.com" required>
+          </div>
+          <span class="text-[10px] text-red-500 font-medium ml-1" id="errSignupEmail"></span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Password</label>
+            <div id="wrapSignupPw" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
+              <input type="password" id="signupPw" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="Create" required>
+              <button type="button" class="pw-eye text-slate-400 px-2" data-target="signupPw"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Confirm</label>
+            <div id="wrapSignupConfirm" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
+              <input type="password" id="signupConfirm" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="Repeat" required>
+              <button type="button" class="pw-eye text-slate-400 px-2" data-target="signupConfirm"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-1">
+          <input type="checkbox" id="signupTerms" class="mt-1 rounded border-slate-300 text-primary focus:ring-primary">
+          <label class="text-[10px] text-slate-500 leading-tight">
+              I agree to the <a href="#" class="text-primary font-bold underline">Terms of Service</a>.
+          </label>
+        </div>
+
+        <button type="submit" class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/10 hover:bg-slate-900 transition-all mt-2" id="btnSignupSubmit">
+          Create Account
+        </button>
+      </form>
+    </div>
+
+    <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+        <p class="text-xs text-slate-400 font-medium" id="footerText">
+            Don't have an account? <button type="button" class="text-primary font-bold hover:underline" id="footerAction">Sign up now</button>
+        </p>
+    </div>
+
   </main>
-</div>
 
-<script type="module">
-import { login, signup }                     from "../utils/authService.js";
-import {
-  validateEmail,
-  validatePassword,
-  validatePasswordConfirm,
-  validateName,
-  evaluatePasswordStrength,
-} from "../utils/authValidation.js";
+  <script type="module">
+    import { login, signup } from "../utils/authService.js";
+    import { validateEmail } from "../utils/authValidation.js";
 
-/* ─────────────────────────────────────────────
-   DOM HELPERS — descriptive names throughout
-───────────────────────────────────────────── */
-function getElementById(elementId) {
-  return document.getElementById(elementId);
-}
+    const $ = (id) => document.getElementById(id);
+    const state = { mode: "login", signupRole: "nanny" };
 
-function setElementText(elementId, textValue) {
-  const element = getElementById(elementId);
-  if (element) element.textContent = textValue;
-}
+    function clearErrors() {
+      document.querySelectorAll('.input-wrap').forEach(w => w.classList.remove('is-error'));
+      document.querySelectorAll('[id^="err"]').forEach(e => e.textContent = "");
+      hideBanners();
+    }
 
-function markFieldError(wrapElementId, errorElementId, errorMessage) {
-  getElementById(wrapElementId)?.classList.add("is-error");
-  setElementText(errorElementId, errorMessage);
-}
+    function markError(wrapId, errId, msg) {
+        $(wrapId)?.classList.add("is-error");
+        if($(errId)) $(errId).textContent = msg;
+    }
 
-function clearFieldError(wrapElementId, errorElementId) {
-  getElementById(wrapElementId)?.classList.remove("is-error");
-  setElementText(errorElementId, "");
-}
+    function showBanner(type, msg) {
+        const b = type === "error" ? $("bannerError") : $("bannerSuccess");
+        const t = type === "error" ? $("bannerErrorText") : $("bannerSuccessText");
+        hideBanners();
+        t.textContent = msg;
+        b.classList.remove("hidden");
+        b.classList.add("flex");
+    }
 
-function showBanner(bannerType, bannerMessage) {
-  const targetBannerId = bannerType === "error" ? "bannerError"   : "bannerSuccess";
-  const targetTextId   = bannerType === "error" ? "bannerErrorText" : "bannerSuccessText";
-  const otherBannerId  = bannerType === "error" ? "bannerSuccess" : "bannerError";
+    function hideBanners() {
+        $("bannerError").classList.add("hidden");
+        $("bannerSuccess").classList.add("hidden");
+    }
 
-  getElementById(otherBannerId)?.classList.remove("show");
-  setElementText(targetTextId, bannerMessage);
-  getElementById(targetBannerId)?.classList.add("show");
-  getElementById(targetBannerId)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
+    function setMode(mode) {
+      state.mode = mode;
+      clearErrors();
+      const isSignup = mode === "signup";
+      $("modeToggle").classList.toggle("signup-mode", isSignup);
+      $("viewLogin").classList.toggle("active", !isSignup);
+      $("viewSignup").classList.toggle("active", isSignup);
+      
+      $("footerText").innerHTML = isSignup 
+        ? `Already have an account? <button type="button" class="text-primary font-bold hover:underline" id="toLogin">Sign in instead</button>`
+        : `Don't have an account? <button type="button" class="text-primary font-bold hover:underline" id="toSignup">Sign up now</button>`;
+      
+      $("toLogin")?.addEventListener("click", () => setMode("login"));
+      $("toSignup")?.addEventListener("click", () => setMode("signup"));
+    }
 
-function hideBanners() {
-  getElementById("bannerError")?.classList.remove("show");
-  getElementById("bannerSuccess")?.classList.remove("show");
-}
+    function initRoles(gridId, key) {
+        $(gridId).querySelectorAll(".role-card").forEach(card => {
+            card.addEventListener("click", () => {
+                $(gridId).querySelectorAll(".role-card").forEach(c => {
+                    c.classList.remove("active", "border-primary", "bg-slate-50");
+                    c.classList.add("border-slate-100");
+                    c.querySelector('span').classList.replace("text-primary", "text-slate-400");
+                });
+                card.classList.add("active", "border-primary", "bg-slate-50");
+                card.querySelector('span').classList.replace("text-slate-400", "text-primary");
+                state[key] = card.dataset.role;
+            });
+        });
+    }
 
-function setButtonLoading(buttonId, isLoading, defaultHTML) {
-  const buttonElement = getElementById(buttonId);
-  if (!buttonElement) return;
-  buttonElement.disabled = isLoading;
-  buttonElement.innerHTML = isLoading
-    ? `<i class="fas fa-spinner fa-spin"></i> Please wait…`
-    : defaultHTML;
-}
+    async function handleRedirect(token) {
+        localStorage.setItem("access_token", token);
+        try {
+            // Decode the JWT to get the role
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const role = payload.role; // Extracting role from token
+            
+            const endpoint = role === "family" ? "families" : "nannies";
+            const res = await fetch(`http://127.0.0.1:8000/${endpoint}/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (role === "family") {
+                window.location.href = res.ok ? "../Family/familydashboard.html" : "../Family/createprofile.html";
+            } else {
+                window.location.href = res.ok ? "../nanny/nannydashboard.html" : "../nanny/profilecreation.html";
+            }
+        } catch (err) {
+            console.error("Redirect logic failed:", err);
+            showBanner("error", "Error identifying user role.");
+        }
+    }
 
-/* ─────────────────────────────────────────────
-   APPLICATION STATE
-───────────────────────────────────────────── */
-const authPageState = {
-  currentMode:  "login",   // "login" | "signup"
-  loginRole:    "nanny",   // role selected in login role cards
-  signupRole:   "nanny",   // role selected in signup role cards
-};
+    $("formLogin").onsubmit = async (e) => {
+        e.preventDefault();
+        clearErrors();
+        const email = $("loginEmail").value;
+        const pw = $("loginPw").value;
 
-/* ─────────────────────────────────────────────
-   CLEAR ALL VALIDATION STATE
-───────────────────────────────────────────── */
-function clearAllErrors() {
-  const fieldPairs = [
-    ["wrapLoginEmail",    "errLoginEmail"],
-    ["wrapLoginPw",       "errLoginPw"],
-    ["wrapSignupFirst",   "errSignupFirst"],
-    ["wrapSignupLast",    "errSignupLast"],
-    ["wrapSignupEmail",   "errSignupEmail"],
-    ["wrapSignupPw",      "errSignupPw"],
-    ["wrapSignupConfirm", "errSignupConfirm"],
-  ];
-  fieldPairs.forEach(([wrapId, errId]) => clearFieldError(wrapId, errId));
-  hideBanners();
-}
+        if(!validateEmail(email).valid) return markError("wrapLoginEmail", "errLoginEmail", "Invalid email");
+        if(!pw) return markError("wrapLoginPw", "errLoginPw", "Password required");
 
-/* ─────────────────────────────────────────────
-   MODE SWITCHING (Login ↔ Sign Up)
-───────────────────────────────────────────── */
-function switchToMode(targetMode) {
-  authPageState.currentMode = targetMode;
-  clearAllErrors();
+        $("btnLoginSubmit").disabled = true;
+        $("btnLoginSubmit").innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Verifying...`;
 
-  const isSignupMode = targetMode === "signup";
-  getElementById("modeToggle")?.classList.toggle("signup-mode", isSignupMode);
-  getElementById("btnLogin")?.classList.toggle("active",  !isSignupMode);
-  getElementById("btnSignup")?.classList.toggle("active",  isSignupMode);
-  getElementById("viewLogin")?.classList.toggle("active",  !isSignupMode);
-  getElementById("viewSignup")?.classList.toggle("active",  isSignupMode);
+        const res = await login(email, pw);
+        if(res.success) {
+            showBanner("success", "Login successful! Redirecting...");
+            handleRedirect(res.access_token);
+        } else {
+            showBanner("error", res.message || "Invalid credentials");
+            $("btnLoginSubmit").disabled = false;
+            $("btnLoginSubmit").textContent = "Sign In";
+        }
+    };
 
-  document.title = isSignupMode
-    ? "NannyLink – Create Account"
-    : "NannyLink – Sign In";
+    $("formSignup").onsubmit = async (e) => {
+        e.preventDefault();
+        clearErrors();
+        const email = $("signupEmail").value;
+        const phone = $("signupPhone").value;
+        const pw = $("signupPw").value;
+        const cpw = $("signupConfirm").value;
 
-  document.querySelector(".form-panel")?.scrollTo({ top: 0, behavior: "smooth" });
-}
+        if(!validateEmail(email).valid) return markError("wrapSignupEmail", "errSignupEmail", "Invalid email");
+        if(phone.length < 10) return markError("wrapSignupPhone", "errSignupPhone", "Invalid phone number");
+        if(pw !== cpw) return showBanner("error", "Passwords do not match");
+        if(!$("signupTerms").checked) return showBanner("error", "Please agree to the Terms of Service");
 
-/* ─────────────────────────────────────────────
-   ROLE CARD SELECTION
-───────────────────────────────────────────── */
-function wireRoleCardGrid(gridElementId, statePropertyKey) {
-  const gridElement = getElementById(gridElementId);
-  if (!gridElement) return;
+        $("btnSignupSubmit").disabled = true;
+        $("btnSignupSubmit").innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Creating Account...`;
 
-  gridElement.querySelectorAll(".role-card").forEach(roleCard => {
-    roleCard.addEventListener("click", () => {
-      gridElement.querySelectorAll(".role-card").forEach(card => card.classList.remove("active"));
-      roleCard.classList.add("active");
-      authPageState[statePropertyKey] = roleCard.dataset.role;
+        const res = await signup({ email, phone, password: pw, role: state.signupRole });
+        if(res.success) {
+            showBanner("success", "Account created! Logging you in...");
+            const lRes = await login(email, pw);
+            if(lRes.success) handleRedirect(lRes.access_token);
+        } else {
+            showBanner("error", res.message || "Signup failed. Try again.");
+            $("btnSignupSubmit").disabled = false;
+            $("btnSignupSubmit").textContent = "Create Account";
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        $("btnLogin").onclick = () => setMode("login");
+        $("btnSignup").onclick = () => setMode("signup");
+        $("footerAction").onclick = () => setMode("signup");
+        initRoles("signupRoleGrid", "signupRole");
+        
+        document.querySelectorAll(".pw-eye").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const inputId = btn.getAttribute("data-target");
+                const input = $(inputId);
+                const icon = btn.querySelector("i");
+                
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.replace("fa-eye", "fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    icon.classList.replace("fa-eye-slash", "fa-eye");
+                }
+            });
+        });
     });
-  });
-}
-
-/* ─────────────────────────────────────────────
-   PASSWORD EYE TOGGLES
-───────────────────────────────────────────── */
-function wirePasswordVisibilityToggles() {
-  document.querySelectorAll(".pw-eye").forEach(toggleButton => {
-    toggleButton.addEventListener("click", () => {
-      const targetInput = getElementById(toggleButton.dataset.target);
-      if (!targetInput) return;
-
-      const isCurrentlyHidden = targetInput.type === "password";
-      targetInput.type = isCurrentlyHidden ? "text" : "password";
-
-      const iconElement = toggleButton.querySelector("i");
-      if (iconElement) {
-        iconElement.className = isCurrentlyHidden ? "fas fa-eye-slash" : "fas fa-eye";
-      }
-    });
-  });
-}
-
-/* ─────────────────────────────────────────────
-   PASSWORD STRENGTH INDICATOR
-───────────────────────────────────────────── */
-function wirePasswordStrengthIndicator() {
-  const passwordInput  = getElementById("signupPw");
-  const strengthWrap   = getElementById("strengthWrap");
-  const strengthFill   = getElementById("strengthFill");
-  const strengthText   = getElementById("strengthText");
-
-  if (!passwordInput) return;
-
-  passwordInput.addEventListener("input", () => {
-    const strengthResult = evaluatePasswordStrength(passwordInput.value);
-
-    if (!strengthResult || !passwordInput.value) {
-      strengthWrap?.classList.remove("visible");
-      if (strengthFill) strengthFill.className = "strength-fill";
-      if (strengthText) { strengthText.textContent = ""; strengthText.className = "strength-text"; }
-      return;
-    }
-
-    strengthWrap?.classList.add("visible");
-    if (strengthFill) strengthFill.className = `strength-fill ${strengthResult.level}`;
-    if (strengthText) {
-      strengthText.textContent = strengthResult.label;
-      strengthText.className   = `strength-text ${strengthResult.level}`;
-    }
-  });
-}
-
-/* ─────────────────────────────────────────────
-   INLINE VALIDATION — wire real-time feedback
-───────────────────────────────────────────── */
-function wireInlineValidation() {
-  // Clear field error as soon as user starts correcting it
-  const fieldWirings = [
-    { inputId: "loginEmail",    wrapId: "wrapLoginEmail",    errId: "errLoginEmail" },
-    { inputId: "loginPw",       wrapId: "wrapLoginPw",       errId: "errLoginPw" },
-    { inputId: "signupFirst",   wrapId: "wrapSignupFirst",   errId: "errSignupFirst" },
-    { inputId: "signupLast",    wrapId: "wrapSignupLast",    errId: "errSignupLast" },
-    { inputId: "signupEmail",   wrapId: "wrapSignupEmail",   errId: "errSignupEmail" },
-    { inputId: "signupPw",      wrapId: "wrapSignupPw",      errId: "errSignupPw" },
-    { inputId: "signupConfirm", wrapId: "wrapSignupConfirm", errId: "errSignupConfirm" },
-  ];
-
-  fieldWirings.forEach(({ inputId, wrapId, errId }) => {
-    getElementById(inputId)?.addEventListener("input", () => {
-      clearFieldError(wrapId, errId);
-    });
-  });
-}
-
-/* ─────────────────────────────────────────────
-   VALIDATE LOGIN FORM
-───────────────────────────────────────────── */
-function validateLoginForm() {
-  let formIsValid = true;
-
-  const emailAddress = getElementById("loginEmail")?.value.trim() || "";
-  const passwordValue = getElementById("loginPw")?.value || "";
-
-  const emailResult = validateEmail(emailAddress);
-  if (!emailResult.valid) {
-    markFieldError("wrapLoginEmail", "errLoginEmail", emailResult.message);
-    formIsValid = false;
-  }
-
-  // Login only checks presence — detailed rules only required on signup
-  if (!passwordValue) {
-    markFieldError("wrapLoginPw", "errLoginPw", "Password is required.");
-    formIsValid = false;
-  }
-
-  return formIsValid;
-}
-
-/* ─────────────────────────────────────────────
-   VALIDATE SIGNUP FORM
-───────────────────────────────────────────── */
-function validateSignupForm() {
-  let formIsValid = true;
-
-  const emailAddressValue = getElementById("signupEmail")?.value.trim() || "";
-  const phoneValue        = getElementById("signupPhone")?.value.trim() || ""; // Added
-  const passwordValue     = getElementById("signupPw")?.value           || "";
-  const confirmPwValue    = getElementById("signupConfirm")?.value      || "";
-  const termsAccepted     = getElementById("signupTerms")?.checked;
-
-  // Email Validation
-  const emailResult = validateEmail(emailAddressValue);
-  if (!emailResult.valid) {
-    markFieldError("wrapSignupEmail", "errSignupEmail", emailResult.message);
-    formIsValid = false;
-  }
-
-  // Phone Validation (Basic check: ensuring it's not empty)
-  if (!phoneValue) {
-    markFieldError("wrapSignupPhone", "errSignupPhone", "Phone number is required");
-    formIsValid = false;
-  } else if (phoneValue.length < 10) {
-    markFieldError("wrapSignupPhone", "errSignupPhone", "Enter a valid phone number");
-    formIsValid = false;
-  }
-
-  // Password Validations
-  const passwordResult = validatePassword(passwordValue);
-  if (!passwordResult.valid) {
-    markFieldError("wrapSignupPw", "errSignupPw", passwordResult.message);
-    formIsValid = false;
-  }
-
-  const confirmResult = validatePasswordConfirm(passwordValue, confirmPwValue);
-  if (!confirmResult.valid) {
-    markFieldError("wrapSignupConfirm", "errSignupConfirm", confirmResult.message);
-    formIsValid = false;
-  }
-
-  if (!termsAccepted) {
-    showBanner("error", "Please accept the Terms of Service to continue.");
-    formIsValid = false;
-  }
-
-  return formIsValid;
-}
-
-/* ─────────────────────────────────────────────
-   REDIRECT AFTER AUTH
-───────────────────────────────────────────── */
-/* ─────────────────────────────────────────────
-   REDIRECT AFTER AUTH (Updated for Profile Check)
-───────────────────────────────────────────── */
-async function redirectAfterAuth(accessToken, fallbackRole) {
-  localStorage.setItem("access_token", accessToken);
-
-  let detectedRole = fallbackRole;
-  let userId = null;
-
-  try {
-    const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
-    detectedRole = tokenPayload.role || fallbackRole;
-    userId = tokenPayload.sub;
-    if (userId) localStorage.setItem("user_id", userId);
-  } catch (decodeError) {
-    console.warn("[login] Could not decode JWT payload:", decodeError);
-  }
-
-  // 1. Handle Family Redirection
-  if (detectedRole === "family") {
-    window.location.href = "../family/views/familydashboard.html";
-    return;
-  }
-
-  // 2. Handle Nanny Redirection
-  if (detectedRole === "nanny") {
-    try {
-      // Use your backend URL (Ensure the port is correct)
-      const response = await fetch(`http://127.0.0.1:8000/nannies/profile/me`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
-
-      if (response.ok) {
-        // If status is 200-299, the profile exists
-        window.location.href = "../nanny/nannydashboard.html";
-      } else if (response.status === 404) {
-        // If status is 404, they need to create a profile
-        window.location.href = "../nanny/profilecreation.html";
-      } else {
-        // Handle other errors (500, etc.)
-        console.error("Server error checking profile:", response.status);
-        window.location.href = "../nanny/profilecreation.html";
-      }
-    } catch (error) {
-      console.error("Network error checking profile status:", error);
-      window.location.href = "../nanny/profilecreation.html";
-    }
-  }
-}
-
-/* ─────────────────────────────────────────────
-   HANDLE LOGIN SUBMIT
-───────────────────────────────────────────── */
-async function handleLoginSubmit(submitEvent) {
-  submitEvent.preventDefault();
-  clearAllErrors();
-
-  if (!validateLoginForm()) return;
-
-  const emailAddress  = getElementById("loginEmail").value.trim();
-  const passwordValue = getElementById("loginPw").value;
-
-  setButtonLoading("btnLoginSubmit", true, `<i class="fas fa-sign-in-alt"></i> Sign In`);
-
-  const loginResult = await login(emailAddress, passwordValue);
-
-  if (loginResult.success) {
-    redirectAfterAuth(loginResult.access_token, authPageState.loginRole);
-  } else {
-    showBanner("error", loginResult.message || "Sign in failed. Please try again.");
-    setButtonLoading("btnLoginSubmit", false, `<i class="fas fa-sign-in-alt"></i> Sign In`);
-  }
-}
-
-/* ─────────────────────────────────────────────
-   HANDLE SIGNUP SUBMIT
-───────────────────────────────────────────── */
-async function handleSignupSubmit(submitEvent) {
-  submitEvent.preventDefault();
-  clearAllErrors();
-
-  if (!validateSignupForm()) return;
-
-  const emailAddressValue = getElementById("signupEmail").value.trim();
-  const phoneValue        = getElementById("signupPhone").value.trim(); // Added
-  const passwordValue     = getElementById("signupPw").value;
-  const selectedRole      = authPageState.signupRole;
-
-  setButtonLoading("btnSignupSubmit", true, `<i class="fas fa-user-plus"></i> Create Account`);
-
-  const signupResult = await signup({
-    email:      emailAddressValue,
-    password:   passwordValue,
-    phone:      phoneValue, // Passed to backend
-    role:       selectedRole,
-  });
-
-  if (signupResult.success) {
-    showBanner("success", "Account created! Signing you in…");
-
-    const loginResult = await login(emailAddressValue, passwordValue);
-
-    if (loginResult.success) {
-      setTimeout(() => redirectAfterAuth(loginResult.access_token, selectedRole), 1000);
-    } else {
-      showBanner("success", "Account created! Please sign in.");
-      setTimeout(() => switchToMode("login"), 1500);
-      setButtonLoading("btnSignupSubmit", false, `<i class="fas fa-user-plus"></i> Create Account`);
-    }
-  } else {
-    showBanner("error", signupResult.message || "Registration failed. Please try again.");
-    setButtonLoading("btnSignupSubmit", false, `<i class="fas fa-user-plus"></i> Create Account`);
-  }
-}
-
-/* ─────────────────────────────────────────────
-   INITIALISE PAGE
-───────────────────────────────────────────── */
-function initialisePage() {
-  // If already authenticated with a valid token, redirect immediately
-  const existingToken = localStorage.getItem("access_token");
-  if (existingToken) {
-    try {
-      const tokenPayload = JSON.parse(atob(existingToken.split(".")[1]));
-      const tokenIsValid = !tokenPayload.exp || tokenPayload.exp * 1000 > Date.now();
-      if (tokenIsValid) {
-        redirectAfterAuth(existingToken, tokenPayload.role || "nanny");
-        return;
-      }
-    } catch {
-      // Malformed token — fall through and show login
-    }
-    localStorage.removeItem("access_token");
-  }
-
-  // Mode toggle buttons
-  getElementById("btnLogin")?.addEventListener("click",  () => switchToMode("login"));
-  getElementById("btnSignup")?.addEventListener("click", () => switchToMode("signup"));
-  getElementById("toSignup")?.addEventListener("click",  () => switchToMode("signup"));
-  getElementById("toLogin")?.addEventListener("click",   () => switchToMode("login"));
-
-  // Role card grids
-  wireRoleCardGrid("loginRoleGrid",  "loginRole");
-  wireRoleCardGrid("signupRoleGrid", "signupRole");
-
-  // Password interactions
-  wirePasswordVisibilityToggles();
-  wirePasswordStrengthIndicator();
-
-  // Real-time inline validation clearing
-  wireInlineValidation();
-
-  // Form submit handlers
-  getElementById("formLogin")?.addEventListener("submit",  handleLoginSubmit);
-  getElementById("formSignup")?.addEventListener("submit", handleSignupSubmit);
-
-  // Forgot password — opens reset page in same tab
-  getElementById("btnForgot")?.addEventListener("click", () => {
-    window.location.href = "reset-password.html";
-  });
-
-  // Check URL param ?mode=signup to open signup tab directly
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get("mode") === "signup") switchToMode("signup");
-}
-
-document.addEventListener("DOMContentLoaded", initialisePage);
-</script>
+  </script>
 </body>
 </html>
