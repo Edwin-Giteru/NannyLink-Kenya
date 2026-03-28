@@ -63,9 +63,14 @@ class ContractRepository:
             generation_date=datetime.utcnow()
         )
         self.db.add(new_contract)
-        await self.db.flush()
-        # Initialize an empty acceptance record for this contract
-        acceptance = ContractAcceptance(contract_id=new_contract.id)
+        await self.db.flush() 
+
+        # Initialize acceptance record with NO acting_user_id (since no one signed yet)
+        acceptance = ContractAcceptance(
+            contract_id=new_contract.id,
+            family_accepted=False,
+            nanny_accepted=False
+        )
         self.db.add(acceptance)
         await self.db.flush()
         return new_contract

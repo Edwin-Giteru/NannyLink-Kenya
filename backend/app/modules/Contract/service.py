@@ -16,84 +16,65 @@ class ContractService:
         self.family_repository = FamilyRepository(db)
         self.nanny_repository = NannyRepository(db)
 
-    def _generate_template_text(self, match_data) -> str:
-        """Helper to build the contract text using your required template."""
-        job = match_data.job_post
-        family = match_data.family
-        today = datetime.utcnow().strftime("%d %B %Y")
+    def _generate_template_text(self, match_data, custom_terms: str = "") -> str:
+            family = match_data.family
+            # If nanny is a relationship on Match, use it; otherwise, fetch it.
+            nanny = getattr(match_data, 'nanny', None)
+            today = datetime.utcnow().strftime("%d %B %Y")
 
-        return f"""NANNYLINK EMPLOYMENT CONTRACT
-Generated: {today}
-Match ID:  {match_data.id}
+            # Pulling details from the Family Profile/Household instead of job_post
+            return f"""NANNYLINK EMPLOYMENT CONTRACT
+    Generated: {today}
+    Match ID:  {match_data.id}
 
-PARTIES
--------
-Family:  {getattr(family, 'name', 'Family') or 'Family'}
-         {getattr(family, 'household_location', '') or ''}
+    PARTIES
+    -------
+    Family:  {getattr(family, 'name', 'Family Name')}
+    Location: {getattr(family, 'household_location', 'Not Specified')}
 
-Nanny:   (See NannyLink profile — Match ID above)
+    Nanny:   {getattr(nanny, 'full_name', 'Professional Caregiver')}
 
-JOB DETAILS
------------
-Position:    {getattr(job, 'title', 'Nanny') or 'Nanny'}
-Location:    {getattr(job, 'location', '—') or '—'}
-Availability:{getattr(job, 'availability', '—') or '—'}
-Salary:      Ksh {getattr(job, 'salary', '—')} per month
-Experience:  {getattr(job, 'required_experience', '—')} year(s) required
+    HOUSEHOLD DETAILS & EXPECTATIONS
+    -------------------------------
+    {getattr(family, 'bio', 'Standard childcare services as per NannyLink guidelines.')}
 
-DUTIES
-------
-{getattr(job, 'duties', 'As agreed between parties.') or 'As agreed between parties.'}
+    TERMS OF SERVICE
+    ---------------
+    {custom_terms if custom_terms else "Standard employment terms apply."}
 
-CARE NEEDS
-----------
-{getattr(job, 'care_needs', 'Standard childcare.') or 'Standard childcare.'}
+    GENERAL PROVISIONS
+    -----------------
+    1. This contract is binding upon digital acceptance by both parties.
+    2. The Family agrees to provide a safe working environment.
+    3. Payment shall be handled via the NannyLink Secure Payment platform.
+    4. Either party may terminate with 14 days written notice.
 
-TERMS
------
-1. This contract is facilitated by NannyLink Kenya and is binding upon
-   acceptance by both parties.
-2. Either party may terminate with 14 days written notice.
-3. The connection fee paid to NannyLink is non-refundable once both parties
-   have accepted this contract.
-4. Any disputes shall be resolved through NannyLink mediation first.
-5. This contract takes effect from the date both parties accept it on the
-   NannyLink platform.
+    ACCEPTANCE
+    ----------
+    By clicking "Sign" on NannyLink, both parties agree to the terms above.
+    ---
+    NannyLink Kenya · Secure. Professional. Reliable.
+    """
 
-ACCEPTANCE
-----------
-By accepting on the NannyLink platform, both parties agree to all terms
-stated in this contract.
-
----
-NannyLink Kenya · Premium Care Services
-"""
-
-    async def generate_contract(self, match_id: UUID, current_user_id: UUID) -> Result:
+    async def generate_contract(self, match_id: UUID, current_user_id: UUID, custom_terms: str = "") -> Result:
         try:
+            # Ensure match and family are loaded
             match = await self.match_repository.get_match_by_id(match_id)
             if not match:
                 return Result.fail("Match not found", 404)
 
-            # Check if user is the family in this match
             family_profile = await self.family_repository.get_family_by_user_id(current_user_id)
             if not family_profile or family_profile.id != match.family_id:
-                return Result.fail("Only the hiring family can generate the contract", 403)
+                return Result.fail("Access Denied", 403)
 
-            # Check if contract exists (Idempotency)
-            existing_contract = await self.contract_repository.get_by_match_id(match_id)
-            if existing_contract:
-                return Result.ok(data=existing_contract)
-
-            # Build and Save
-            contract_text = self._generate_template_text(match)
-            new_contract = await self.contract_repository.create_contract(match_id, contract_text)
+            # Build text using updated profile logic
+            contract_text = self._generate_template_text(match, custom_terms)
             
+            new_contract = await self.contract_repository.create_contract(match_id, contract_text)
             await self.db.commit()
-            # Re-fetch with eager loads
+            
             full_contract = await self.contract_repository.get_by_id(new_contract.id)
             return Result.ok(data=full_contract, status_code=201)
-
         except Exception as e:
             await self.db.rollback()
             return Result.fail(str(e), 500)

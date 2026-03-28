@@ -24,6 +24,8 @@ class ContractAcceptance(Base):
     family_acceptance_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     nanny_acceptance_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
-    acting_user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
+    # CHANGE: Set nullable=True because nobody has signed yet at generation time
+    acting_user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=True)
+    
     contract: Mapped["Contract"] = relationship("Contract", back_populates="acceptance", foreign_keys=[contract_id])
     acting_user: Mapped["User"] = relationship("User", back_populates="contract_acceptances", foreign_keys=[acting_user_id])

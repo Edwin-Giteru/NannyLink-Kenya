@@ -6,13 +6,13 @@ from typing import Optional
  
 class ContractAcceptanceResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
- 
+
     contract_id: UUID
     family_accepted: Optional[bool] = False
     nanny_accepted: Optional[bool] = False
     family_acceptance_date: Optional[datetime] = None
     nanny_acceptance_date: Optional[datetime] = None
-    acting_user_id: UUID
+    acting_user_id: Optional[UUID] = None
  
  
 class ContractResponse(BaseModel):
