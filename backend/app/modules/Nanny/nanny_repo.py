@@ -41,3 +41,8 @@ class NannyRepository:
     
     async def delete_nanny(self, nanny: NannyProfile):
         await self.db.delete(nanny)
+
+    async def count_number_of_nannies(self) -> int:
+        stmt = select(func.count(NannyProfile.id))
+        result = await self.db.execute(stmt)
+        return result.scalar() or 0

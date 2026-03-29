@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from uuid import UUID
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 
 from app.db.models.match import Match
 from app.db.models.types import MatchStatus
@@ -66,3 +66,8 @@ class MatchRepository:
         await self.db.commit()
         # After commit, we re-fetch using our load_opts to get the names/images
         return await self.get_match_by_id(new_match.id)
+    
+    async def count_matches(self) -> int:
+        stmt = select(func.count(Match.id))
+        result = await self.db.execute(stmt)
+        return result.scalar() or 0

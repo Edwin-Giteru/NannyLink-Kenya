@@ -13,13 +13,17 @@ class ContractRepository:
         self.db = db
 
     # Eager-load acceptance relationships to ensure the API returns full status
-    _load_options = [selectinload(Contract.acceptance)]
+    __load_options = [
+    selectinload(Contract.acceptance),
+    selectinload(Contract.match).selectinload(Match.family),
+    selectinload(Contract.match).selectinload(Match.nanny)
+]
 
     async def get_by_id(self, contract_id: UUID) -> Contract | None:
         stmt = (
             select(Contract)
             .where(Contract.id == contract_id)
-            .options(*self._load_options)
+            .options(*self.__load_options)
         )
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
@@ -28,7 +32,7 @@ class ContractRepository:
         stmt = (
             select(Contract)
             .where(Contract.match_id == match_id)
-            .options(*self._load_options)
+            .options(*self.__load_options)
         )
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
@@ -38,7 +42,7 @@ class ContractRepository:
             select(Contract)
             .join(Match, Contract.match_id == Match.id)
             .where(Match.family_id == family_profile_id)
-            .options(*self._load_options)
+            .options(*self.__load_options)
             .order_by(Contract.created_at.desc())
         )
         result = await self.db.execute(stmt)
@@ -50,7 +54,7 @@ class ContractRepository:
             .join(Match, Contract.match_id == Match.id)
             # CHANGED: Use 'nanny_id' instead of 'selected_nanny_id'
             .where(Match.nanny_id == nanny_profile_id) 
-            .options(*self._load_options)
+            .options(*self.__load_options)
             .order_by(Contract.created_at.desc())
         )
         result = await self.db.execute(stmt)

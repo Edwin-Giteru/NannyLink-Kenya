@@ -17,59 +17,60 @@ class ContractService:
         self.nanny_repository = NannyRepository(db)
 
     def _generate_template_text(self, match_data, custom_terms: str = "") -> str:
-            family = match_data.family
-            # If nanny is a relationship on Match, use it; otherwise, fetch it.
-            nanny = getattr(match_data, 'nanny', None)
-            today = datetime.utcnow().strftime("%d %B %Y")
+        family = match_data.family
+        nanny = getattr(match_data, 'nanny', None)
+        today = datetime.utcnow().strftime("%d %B %Y")
 
-            # Pulling details from the Family Profile/Household instead of job_post
-            return f"""NANNYLINK EMPLOYMENT CONTRACT
-    Generated: {today}
-    Match ID:  {match_data.id}
+        # This string is saved to the DB. The Nanny will see exactly this.
+        return f"""NANNYLINK EMPLOYMENT CONTRACT
+Generated: {today}
+Match ID: {match_data.id}
 
-    PARTIES
-    -------
-    Family:  {getattr(family, 'name', 'Family Name')}
-    Location: {getattr(family, 'household_location', 'Not Specified')}
+PARTIES
+-------
+Family: {getattr(family, 'name', 'Family Name')}
+Location: {getattr(family, 'household_location', 'Not Specified')}
+Nanny: {getattr(nanny, 'full_name', 'Professional Caregiver')}
 
-    Nanny:   {getattr(nanny, 'full_name', 'Professional Caregiver')}
+HOUSEHOLD EXPECTATIONS
+----------------------
+{getattr(family, 'bio', 'Standard childcare services as per NannyLink guidelines.')}
 
-    HOUSEHOLD DETAILS & EXPECTATIONS
-    -------------------------------
-    {getattr(family, 'bio', 'Standard childcare services as per NannyLink guidelines.')}
+SPECIAL JOB REQUIREMENTS (CUSTOM TERMS)
+--------------------------------------
+{custom_terms if custom_terms and custom_terms.strip() else "No additional custom terms specified."}
 
-    TERMS OF SERVICE
-    ---------------
-    {custom_terms if custom_terms else "Standard employment terms apply."}
+GENERAL PROVISIONS
+------------------
+1. This contract is binding upon digital acceptance by both parties.
+2. The Family agrees to provide a safe working environment.
+3. Payment shall be handled via the NannyLink Secure Payment platform.
+4. Either party may terminate with 14 days written notice.
 
-    GENERAL PROVISIONS
-    -----------------
-    1. This contract is binding upon digital acceptance by both parties.
-    2. The Family agrees to provide a safe working environment.
-    3. Payment shall be handled via the NannyLink Secure Payment platform.
-    4. Either party may terminate with 14 days written notice.
-
-    ACCEPTANCE
-    ----------
-    By clicking "Sign" on NannyLink, both parties agree to the terms above.
-    ---
-    NannyLink Kenya · Secure. Professional. Reliable.
-    """
+ACCEPTANCE
+----------
+By clicking "Sign" on NannyLink, both parties agree to the terms above.
+NannyLink Kenya · Secure. Professional. Reliable.
+"""
 
     async def generate_contract(self, match_id: UUID, current_user_id: UUID, custom_terms: str = "") -> Result:
         try:
-            # Ensure match and family are loaded
+            # 1. Get Match Data
             match = await self.match_repository.get_match_by_id(match_id)
             if not match:
                 return Result.fail("Match not found", 404)
 
+            # 2. Verify Security
             family_profile = await self.family_repository.get_family_by_user_id(current_user_id)
             if not family_profile or family_profile.id != match.family_id:
                 return Result.fail("Access Denied", 403)
 
-            # Build text using updated profile logic
+            # 3. Generate the text (Custom terms are now baked into the string)
             contract_text = self._generate_template_text(match, custom_terms)
             
+            # 4. Save to DB
+            # Because this string is saved in the 'contract_text' column, 
+            # when the nanny calls /contracts/me, they fetch this exact same text.
             new_contract = await self.contract_repository.create_contract(match_id, contract_text)
             await self.db.commit()
             

@@ -1,10 +1,15 @@
 from app.db.models.family_profile import FamilyProfile
+from app.db.models.match import Match
+from app.db.models.contract import Contract
+from app.db.models.payment import Payment, PaymentStatus
+from sqlalchemy import select, func
 from app.modules.Family.repository import FamilyRepository
 from app.modules.Match.repository import MatchRepository
 from app.utils.results import Result
 from app.modules.Family.schema import FamilyCreate, FamilyUpdate, FamilyResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
+
 
 class FamilyService:
     def __init__(self, db: AsyncSession):
@@ -62,3 +67,52 @@ class FamilyService:
             return Result.ok(data=connections)
         except Exception as e:
             return Result.fail(f"Error fetching connections: {str(e)}", status_code=500)
+
+    
+    # Inside FamilyService class:
+    async def get_family_dashboard_data(self, user_id: uuid.UUID):
+        # 1. Get the profile - Added 'await'
+        result = await self.db.execute(
+            select(FamilyProfile).where(FamilyProfile.user_id == user_id)
+        )
+        profile = result.scalar_one_or_none()
+
+        if not profile:
+            return {"success": False, "error": "Profile not found", "status_code": 404}
+
+        # 2. Get Connection Count - Added 'await'
+        conn_result = await self.db.execute(
+            select(func.count(Match.id)).where(Match.family_id == profile.id)
+        )
+        connection_count = conn_result.scalar()
+
+        # 3. Get Contract Count - Added 'await'
+        contract_result = await self.db.execute(
+            select(func.count(Contract.id))
+            .join(Match, Contract.match_id == Match.id)
+            .where(Match.family_id == profile.id)
+        )
+        contract_count = contract_result.scalar()
+
+        # 4. Get Total Successful Payments - Added 'await'
+        payment_result = await self.db.execute(
+            select(func.sum(Payment.amount))
+            .where(Payment.user_id == user_id)
+            .where(Payment.payment_status == PaymentStatus.COMPLETED)
+        )
+        total_paid = payment_result.scalar() or 0.0
+
+        return {
+            "success": True,
+            "data": {
+                "id": profile.id,
+                "name": profile.name,
+                "household_location": profile.household_location,
+                "household_details": profile.household_details,
+                "stats": {
+                    "connections": connection_count,
+                    "contracts": contract_count,
+                    "total_paid": float(total_paid)
+                }
+            }
+        }

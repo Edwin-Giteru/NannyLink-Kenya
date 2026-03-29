@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>NannyLink | Family Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet" />
+    
+    <script>
+        // 1. AUTH GUARD & REDIRECT
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = '../views/login.html';
+        }
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00152f",
+                        "secondary": "#835500",
+                        "surface": "#f8f9fa",
+                    },
+                    fontFamily: { "headline": ["Manrope"], "body": ["Inter"] }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-surface text-primary font-body antialiased pb-32">
+
+    <header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 h-16 flex items-center px-6 justify-between">
+        <div class="flex items-center gap-3">
+            <img src="../../assets/images/logo.png" class="h-8 w-auto object-contain" alt="Logo">
+            <span class="text-lg font-extrabold font-headline tracking-tighter">NannyLink Kenya</span>
+        </div>
+        <button onclick="logout()" class="text-[10px] font-black text-slate-400 hover:text-secondary uppercase tracking-widest transition-colors">Sign Out</button>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 pt-24 space-y-8">
+        
+        <section class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-6">
+            <div class="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center border-4 border-surface shadow-inner overflow-hidden">
+                <img id="avatar" src="https://ui-avatars.com/api/?name=Family&background=00152f&color=fff" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-grow text-center md:text-left">
+                <h1 id="family_name" class="font-headline font-black text-2xl">Loading profile...</h1>
+                <p id="family_location" class="text-slate-400 text-sm font-medium">Please wait...</p>
+            </div>
+            <button onclick="window.location.href='edit-profile.html'" class="bg-primary text-white px-8 py-3 rounded-2xl font-bold text-sm hover:scale-105 transition-all">
+                Edit Profile
+            </button>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div onclick="window.location.href='connections.html'" class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                <div class="w-12 h-12 rounded-2xl bg-slate-50 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined">diversity_3</span>
+                </div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nanny Connections</p>
+                <h2 id="stat_connections" class="text-3xl font-black mt-1">0</h2>
+            </div>
+
+            <div onclick="window.location.href='contracts.html'" class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                <div class="w-12 h-12 rounded-2xl bg-slate-50 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined">history_edu</span>
+                </div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Contracts</p>
+                <h2 id="stat_contracts" class="text-3xl font-black mt-1">0</h2>
+            </div>
+
+            <div class="bg-secondary/[0.03] p-6 rounded-[2rem] border border-secondary/10 shadow-sm">
+                <div class="w-12 h-12 rounded-2xl bg-secondary text-white flex items-center justify-center mb-4 shadow-lg shadow-secondary/20">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                </div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Paid Out</p>
+                <h2 id="stat_payments" class="text-3xl font-black mt-1 text-secondary">KES 0</h2>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
+            <h3 class="font-headline font-bold text-slate-900 mb-6">Household Overview</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Details</span>
+                    <p id="household_details" class="text-sm text-slate-600 leading-relaxed italic">No details provided yet.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-xl z-50 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-slate-100">
+        <a class="flex flex-col items-center text-slate-400" href="contracts.html">
+            <span class="material-symbols-outlined">description</span>
+            <span class="text-[9px] font-bold uppercase mt-1">Contracts</span>
+        </a>
+        <a class="flex flex-col items-center text-slate-400" href="connections.html">
+            <span class="material-symbols-outlined">payments</span>
+            <span class="text-[9px] font-bold uppercase mt-1">Payments</span>
+        </a>
+        
+        <a class="flex flex-col items-center text-primary" href="familydashboard.html">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+            <span class="text-[9px] font-black uppercase mt-1">Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        async function loadProfile() {
+    try {
+        // Change this line to include the full backend URL (usually port 8000)
+        const response = await fetch('http://127.0.0.1:8000/families/profile/me', {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Populate DOM
+        document.getElementById('family_name').innerText = data.name || "NannyLink User";
+        document.getElementById('family_location').innerText = data.household_location || 'Location not set';
+        document.getElementById('household_details').innerText = data.household_details || 'No details provided.';
+        
+        // Populate Stats
+        document.getElementById('stat_connections').innerText = data.stats?.connections || 0;
+        document.getElementById('stat_contracts').innerText = data.stats?.contracts || 0;
+        document.getElementById('stat_payments').innerText = `KES ${(data.stats?.total_paid || 0).toLocaleString()}`;
+
+    } catch (error) {
+        console.error("Dashboard error:", error);
+        // Optional: show a small UI error message
+    }
+}
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            window.location.href = '../views/login.html';
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>

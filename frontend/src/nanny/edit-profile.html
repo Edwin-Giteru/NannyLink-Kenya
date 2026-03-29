@@ -33,14 +33,19 @@
 
 <body class="bg-surface text-primary font-body antialiased">
 
-    <nav class="fixed top-0 w-full z-50 glass-nav border-b border-border-muted/50 h-16 flex items-center px-6 justify-between">
-        <button onclick="window.history.back()" class="flex items-center gap-2 text-primary/70 hover:text-primary transition-colors group">
-            <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
-            <span class="font-bold text-sm tracking-tight">Back to Dashboard</span>
-        </button>
-        <h1 class="font-headline font-extrabold text-lg tracking-tight lg:absolute lg:left-1/2 lg:-translate-x-1/2">Edit Profile</h1>
-        <div class="w-24"></div> 
-    </nav>
+    <header class="fixed top-0 w-full z-50 glass-nav border-b border-border-muted/50 h-16 flex items-center px-6 justify-between">
+        <div class="flex items-center gap-4">
+            <button onclick="window.history.back()" class="flex items-center gap-2 text-primary/70 hover:text-primary transition-colors group">
+                <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            </button>
+            <div class="h-8 flex items-center border-l border-slate-200 pl-4">
+                <img src="../../assets/images/logo.png" class="h-full w-auto object-contain" alt="NannyLink Logo">
+                <span class="ml-2 font-headline font-extrabold text-lg tracking-tight text-primary">NannyLink</span>
+            </div>
+        </div>
+        <h1 class="font-headline font-extrabold text-sm uppercase tracking-widest text-slate-400 hidden md:block">Edit Profile</h1>
+        <div class="w-10"></div> 
+    </header>
 
     <main class="max-w-4xl mx-auto px-6 pt-28 pb-20">
         <form id="edit_profile_form" class="space-y-8">
@@ -116,6 +121,7 @@
             </div>
         </form>
     </main>
+
 
     <script>
         const API_BASE = "http://127.0.0.1:8000/nannies";

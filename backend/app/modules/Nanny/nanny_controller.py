@@ -18,15 +18,15 @@ async def get_all_nannies(db: SessionDep):
     return [
         {
             "id": n.id,
-            "name": n.name,
-            "experience": n.years_experience,
-            "location": n.address,
-            "photo": n.profile_photo_url,
+            "full_name": n.name, # Changed from "name"
+            "experience_years": n.years_experience, # Changed from "experience"
+            "current_location": n.address, # Changed from "location"
+            "preferred_location": getattr(n, 'preferred_location', 'Nairobi'), # Added
+            "profile_image": n.profile_photo_url, # Changed from "photo"
             "skills": n.skills,
             "availability": n.availability
         } for n in nannies
     ]
-
 @router.post("/profile", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
 async def create_my_profile(
     nanny_data: NannyCreate, 

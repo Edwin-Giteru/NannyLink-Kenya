@@ -23,7 +23,7 @@ async def create_family_profile(
         raise HTTPException(status_code=result.status_code, detail=result.error)
     return result.data
 
-@router.get("/profile/me", response_model=FamilyResponse)
+@router.get("/profile/me")
 async def get_my_family_profile(
     db: SessionDep,
     current_user: User = Depends(get_current_user)
@@ -32,10 +32,10 @@ async def get_my_family_profile(
         raise HTTPException(status_code=403, detail="Family access only.")
     
     service = FamilyService(db)
-    result = await service.get_family(current_user.id)
-    if not result.success:
-        raise HTTPException(status_code=result.status_code, detail=result.error)
-    return result.data
+    result = await service.get_family_dashboard_data(current_user.id) # Use the new stats method
+    if not result["success"]:
+        raise HTTPException(status_code=result["status_code"], detail=result["error"])
+    return result["data"]
 
 @router.patch("/profile/me", response_model=FamilyResponse)
 async def update_my_family_profile(

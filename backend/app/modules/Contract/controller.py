@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from uuid import UUID
 from app.db.session import SessionDep
 from app.utils.security import get_current_user
@@ -12,17 +12,18 @@ router = APIRouter(tags=["Contracts"], prefix="/contracts")
 async def generate_match_contract(
     match_id: UUID,
     db: SessionDep,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    custom_terms: str = Query(None)  # Added to capture family input
 ):
     if current_user.role != "family":
         raise HTTPException(status_code=403, detail="Only families can initiate contracts.")
     
     service = ContractService(db)
-    result = await service.generate_contract(match_id, current_user.id)
+    # Pass custom_terms to the service
+    result = await service.generate_contract(match_id, current_user.id, custom_terms)
     if not result.success:
         raise HTTPException(status_code=result.status_code, detail=result.error)
     return result.data
-
 @router.post("/{contract_id}/sign", response_model=ContractResponse)
 async def sign_contract(
     contract_id: UUID,

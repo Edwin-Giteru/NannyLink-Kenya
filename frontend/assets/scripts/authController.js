@@ -1,7 +1,9 @@
 import { login, signup } from "../service/nannyProfileService.js";
 
+// Global state to store nannies for filtering
+let allNannies = [];
+
 const showModal = (message, type = "info") => {
-    // Create notification element if it doesn't exist
     let modal = document.getElementById("customAlertModal");
     if (!modal) {
         modal = document.createElement('div');
@@ -33,18 +35,14 @@ const showModal = (message, type = "info") => {
     });
 };
 
-console.log("Nanny Link Auth controller loaded");
-
 // --- LOGIN LOGIC ---
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        // Visual feedback for user
         const submitBtn = loginForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerText;
         submitBtn.innerText = "Logging in...";
@@ -52,7 +50,6 @@ if (loginForm) {
 
         try {
             const result = await login(email, password);
-
             if (result.success) {
                 localStorage.setItem("access_token", result.access_token);
                 localStorage.setItem("user_role", result.role);
@@ -65,11 +62,7 @@ if (loginForm) {
                     window.location.href = "/frontend/src/views/nannydashboard.html"; 
                 } else if (role === "family") {
                     window.location.href = "/frontend/src/family/views/familydashboard.html"; 
-                // } else {
-                    // window.location.href = "/frontend/src/views/dashboard.html"; 
                 }
-               
-                // console.log("Attempting redirect to:", new URL("/frontend/src/family/views/familydashboard.html", window.location.href).href);
             } else {
                 showModal(result.message || "Invalid email or password", "error");
             }
@@ -87,13 +80,10 @@ const signupForm = document.getElementById("signupForm");
 const passwordInput = document.getElementById("password");
 
 if (signupForm) {
-    // Password Strength Meter Logic for Signup
     passwordInput.addEventListener("input", () => {
         const val = passwordInput.value;
         let strength = "";
         let text = "";
-        
-        // Find or create strength elements if they aren't in HTML
         let strengthBar = document.getElementById("strengthBar");
         let strengthText = document.getElementById("strengthText");
 
@@ -109,21 +99,18 @@ if (signupForm) {
                 text = "Medium: add numbers/symbols";
             }
         }
-
         if (strengthBar) strengthBar.className = "bar " + strength;
         if (strengthText) strengthText.textContent = text;
     });
 
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const confirmPassword = document.getElementById("confirm-password").value;
 
         if (passwordInput.value.length < 6) {
             showModal("Password must be at least 6 characters.", "error");
             return;
         }
-
         if (passwordInput.value !== confirmPassword) {
             showModal("Passwords do not match.", "error");
             return;
@@ -140,7 +127,6 @@ if (signupForm) {
         submitBtn.innerText = "Creating account...";
 
         const result = await signup(userData);
-
         if (result.success) {
             await showModal("Nanny Link account created!", "success");
             window.location.href = "login.html";
@@ -152,94 +138,131 @@ if (signupForm) {
     });
 }
 
-const API_BASE = "http://localhost:8000"; // adjust if needed
+const API_BASE = "http://localhost:8000"; 
 
 // 🔷 FETCH STATS
 async function fetchStats() {
     try {
         const res = await fetch(`${API_BASE}/stats/`);
         const stats = await res.json();
-        
-       
         document.getElementById("stat-nannies").innerText = stats.nannies || 0;
         document.getElementById("stat-families").innerText = stats.families || 0;
         document.getElementById("stat-matches").innerText = stats.matches || 0;
-
     } catch (err) {
         console.warn("Stats failed to load:", err);
-        // Optional: Set defaults on failure
-        document.getElementById("stat-nannies").innerText = "-";
-        document.getElementById("stat-families").innerText = "-";
-        document.getElementById("stat-matches").innerText = "-";
     }
 }
-/// Fetch featured nannies
+
+// 🔷 RENDER NANNIES (Shared logic for initial fetch and search)
+function renderNannies(nannies) {
+    const container = document.getElementById("nanny-list");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (nannies.length === 0) {
+        container.innerHTML = "<p class='col-span-full text-center py-10 text-slate-400 font-bold'>No nannies found matching your criteria.</p>";
+        return;
+    }
+
+    nannies.forEach(nanny => {
+        const exp = parseInt(nanny.experience_years) || 0;
+        const baseRate = 250;
+        const computedRate = baseRate + (exp * 50);
+
+        const card = document.createElement("div");
+        card.className = "nanny-card bg-white rounded-[2rem] overflow-hidden ambient-shadow border border-slate-50 flex flex-col group transition-all duration-300 hover:-translate-y-2";
+        
+        card.innerHTML = `
+            <div class="relative h-64">
+                <img class="w-full h-full object-cover" src="${nanny.profile_image || './assets/images/default-avatar.png'}" alt="${nanny.full_name || 'Nanny'}" />
+                <div class="absolute top-4 right-4 glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-yellow-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+                    <span class="text-xs font-bold text-primary">4.9</span>
+                </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-xl font-headline font-bold text-primary">${nanny.full_name || "Name Unavailable"}</h3>
+                    <span class="text-secondary font-bold text-sm">KES ${computedRate.toLocaleString()}/hr</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400 text-sm mb-4">
+                    <span class="material-symbols-outlined text-sm">location_on</span>
+                    <span>${nanny.current_location || "Not specified"}</span>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">${exp} years exp</span>
+                    <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">${nanny.skills || 'Vetted'}</span>
+                </div>
+                <button class="view-btn mt-auto w-full py-4 bg-slate-50 text-primary text-center font-bold rounded-2xl transition-all hover:bg-primary hover:text-white" data-id="${nanny.id}">
+                    View Profile
+                </button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    document.querySelectorAll(".view-btn").forEach(btn => {
+        btn.addEventListener("click", () => handleView(btn.dataset.id));
+    });
+}
+
+// 🔷 IMPROVED SEARCH LOGIC (Filters by both Skill and Location)
+function setupSearch() {
+    const skillInput = document.getElementById("skill-search");
+    const locationInput = document.getElementById("location-search");
+
+    if (!skillInput || !locationInput) return;
+
+    const performFilter = () => {
+        const skillTerm = skillInput.value.toLowerCase();
+        const locationTerm = locationInput.value.toLowerCase();
+
+        const filtered = allNannies.filter(nanny => {
+            const skills = (nanny.skills || "").toLowerCase();
+            const location = (nanny.current_location || "").toLowerCase();
+            const name = (nanny.full_name || "").toLowerCase();
+
+            // Match if skill term is in skills/name AND location term is in current_location
+            const matchesSkill = skills.includes(skillTerm) || name.includes(skillTerm);
+            const matchesLocation = location.includes(locationTerm);
+
+            return matchesSkill && matchesLocation;
+        });
+
+        renderNannies(filtered);
+    };
+
+    skillInput.addEventListener("input", performFilter);
+    locationInput.addEventListener("input", performFilter);
+}
+
 async function fetchFeaturedNannies() {
     try {
-        const res = await fetch("http://127.0.0.1:8000/Nanny/public"); 
+        const res = await fetch(`${API_BASE}/nannies/`); 
         const data = await res.json();
 
-        const container = document.getElementById("nanny-list");
-        if (!container) return;
-        container.innerHTML = "";
-
-        data.forEach(nanny => {
-            // --- REQUIREMENT 7: Compute hourly rate on the fly ---
-            // Logic: Base 250 + 50 for every year of experience
-            const baseRate = 250;
-            const computedRate = baseRate + (nanny.experience_years * 50);
-
-            const card = document.createElement("div");
-            card.className = "nanny-card";
-            
-            // Map the backend keys correctly here:
-            card.innerHTML = `
-                <div class="card-image">
-                    <img src="${nanny.profile_image || './assets/images/default-avatar.png'}" alt="${nanny.full_name}" />
-                </div>
-                <div class="card-body">
-                    <h3>${nanny.full_name}</h3>
-                    <p><strong>Location:</strong> ${nanny.current_location}</p>
-                    <p><strong>Preferred Working Location:</strong> ${nanny.preferred_location}</p>
-                    <p><strong>Experience:</strong> ${nanny.experience_years} years</p>
-                    <p><strong>Skills:</strong> ${nanny.skills || 'General Childcare'}</p>
-                    <p><strong>Availability:</strong> <span class="badge">${nanny.availability}</span></p>
-                    <p class="rate-text">Rate: <strong>KES ${computedRate.toLocaleString()}/hr</strong></p>
-                    
-                    <button class="view-btn" data-id="${nanny.id}">View Profile</button>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-
-        // Attach click listeners
-        document.querySelectorAll(".view-btn").forEach(btn => {
-            btn.addEventListener("click", () => handleView(btn.dataset.id));
-        });
-
+        if (Array.isArray(data)) {
+            allNannies = data; // Store globally for searching
+            renderNannies(allNannies);
+        }
     } catch (err) {
         console.error("Failed to fetch nannies:", err);
-        document.getElementById("nanny-list").innerHTML = "<p>Unable to load nannies at this time.</p>";
     }
 }
 
-// 4 & 5. Redirect Logic
 function handleView(nannyId) {
-    const token = localStorage.getItem('token'); // Check your auth storage
+    const token = localStorage.getItem('access_token'); 
     if (!token) {
-        // Store intended destination
         sessionStorage.setItem('redirect_after_login', `/views/nanny-profile.html?id=${nannyId}`);
         window.location.href = "../frontend/src/views/login.html";
     } else {
-        window.location.href = `/views/nanny-profile.html?id=${nannyId}`;
+        window.location.href = "../frontend/src/views/login.html";
     }
 }
-
 
 // INIT
 document.addEventListener("DOMContentLoaded", () => {
     fetchStats();
     fetchFeaturedNannies();
+    setupSearch(); // Initialize search listener
 });
-
-

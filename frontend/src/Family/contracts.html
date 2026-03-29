@@ -37,12 +37,13 @@
 <header class="w-full sticky top-0 bg-white/90 backdrop-blur-md z-50 border-b border-slate-100 px-6 py-3">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                <span class="material-symbols-outlined text-white text-sm">shield_with_heart</span>
+            <div class="h-8 flex items-center">
+                <img src="../../assets/images/logo.png" class="h-full w-auto object-contain" alt="NannyLink Logo">
             </div>
             <span class="text-lg font-extrabold text-primary font-headline tracking-tighter">NannyLink Kenya</span>
         </div>
-    </div>
+        
+        </div>
 </header>
 
 <main class="max-w-6xl mx-auto px-6 pt-8 pb-32">
@@ -62,7 +63,23 @@
         </div>
     </div>
 </main>
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-xl z-50 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-slate-100">
+    <a class="flex flex-col items-center justify-center text-primary px-5 py-2 transition-all" href="contracts.html">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">description</span>
+        <span class="text-[10px] font-black tracking-wide uppercase mt-1">Contracts</span>
+        <div class="w-1 h-1 bg-primary rounded-full mt-1"></div>
+    </a>
 
+    <a href="connections.html" class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-primary transition-all">
+        <span class="material-symbols-outlined">payments</span>
+        <span class="text-[10px] font-bold tracking-wide uppercase mt-1">Payments</span>
+    </a>
+
+    <a class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-primary transition-all" href="familydashboard.html">
+        <span class="material-symbols-outlined">group</span>
+        <span class="text-[10px] font-bold tracking-wide uppercase mt-1">Connect</span>
+    </a>
+</nav>
 <script>
     const API_CONTRACTS = "http://localhost:8000/contracts";
     const API_CONNECTIONS = "http://localhost:8000/connections"; 
@@ -79,6 +96,12 @@
                 fetch(`${API_CONNECTIONS}/`, { headers: { 'Authorization': `Bearer ${token}` } }),
                 fetch(`${API_CONTRACTS}/me`, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
+            if (cRes.status === 401 || ctRes.status === 401) {
+                alert("Session expired. Please log in again.");
+                localStorage.removeItem('access_token');
+                window.location.href = "../views/login.html";
+                return;
+            }
             successfulMatches = await cRes.json();
             existingContracts = await ctRes.json();
             renderMatches();
@@ -128,9 +151,10 @@
         const btn = document.getElementById('genBtn');
         btn.innerHTML = "Processing...";
         try {
-            const res = await fetch(`${API_CONTRACTS}/generate/${matchId}?custom_terms=${encodeURIComponent(terms)}`, {
-                method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
-            });
+        const res = await fetch(`${API_CONTRACTS}/generate/${matchId}?custom_terms=${encodeURIComponent(terms)}`, {
+            method: 'POST', 
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
             const newContract = await res.json();
             existingContracts.push(newContract);
             renderMatches();
@@ -139,96 +163,141 @@
     }
 
     function renderContractView(contract, match) {
-        const workspace = document.getElementById('workspace');
+    const workspace = document.getElementById('workspace');
+    
+    // Cleaning logic to extract the custom duties and household expectations
+    let fullText = contract.contract_text || "";
+    
+    // Extract Household Expectations
+    let householdExp = "Standard childcare services as per NannyLink guidelines.";
+    if (fullText.includes("HOUSEHOLD EXPECTATIONS") && fullText.includes("SPECIAL JOB REQUIREMENTS")) {
+        householdExp = fullText.split("HOUSEHOLD EXPECTATIONS")[1].split("SPECIAL JOB REQUIREMENTS")[0].trim();
+    }
+
+    // Extract Special Requirements (The Family's custom input)
+    let customRequirements = "Standard employment terms apply.";
+    if (fullText.includes("SPECIAL JOB REQUIREMENTS") && fullText.includes("GENERAL PROVISIONS")) {
+        customRequirements = fullText.split("SPECIAL JOB REQUIREMENTS")[1].split("GENERAL PROVISIONS")[0].trim();
+    }
+
+    // ACCURATE NAME LOGIC: Check for full_name first, then name, then fallback
+    const accurateNannyName = match.nanny?.full_name || match.nanny?.name || 'Caregiver Professional';
+
+    workspace.innerHTML = `
+        <div class="bg-primary p-4 text-white flex justify-between items-center no-print">
+            <span class="text-xs font-bold uppercase tracking-widest opacity-80">Employment Agreement (Official)</span>
+            <button onclick="downloadPDF()" class="bg-secondary px-4 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">download</span> Download PDF
+            </button>
+        </div>
         
-        // --- CLEANING LOGIC ---
-        // 1. Take everything after "EXPECTATIONS" 
-        // 2. Stop everything before "GENERAL PROVISIONS"
-        let fullText = contract.contract_text || "";
-        let cleanText = "";
-
-        if (fullText.includes("EXPECTATIONS")) {
-            cleanText = fullText.split("EXPECTATIONS")[1];
-        } else if (fullText.includes("TERMS")) {
-            cleanText = fullText.split("TERMS")[1];
-        } else {
-            cleanText = fullText;
-        }
-
-        // Strip out the repeated general provisions and dashes
-        cleanText = cleanText.split("GENERAL PROVISIONS")[0]
-                    .replace(/---/g, '')
-                    .replace(/OF SERVICE/g, '')
-                    .trim();
-
-        workspace.innerHTML = `
-            <div class="bg-primary p-4 text-white flex justify-between items-center no-print">
-                <span class="text-xs font-bold uppercase tracking-widest opacity-80">Employment Agreement</span>
-                <button onclick="downloadPDF()" class="bg-secondary px-4 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2">
-                    <span class="material-symbols-outlined text-sm">download</span> Download PDF
-                </button>
-            </div>
-            
-            <div class="p-8 flex-grow overflow-y-auto bg-slate-200 hide-scrollbar">
-                <div id="contractPDF" class="p-16 border border-slate-300 shadow-2xl relative mx-auto max-w-[800px] bg-white">
-                    <div class="legal-header">
-                        <h1 class="legal-title font-headline">Employment Agreement</h1>
+        <div class="p-8 flex-grow overflow-y-auto bg-slate-100 hide-scrollbar">
+            <div id="contractPDF" class="p-12 md:p-16 border border-slate-200 shadow-2xl relative mx-auto max-w-[850px] bg-white">
+                
+                <div class="flex justify-between items-start border-b-2 border-primary pb-6 mb-8">
+                    <div>
+                        <h1 class="text-2xl font-black text-primary font-headline tracking-tighter">NannyLink Kenya</h1>
+                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Premium Care & Household Staffing</p>
                     </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Date Generated</p>
+                        <p class="text-sm font-bold text-primary">${contract.generation_date ? new Date(contract.generation_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '28 March 2026'}</p>
+                    </div>
+                </div>
 
-                    <div class="space-y-4">
-                        <h3 class="section-title">I. Parties</h3>
-                        <ol class="legal-list">
-                            <li><span class="legal-term-label">Employer:</span> ${match.family?.name || 'Hiring Family'}</li>
-                            <li><span class="legal-term-label">Employee:</span> ${match.nanny?.full_name || match.nanny?.name || 'Caregiver'}</li>
-                        </ol>
+                <h2 class="text-3xl font-black text-primary text-center mb-12 tracking-widest uppercase font-headline">Employment Agreement</h2>
 
-                        <h3 class="section-title">II. Duties & Requirements</h3>
-                        <ol class="legal-list" style="counter-reset: item 2;">
-                            <li><span class="legal-term-label">Primary Duties:</span>
-                                <div class="mt-4 p-6 bg-slate-50 rounded-xl border border-slate-100 text-slate-600 leading-relaxed italic">
-                                    ${cleanText || "Standard employment terms as per NannyLink guidelines."}
-                                </div>
-                            </li>
-                        </ol>
-
-                        <h3 class="section-title">III. General Provisions</h3>
-                        <ol class="legal-list" style="counter-reset: item 3;">
-                            <li>This contract is binding upon digital acceptance by both parties.</li>
-                            <li>The Family agrees to provide a safe working environment.</li>
-                            <li>Payment shall be handled via the NannyLink Secure Payment platform.</li>
-                            <li>Either party may terminate with 14 days written notice.</li>
-                        </ol>
-
-                        <div class="mt-20 pt-10 border-t border-slate-200 grid grid-cols-2 gap-12">
-                            <div class="text-center">
-                                <div class="h-16 flex items-end justify-center border-b border-slate-300 mb-2">
-                                    ${contract.acceptance?.family_accepted ? '<span class="font-bold italic text-primary">Digitally Signed</span>' : ''}
-                                </div>
-                                <p class="text-[9px] font-black uppercase text-slate-400 tracking-tighter">Employer Signature</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="h-16 flex items-end justify-center border-b border-slate-300 mb-2">
-                                    ${contract.acceptance?.nanny_accepted ? '<span class="font-bold italic text-primary">Digitally Signed</span>' : ''}
-                                </div>
-                                <p class="text-[9px] font-black uppercase text-slate-400 tracking-tighter">Employee Signature</p>
-                            </div>
+                <div class="mb-10">
+                    <h3 class="text-secondary text-sm font-black uppercase mb-4 tracking-widest">1. Agreement Parties</h3>
+                    <div class="grid grid-cols-2 gap-8 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <div>
+                            <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Employer (Family)</p>
+                            <p class="text-sm font-extrabold text-primary">${match.family?.name || 'Johnarto Family'}</p>
+                            <p class="text-xs text-slate-500">${match.family?.household_location || 'Nyali, Mombasa'}</p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Employee (Nanny)</p>
+                            <p class="text-sm font-extrabold text-primary">${accurateNannyName}</p>
+                            <p class="text-xs text-green-600 font-bold">Verified via NannyLink</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="p-6 bg-white border-t border-slate-100 flex justify-center no-print">
-                ${!contract.acceptance?.family_accepted ? `
-                    <button onclick="signNow('${contract.id}')" class="bg-primary text-white px-16 py-4 rounded-2xl font-black shadow-xl hover:scale-105 transition-all">
-                        Sign This Contract
-                    </button>
-                ` : `<div class="bg-green-50 text-green-600 px-10 py-3 rounded-2xl font-bold flex items-center gap-3 border border-green-200">
-                      <span class="material-symbols-outlined">verified</span> Signature Recorded
-                    </div>`}
-            </div>
-        `;
-    }
+                <div class="mb-10">
+                    <h3 class="text-secondary text-sm font-black uppercase mb-4 tracking-widest">2. Terms & Duties</h3>
+                    <div class="space-y-6 text-sm text-slate-700 leading-relaxed">
+                        <div>
+                            <p class="text-[10px] font-black text-primary uppercase mb-2">Household Details & Expectations</p>
+                            <p class="italic text-slate-600 border-l-4 border-slate-200 pl-4">${householdExp}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-primary uppercase mb-2">Special Job Requirements</p>
+                            <p class="italic text-slate-600 border-l-4 border-slate-200 pl-4">${customRequirements}</p>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="mb-12">
+                    <h3 class="text-secondary text-sm font-black uppercase mb-4 tracking-widest">3. General Provisions</h3>
+                    <ul class="space-y-3 text-xs text-slate-600">
+                        <li class="flex gap-3"><span>1.</span> This contract is binding upon digital acceptance by both parties.</li>
+                        <li class="flex gap-3"><span>2.</span> The Family agrees to provide a safe working environment.</li>
+                        <li class="flex gap-3"><span>3.</span> Payment shall be handled via the NannyLink Secure Payment platform.</li>
+                        <li class="flex gap-3"><span>4.</span> Either party may terminate with 14 days written notice.</li>
+                    </ul>
+                </div>
+
+                <div class="mt-20 pt-10 border-t border-slate-100">
+                    <p class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-10">Acceptance & Digital Signatures</p>
+                    <div class="grid grid-cols-2 gap-16">
+                        <div class="text-center">
+                            <div class="mb-4 flex justify-center">
+                                <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200">
+                                    <span class="material-symbols-outlined text-3xl ${contract.acceptance?.family_accepted ? 'text-green-500' : 'text-slate-200'}">verified</span>
+                                </div>
+                            </div>
+                            <p class="text-[10px] font-black text-primary uppercase">Employer / Family</p>
+                            <p class="text-xs italic ${contract.acceptance?.family_accepted ? 'text-green-600 font-bold' : 'text-slate-400'}">
+                                ${contract.acceptance?.family_accepted ? 'Digitally Signed' : 'Signature Pending'}
+                            </p>
+                        </div>
+                        <div class="text-center">
+                            <div class="mb-4 flex justify-center">
+                                <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200">
+                                    <span class="material-symbols-outlined text-3xl ${contract.acceptance?.nanny_accepted ? 'text-green-500' : 'text-slate-200'}">verified</span>
+                                </div>
+                            </div>
+                            <p class="text-[10px] font-black text-primary uppercase">Employee / Nanny</p>
+                            <p class="text-xs italic ${contract.acceptance?.nanny_accepted ? 'text-green-600 font-bold' : 'text-slate-400'}">
+                                ${contract.acceptance?.nanny_accepted ? 'Digitally Signed' : 'Signature Pending'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-16 text-center border-t border-slate-50 pt-6">
+                    <p class="text-[10px] font-bold text-primary">NannyLink Kenya · Secure. Professional. Reliable.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 bg-white border-t border-slate-100 flex justify-center no-print">
+            ${(contract.acceptance?.family_accepted && contract.acceptance?.nanny_accepted) ? `
+                <div class="bg-green-50 text-green-600 px-10 py-4 rounded-2xl font-black flex items-center gap-3 border border-green-200 shadow-sm">
+                    <span class="material-symbols-outlined font-bold">verified</span> Contract Fully Executed
+                </div>
+            ` : contract.acceptance?.family_accepted ? `
+                <div class="text-slate-400 font-bold flex items-center gap-2 italic">
+                    <span class="material-symbols-outlined">hourglass_empty</span> Waiting for Nanny to sign...
+                </div>
+            ` : `
+                <button id="signBtn" onclick="signNow('${contract.id}')" class="bg-primary text-white px-20 py-4 rounded-2xl font-black shadow-xl hover:scale-105 transition-all flex items-center gap-3">
+                    <span class="material-symbols-outlined">draw</span> Sign This Agreement
+                </button>
+            `}
+        </div>
+    `;
+}
     function downloadPDF() {
         const element = document.getElementById('contractPDF');
         html2pdf().set({
@@ -240,17 +309,39 @@
     }
 
     async function signNow(id) {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch(`${API_CONTRACTS}/${id}/sign`, {
-            method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.ok) {
-            const updated = await res.json();
-            const idx = existingContracts.findIndex(c => c.id === id);
-            existingContracts[idx] = updated;
-            renderContractView(updated, successfulMatches.find(m => m.id === updated.match_id));
-        }
-    }
+      const token = localStorage.getItem('access_token');
+      const signBtn = document.getElementById('signBtn');
+      
+      // Maintain state: loading
+      if (signBtn) {
+          signBtn.disabled = true;
+          signBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Processing...`;
+      }
+
+      try {
+          const res = await fetch(`${API_CONTRACTS}/${id}/sign`, {
+              method: 'POST', 
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+          
+          if (res.ok) {
+              const updated = await res.json();
+              // Update local state
+              const idx = existingContracts.findIndex(c => c.id === id);
+              if (idx !== -1) existingContracts[idx] = updated;
+              
+              // Re-render with official signature badge
+              renderContractView(updated, successfulMatches.find(m => m.id === updated.match_id));
+              renderMatches(); // Update sidebar checkmarks
+          }
+      } catch (e) {
+          if (signBtn) {
+              signBtn.disabled = false;
+              signBtn.innerHTML = `<span class="material-symbols-outlined">draw</span> Sign This Agreement`;
+          }
+          alert("Signature could not be recorded. Check your connection.");
+      }
+  }
 </script>
 </body>
 </html>

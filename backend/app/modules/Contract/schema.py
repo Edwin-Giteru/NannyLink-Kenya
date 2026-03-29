@@ -14,6 +14,21 @@ class ContractAcceptanceResponse(BaseModel):
     nanny_acceptance_date: Optional[datetime] = None
     acting_user_id: Optional[UUID] = None
  
+class FamilyShortResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    name: str
+    household_location: Optional[str] = None
+
+class NannyShortResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    full_name: Optional[str] = None
+    name: Optional[str] = None
+
+class MatchShortResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    family: Optional[FamilyShortResponse] = None
+    nanny: Optional[NannyShortResponse] = None
  
 class ContractResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -25,6 +40,7 @@ class ContractResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     acceptance: Optional[ContractAcceptanceResponse] = None
+    match: Optional[MatchShortResponse] = None
  
  
 class ContractGenerateRequest(BaseModel):
