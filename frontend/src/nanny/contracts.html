@@ -184,36 +184,48 @@
 
  <script>
     const API_BASE = "http://127.0.0.1:8000";
+    // Adjust this to match your backend mount point (usually /nannies/contracts or /contracts)
+    const CONTRACT_PATH = "/contracts/me"; 
     let selectedId = null;
-    let successfulMatches = []; // Initialize to prevent ReferenceError
+    let cachedContracts = []; 
 
     async function loadData() {
         const token = localStorage.getItem("access_token");
-        if (!token) { window.location.href = "../views/login.html"; return; }
+        if (!token) { 
+            window.location.href = "/frontend/src/views/login.html"; 
+            return; 
+        }
         
-        const headers = { 'Authorization': `Bearer ${token}` };
+        const headers = { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+
         try {
-            // Added connection fetching to populate 'successfulMatches'
-            const [profileReq, contractReq, connectionReq] = await Promise.all([
+            // 1. Fetch Profile and Contracts in parallel
+            // Note: Changed /contracts/me to check if it's under /nannies prefix
+            const [profileReq, contractReq] = await Promise.all([
                 fetch(`${API_BASE}/nannies/profile/me`, { headers }),
-                fetch(`${API_BASE}/contracts/me`, { headers }),
-                fetch(`${API_BASE}/connections/`, { headers }) 
+                fetch(`${API_BASE}${CONTRACT_PATH}`, { headers }) 
             ]);
 
             if (profileReq.ok) {
                 const profileData = await profileReq.json();
-                if (profileData.profile_photo_url) {
-                    document.getElementById('nav_profile_img').src = profileData.profile_photo_url;
+                // Handle nested .data if your service returns it that way
+                const profile = profileData.data || profileData;
+                const navImg = document.getElementById('nav_profile_img');
+                if (navImg && profile.profile_photo_url) {
+                    navImg.src = profile.profile_photo_url;
                 }
             }
 
-            if (connectionReq.ok) {
-                successfulMatches = await connectionReq.json();
-            }
-
             if (contractReq.ok) {
-                const contracts = await contractReq.json();
-                renderLists(contracts);
+                const rawData = await contractReq.json();
+                // CRITICAL: Handle the 'success/data' wrapper from NannyService/ContractService
+                cachedContracts = Array.isArray(rawData) ? rawData : (rawData.data || []);
+                renderLists(cachedContracts);
+            } else {
+                console.error("Contract Fetch Failed:", contractReq.status);
             }
         } catch (e) { 
             console.error("Load Data Error:", e); 
@@ -225,19 +237,30 @@
         const aList = document.getElementById('active-list');
         if(!pList || !aList) return;
         
-        pList.innerHTML = ''; aList.innerHTML = '';
+        pList.innerHTML = ''; 
+        aList.innerHTML = '';
+
+        if (list.length === 0) {
+            pList.innerHTML = '<p class="text-[10px] text-slate-400 italic">No contracts found.</p>';
+            return;
+        }
+
         list.forEach(c => {
-            const isNannySigned = c.acceptance?.nanny_accepted;
+            const isNannySigned = c.acceptance?.nanny_accepted || c.nanny_accepted;
             const card = document.createElement('div');
             card.className = `p-5 bg-white rounded-2xl border-l-4 cursor-pointer shadow-sm transition-all hover:translate-x-1 mb-3 ${isNannySigned ? 'border-green-500' : 'border-secondary'}`;
+            
+            // Generate a readable ID
+            const displayId = c.id ? c.id.substring(0,8).toUpperCase() : 'NEW';
+            
             card.onclick = () => showContract(c);
             card.innerHTML = `
                 <div class="flex justify-between items-center">
                     <div>
                         <h3 class="font-bold text-primary text-sm">Employment Agreement</h3>
-                        <p class="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">REF: NL-${c.id.substring(0,8).toUpperCase()}</p>
+                        <p class="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">REF: NL-${displayId}</p>
                     </div>
-                    ${isNannySigned ? '<span class="material-symbols-outlined text-green-500">verified</span>' : ''}
+                    ${isNannySigned ? '<span class="material-symbols-outlined text-green-500">verified</span>' : '<span class="material-symbols-outlined text-secondary animate-pulse">pending_actions</span>'}
                 </div>
             `;
             (isNannySigned ? aList : pList).appendChild(card);
@@ -246,34 +269,31 @@
 
     async function showContract(c) {
     selectedId = c.id;
+        const matchData = c.match || {}; 
+        const familyData = matchData.family || {};
+        const nannyData = matchData.nanny || {};
+        
+        const emptyState = document.getElementById('viewer-empty-state');
+        if(emptyState) emptyState.classList.add('hidden');
+        
+        const viewer = document.getElementById('contract-viewer');
+        viewer.classList.remove('hidden');
 
-    // Pull data from the nested match object provided by the updated backend
-    const matchData = c.match || {}; 
-    const familyData = matchData.family || {};
-    const nannyData = matchData.nanny || {};
-    
-    document.getElementById('viewer-empty-state').classList.add('hidden');
-    const viewer = document.getElementById('contract-viewer');
-    viewer.classList.remove('hidden');
+        // Logic for parsing text and rendering (Matches your existing implementation)
+        let fullText = c.contract_text || "";
+        let householdExp = "Standard childcare services.";
+        let customRequirements = "Standard terms apply.";
 
-    // --- PARSING LOGIC ---
-    let fullText = c.contract_text || "";
-    let householdExp = "Standard childcare services as per NannyLink guidelines.";
-    let customRequirements = "Standard employment terms apply.";
-
-    // Improved split logic to avoid empty strings or missing sections
-    if (fullText.includes("HOUSEHOLD EXPECTATIONS")) {
-        const sections = fullText.split("HOUSEHOLD EXPECTATIONS");
-        if (sections[1]) {
-            const subSections = sections[1].split("SPECIAL JOB REQUIREMENTS");
-            householdExp = subSections[0].trim().replace(/-{2,}/g, "");
-            
-            if (subSections[1]) {
-                customRequirements = subSections[1].split("GENERAL PROVISIONS")[0].trim().replace(/-{2,}/g, "");
+        if (fullText.includes("HOUSEHOLD EXPECTATIONS")) {
+            const sections = fullText.split("HOUSEHOLD EXPECTATIONS");
+            if (sections[1]) {
+                const subSections = sections[1].split("SPECIAL JOB REQUIREMENTS");
+                householdExp = subSections[0].trim().replace(/-{2,}/g, "");
+                if (subSections[1]) {
+                    customRequirements = subSections[1].split("GENERAL PROVISIONS")[0].trim().replace(/-{2,}/g, "");
+                }
             }
         }
-    }
-
     viewer.innerHTML = `
         <div class="bg-primary p-4 text-white flex justify-between items-center no-print rounded-t-[2.5rem]">
             <span class="text-xs font-bold uppercase tracking-widest opacity-80">Reference: NL-${c.id.substring(0,8).toUpperCase()}</span>

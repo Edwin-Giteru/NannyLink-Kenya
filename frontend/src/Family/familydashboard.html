@@ -229,7 +229,6 @@
         <span class="text-[9px] font-black uppercase mt-1">Profile</span>
     </a>
 </nav>
-</nav>
 
 <script>
     const API_BASE_URL = "http://localhost:8000";
@@ -311,9 +310,9 @@
 
     function renderNannyCard(nanny) {
         const baseRate = 250;
-        const exp = parseInt(nanny.experience) || 0;
+        const exp = parseInt(nanny.experience_years) || 0;
         const computedRate = baseRate + (exp * 50);
-        const photo = nanny.photo || 'https://ui-avatars.com/api/?name=' + (nanny.name || 'Nanny');
+        const photo = nanny.profile_image || 'https://ui-avatars.com/api/?name=' + (nanny.full_name || nanny.name || 'Nanny');
         
         return `
             <div onclick='openNannyModal(${JSON.stringify(nanny).replace(/'/g, "&apos;")})' class="group bg-white rounded-[2rem] overflow-hidden ambient-shadow cursor-pointer border border-transparent hover:border-secondary/20 transition-all duration-300">
@@ -326,13 +325,13 @@
                 </div>
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-1">
-                        <h3 class="font-headline text-xl font-extrabold text-primary">${nanny.name}</h3>
+                        <h3 class="font-headline text-xl font-extrabold text-primary">${nanny.full_name || nanny.name || "Nanny Name"}</h3>
                         <div class="text-right">
                             <span class="text-secondary font-black text-sm">KSh ${computedRate.toLocaleString()}</span>
                             <span class="text-slate-400 text-[10px] block font-bold">/hr</span>
                         </div>
                     </div>
-                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">${nanny.location || 'Nairobi'}</p>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">${nanny.current_location || 'Nairobi'}</p>
                     <div class="flex items-center gap-4 text-slate-600 text-sm mb-6 font-medium">
                         <div class="flex items-center gap-1">
                             <span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
@@ -351,15 +350,15 @@
         const modal = document.getElementById('nannyModal');
         const connectBtn = document.getElementById('connectBtn');
         const baseRate = 250;
-        const exp = parseInt(nanny.experience) || 0;
+        const exp = parseInt(nanny.experience_years) || 0;
         const computedRate = baseRate + (exp * 50);
         
-        document.getElementById('modalImage').src = nanny.photo || 'https://ui-avatars.com/api/?name=' + nanny.name;
-        document.getElementById('modalName').textContent = nanny.name;
-        document.getElementById('modalLocation').textContent = nanny.location || 'Nairobi';
+        document.getElementById('modalImage').src = nanny.profile_image || 'https://ui-avatars.com/api/?name=' + nanny.name;
+        document.getElementById('modalName').textContent = nanny.full_name || nanny.name || "Nanny Name";
+        document.getElementById('modalLocation').textContent = nanny.current_location || 'Nairobi';
         document.getElementById('modalRate').textContent = `KSh ${computedRate.toLocaleString()}`;
         document.getElementById('modalExp').textContent = `${exp} Yrs`;
-        document.getElementById('modalBio').textContent = nanny.bio || "No description provided.";
+        // document.getElementById('modalBio').textContent = nanny.bio || "No description provided.";
         
         const skillsDiv = document.getElementById('modalSkills');
         const skills = Array.isArray(nanny.skills) ? nanny.skills : (nanny.skills ? nanny.skills.split(',') : []);
@@ -431,8 +430,8 @@
         const selectedSchedules = Array.from(document.querySelectorAll('#scheduleCheckboxes input:checked')).map(cb => cb.value);
         
         const filtered = allNannies.filter(nanny => {
-            const matchesLocation = selectedCity === "All Cities" || (nanny.location && nanny.location.toLowerCase().includes(selectedCity.toLowerCase()));
-            const matchesSearch = (nanny.name && nanny.name.toLowerCase().includes(searchTerm)) || (nanny.skills && String(nanny.skills).toLowerCase().includes(searchTerm));
+            const matchesLocation = selectedCity === "All Cities" || (nanny.current_location && nanny.current_location.toLowerCase().includes(selectedCity.toLowerCase()));
+            const matchesSearch = (nanny.full_name && nanny.full_name.toLowerCase().includes(searchTerm)) || (nanny.skills && String(nanny.skills).toLowerCase().includes(searchTerm));
             
             let matchesSchedule = true;
             if (selectedSchedules.length > 0) {

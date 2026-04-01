@@ -62,14 +62,12 @@
 
 <header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant/30 flex items-center justify-between px-6 h-16">
     <div class="flex items-center gap-3">
-      <div class="h-10 flex items-center">
-        <img src="../../assets/images/logo.png" class="h-full w-auto object-contain" alt="NannyLink Logo">
-      </div>
-      <span class="font-headline font-extrabold text-xl tracking-tight text-primary">NannyLink</span>
+        <div class="h-10 flex items-center">
+            <img src="../../assets/images/logo.png" class="h-full w-auto object-contain" alt="NannyLink Logo">
+        </div>
+        <span class="font-headline font-extrabold text-xl tracking-tight text-primary">NannyLink</span>
     </div>
 
-    <div class="flex items-center">
-        </div>
 </header>
 
   <main class="max-w-7xl mx-auto px-6 pt-24 pb-32">
@@ -173,14 +171,13 @@
     </a>
   </nav>
 
-  <script>
+ <script>
     const API_BASE = "http://127.0.0.1:8000/nannies";
     let cachedConnections = [];
 
     async function initDashboard() {
         const token = localStorage.getItem("access_token");
 
-        // Redirect if no token exists
         if (!token) {
             window.location.href = "/frontend/src/views/login.html";
             return;
@@ -194,7 +191,6 @@
         try {
             const profileRes = await fetch(`${API_BASE}/profile/me`, { headers });
             
-            // Handle expired or unauthorized token
             if (profileRes.status === 401) {
                 localStorage.removeItem("access_token");
                 window.location.href = "/frontend/src/views/login.html";
@@ -212,18 +208,11 @@
             }
 
             const connRes = await fetch(`${API_BASE}/connections`, { headers });
-            
-            // Handle expired or unauthorized token for the second call
-            if (connRes.status === 401) {
-                localStorage.removeItem("access_token");
-                window.location.href = "/frontend/src/views/login.html";
-                return;
-            }
-
             const connectionsData = await connRes.json();
 
             if (connRes.ok) {
-                cachedConnections = connectionsData.data || connectionsData;
+                // Ensure we are grabbing the array correctly
+                cachedConnections = Array.isArray(connectionsData) ? connectionsData : (connectionsData.data || []);
                 updateStats(cachedConnections);
             }
 
@@ -234,17 +223,23 @@
 
     function updateUI(data) {
         const defaultAvatar = "https://via.placeholder.com/150?text=Profile";
-        const profilePic = data.profile_photo_url || defaultAvatar;
+        // Map keys based on your FastAPI NannyResponse
+        const profilePic = data.profile_photo_url || data.profile_image || defaultAvatar;
 
-        document.getElementById('nav_profile_img').src = profilePic;
-        document.getElementById('hero_profile_img').src = profilePic;
-        document.getElementById('nanny_name').innerText = data.name || "Nanny";
+        // Error fixed by adding elements to HTML above
+        const navImg = document.getElementById('nav_profile_img');
+        const heroImg = document.getElementById('hero_profile_img');
         
+        if (navImg) navImg.src = profilePic;
+        if (heroImg) heroImg.src = profilePic;
+        
+        document.getElementById('nanny_name').innerText = data.name || data.full_name || "Nanny";
+
         const badge = document.getElementById('vetting_badge');
         const vText = document.getElementById('vetting_text');
-        const status = (data.vetting_status || "").toLowerCase();
+        const status = (data.vetting_status || "pending").toLowerCase();
 
-        if (status === "approved") {
+        if (status === "approved" || status === "verified") {
             badge.className = "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-green-100 text-green-700";
             badge.innerText = "VERIFIED";
             vText.innerText = "Profile Approved";
@@ -257,37 +252,53 @@
             badge.innerText = "IN REVIEW";
             vText.innerText = "Checking Credentials";
         }
-        document.getElementById('availability_text').innerText = (data.availability || "Check Settings").replace('_', ' ');
+        
+        const availability = data.availability || "Not Set";
+        document.getElementById('availability_text').innerText = availability.replace(/_/g, ' ');
     }
 
     function updateStats(connections) {
-        const list = document.getElementById('activity_list');
-        const count = connections.length;
-        
-        document.getElementById('connection_count').innerText = count;
-        const activeContracts = connections.filter(c => c.status === 'accepted' || c.status === 'active').length;
-        document.getElementById('contract_count').innerText = activeContracts;
+    const list = document.getElementById('activity_list');
+    const count = connections.length;
+    
+    // Update Total Connections
+    document.getElementById('connection_count').innerText = count;
 
-        if (count > 0) {
-            list.innerHTML = connections.slice(0, 3).map(conn => `
-                <div class="bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between border border-outline-variant/10 hover:shadow-md transition-shadow group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-colors">
-                            <span class="material-symbols-outlined">family_restroom</span>
-                        </div>
-                        <div>
-                            <p class="font-bold text-primary">${conn.family_name || 'Family Profile'}</p>
-                            <p class="text-[11px] font-bold text-secondary uppercase tracking-tighter">View Match details</p>
-                        </div>
+    // FIX: Robust filtering for active contracts
+    // We check for 'accepted', 'active', or 'signed' to be safe.
+    const activeContracts = connections.filter(c => {
+        const status = (c.status || "").toLowerCase();
+        return status === 'accepted' || status === 'active' || status === 'signed';
+    }).length;
+
+    document.getElementById('contract_count').innerText = activeContracts;
+
+    // Log for debugging if the count is still 0 unexpectedly
+    console.log("Total Connections Found:", count);
+    console.log("Active Contracts Calculated:", activeContracts);
+
+    if (count > 0) {
+        list.innerHTML = connections.slice(0, 3).map(conn => `
+            <div class="bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between border border-outline-variant/10 hover:shadow-md transition-shadow group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">family_restroom</span>
                     </div>
-                    <button onclick="openModal('${conn.id}')" class="bg-surface p-2 rounded-lg text-primary hover:bg-primary hover:text-white transition-colors">
-                        <span class="material-symbols-outlined text-sm">chevron_right</span>
-                    </button>
+                    <div>
+                        <p class="font-bold text-primary">${conn.family_name || 'New Family Connection'}</p>
+                        <p class="text-[11px] font-bold text-secondary uppercase tracking-tighter">View Match details</p>
+                    </div>
                 </div>
-            `).join('');
-        }
+                <button onclick="openModal('${conn.id}')" class="bg-surface p-2 rounded-lg text-primary hover:bg-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                </button>
+            </div>
+        `).join('');
+    } else {
+        list.innerHTML = `<p class="text-sm text-on-surface-variant italic">Waiting for your first match...</p>`;
     }
-
+}
+    // Modal functions remain the same
     function openModal(connId) {
         const connection = cachedConnections.find(c => String(c.id) === String(connId));
         if (!connection) return;
@@ -310,16 +321,10 @@
                 </div>
                 <div class="p-4 bg-white border border-outline-variant/20 rounded-2xl">
                     <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Location</p>
-                    <p class="font-bold text-primary text-sm">${connection.family_location || 'Nakuru, Kenya'}</p>
+                    <p class="font-bold text-primary text-sm">${connection.family_location || 'Not Specified'}</p>
                 </div>
             </div>
-            <div class="bg-primary/5 p-4 rounded-2xl border-l-4 border-primary">
-                <p class="text-xs text-primary/80 italic leading-relaxed">
-                    "This family has expressed interest in your profile. You will receive an official notification once the contract is ready for review."
-                </p>
-            </div>
         `;
-
         document.getElementById('connection-modal').classList.remove('hidden');
         document.body.classList.add('modal-active');
     }
@@ -330,6 +335,6 @@
     }
 
     initDashboard();
-  </script>
+</script>
 </body>
 </html>
