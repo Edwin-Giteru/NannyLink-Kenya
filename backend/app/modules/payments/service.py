@@ -96,7 +96,7 @@ class PaymentService:
             # Update Match Status to PAID
             await self.match_service.update_match_status(
                 payment.match_id, 
-                models.MatchStatus.PAID
+                models.MatchStatus.COMPLETED
             )
             logger.info(f"Payment Successful for Match {payment.match_id}")
         else:
