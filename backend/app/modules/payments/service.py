@@ -21,17 +21,26 @@ class PaymentService:
         self.match_service = MatchService(db)
         self.family_service = FamilyService(db)
 
-    async def initiate_batch_stk_push(
+    async def initiate_stk_push(
         self,
         match_ids: List[UUID],
         payer_user: models.User,
         phone_number: str,
-        amount_per_nanny: float = 1.0 # Set your price here
+        amount_per_nanny: float = 1.0  # Your unit price
     ) -> Result:
+        """
+        Handles both single and batch payments by treating single payments 
+        as a batch of one.
+        """
         try:
+            if not match_ids:
+                return Result.fail("No match IDs provided for payment", 400)
+
+            # Calculate total based on number of matches
             total_amount = len(match_ids) * amount_per_nanny
 
-            # 1. Create the Batch Payment Record
+            # 1. Create the Payment Record (Single or Batch)
+            # Your repository already links multiple matches to one payment ID
             payment_record = await self.payment_repository.create_batch_payment(
                 user_id=payer_user.id,
                 match_ids=match_ids,
@@ -39,8 +48,6 @@ class PaymentService:
                 phone_number=phone_number
             )
 
-            # 2. Trigger STK Push
-            # We use the payment_record.id as the account reference
             stk_response = await sendStkPush(
                 phone_number=phone_number,
                 amount=total_amount,
@@ -48,7 +55,10 @@ class PaymentService:
                 base_url=os.getenv("BASE_URL")
             )
 
-            # 3. Update record with Daraja IDs
+            # 3. Handle M-Pesa Response
+            if "CheckoutRequestID" not in stk_response:
+                return Result.fail(f"Daraja Error: {stk_response.get('errorMessage', 'Unknown Error')}", 400)
+
             payment_record.merchant_request_id = stk_response.get("MerchantRequestID")
             payment_record.checkout_request_id = stk_response.get("CheckoutRequestID")
             payment_record.payment_status = "pending"
@@ -58,9 +68,9 @@ class PaymentService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Batch STK Error: {e}")
+            logger.error(f"STK Initiation Error: {e}")
             return Result.fail(f"Payment initiation failed: {str(e)}", 500)
-
+        
     async def process_callback(self, callback_data: dict) -> Result:
         stk_payload = callback_data.get("Body", {}).get("stkCallback", {})
         checkout_id = stk_payload.get("CheckoutRequestID")

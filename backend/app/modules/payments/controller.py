@@ -18,7 +18,7 @@ async def initiate_batch_payment(
     """
     payment_service = PaymentService(db)
     
-    result = await payment_service.initiate_batch_stk_push(
+    result = await payment_service.initiate_stk_push(
         match_ids=payload.match_ids,
         payer_user=current_user,
         phone_number=payload.phone_number
