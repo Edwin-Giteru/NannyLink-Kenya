@@ -16,7 +16,7 @@ class PaymentRepository:
         amount: float,
         phone_number: str,
     ) -> Payment:
-        # 1. Create the base payment record
+        # Create the payment record
         new_payment = Payment(
             user_id=user_id,
             amount=amount,
@@ -26,7 +26,8 @@ class PaymentRepository:
         self.db.add(new_payment)
         await self.db.flush() 
 
-        # 2. Link each match to this payment via the helper table
+        # Link matches via the helper table manually as you did 
+        # (or append to new_payment.matches if preferred)
         for m_id in match_ids:
             link = PaymentMatchLink(
                 payment_id=new_payment.id,
@@ -38,7 +39,7 @@ class PaymentRepository:
         return new_payment
 
     async def get_by_checkout_id(self, checkout_request_id: str) -> Optional[Payment]:
-        # We use selectinload to eagerly load the linked matches for the callback logic
+        # Now Payment.matches exists, so selectinload will work
         stmt = (
             select(Payment)
             .where(Payment.checkout_request_id == checkout_request_id)

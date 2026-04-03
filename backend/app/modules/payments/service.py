@@ -66,8 +66,10 @@ class PaymentService:
         checkout_id = stk_payload.get("CheckoutRequestID")
         result_code = stk_payload.get("ResultCode")
 
+        # This will now include the .matches list thanks to the model fix
         payment = await self.payment_repository.get_by_checkout_id(checkout_id)
         if not payment:
+            logger.error(f"Callback received for unknown checkout_id: {checkout_id}")
             return Result.fail("Payment record not found", 404)
 
         if result_code == 0:
@@ -77,18 +79,23 @@ class PaymentService:
             payment.mpesa_transaction_code = meta_dict.get("MpesaReceiptNumber")
             payment.payment_status = "completed"
             payment.result_code = result_code
-            payment.result_desc = stk_payload.get("ResultDesc")
+            payment.result_desc = "The service was accepted successfully"
             payment.transaction_date = datetime.datetime.utcnow()
 
-            # 🔥 UPDATE ALL LINKED MATCHES
-            for match in payment.matches:
-                match.status = MatchStatus.COMPLETED
-                logger.info(f"Match {match.id} confirmed via batch payment {payment.id}")
-
+            # Update all linked matches to COMPLETED
+            if payment.matches:
+                for match in payment.matches:
+                    match.status = MatchStatus.COMPLETED
+                    logger.info(f"Match {match.id} activated via Payment {payment.id}")
         else:
             payment.payment_status = "failed"
             payment.result_code = result_code
             payment.result_desc = stk_payload.get("ResultDesc")
 
-        await self.db.commit()
-        return Result.ok(data={"status": "processed"})
+        try:
+            await self.db.commit()
+            return Result.ok(data={"status": "processed"})
+        except Exception as e:
+            await self.db.rollback()
+            logger.error(f"Error committing callback update: {e}")
+            return Result.fail("Internal server error during callback processing", 500)
