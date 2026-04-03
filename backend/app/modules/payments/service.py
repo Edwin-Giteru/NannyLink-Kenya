@@ -66,6 +66,12 @@ class PaymentService:
             # 5. Update record with Daraja IDs
             payment_record.merchant_request_id = stk_response.get("MerchantRequestID")
             payment_record.checkout_request_id = stk_response.get("CheckoutRequestID")
+
+            # update match status to pending payment
+            await self.match_service.update_match_status(
+                match.id, 
+                models.MatchStatus.AWAITING_PAYMENT
+            )
             
             await self.db.commit()
             return Result.ok(data=stk_response)

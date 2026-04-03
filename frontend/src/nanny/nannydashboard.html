@@ -42,6 +42,8 @@
     .ambient-shadow { box-shadow: 0px 20px 40px rgba(0, 21, 47, 0.06); }
     [shadow-fill] { font-variation-settings: 'FILL' 1; }
     .modal-active { overflow: hidden; }
+    @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .animate-pulse-soft { animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
   </style>
 </head>
 
@@ -54,24 +56,21 @@
         <h2 class="font-headline font-bold text-2xl text-primary">Match Details</h2>
         <button onclick="closeModal()" class="material-symbols-outlined text-slate-400 hover:text-primary">close</button>
       </div>
-      <div id="modal-content" class="space-y-6 text-center md:text-left">
-        </div>
+      <div id="modal-content" class="space-y-6 text-center md:text-left"></div>
       <button onclick="closeModal()" class="w-full mt-8 py-4 bg-surface-container-low text-primary font-bold rounded-2xl hover:bg-slate-200 transition-colors">Close</button>
     </div>
   </div>
 
-<header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant/30 flex items-center justify-between px-6 h-16">
+  <header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant/30 flex items-center justify-between px-6 h-16">
     <div class="flex items-center gap-3">
         <div class="h-10 flex items-center">
             <img src="../../assets/images/logo.png" class="h-full w-auto object-contain" alt="NannyLink Logo">
         </div>
         <span class="font-headline font-extrabold text-xl tracking-tight text-primary">NannyLink</span>
     </div>
-
-</header>
+  </header>
 
   <main class="max-w-7xl mx-auto px-6 pt-24 pb-32">
-    
     <section class="mb-10 text-center md:text-left flex flex-col md:flex-row items-center gap-6">
       <div class="w-24 h-24 md:w-32 md:h-32 rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
         <img id="hero_profile_img" class="w-full h-full object-cover" src="https://via.placeholder.com/400" />
@@ -82,13 +81,6 @@
         </h2>
         <p class="text-xl md:text-2xl font-medium text-primary/70 italic">"Making a difference, one family at a time."</p>
       </div>
-    </section>
-
-    <section class="mb-10 bg-white p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
-        <h3 class="font-headline font-bold text-lg text-primary mb-2">Your Career at a Glance</h3>
-        <p class="text-on-surface-variant leading-relaxed">
-            Welcome to your professional hub. Below you can track your verification progress, manage your growing network of families, and view active work engagements. Keep your profile updated to stay visible to new opportunities.
-        </p>
     </section>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -171,66 +163,61 @@
     </a>
   </nav>
 
- <script>
+<script>
     const API_BASE = "http://127.0.0.1:8000/nannies";
     let cachedConnections = [];
 
     async function initDashboard() {
         const token = localStorage.getItem("access_token");
-
         if (!token) {
             window.location.href = "/frontend/src/views/login.html";
             return;
         }
 
-        const headers = {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        };
+        const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
         try {
+            // 1. Fetch Nanny Profile
             const profileRes = await fetch(`${API_BASE}/profile/me`, { headers });
-            
             if (profileRes.status === 401) {
                 localStorage.removeItem("access_token");
                 window.location.href = "/frontend/src/views/login.html";
                 return;
             }
-
-            if (profileRes.status === 404) {
-                window.location.href = "profilecreation.html";
-                return; 
-            }
-
             const profile = await profileRes.json();
-            if (profileRes.ok) {
-                updateUI(profile);
-            }
+            if (profileRes.ok) updateUI(profile);
 
+            // 2. Fetch Connections (Matches)
             const connRes = await fetch(`${API_BASE}/connections`, { headers });
             const connectionsData = await connRes.json();
 
             if (connRes.ok) {
-                // Ensure we are grabbing the array correctly
+                // Backend returns results in different structures; this normalizes it
                 cachedConnections = Array.isArray(connectionsData) ? connectionsData : (connectionsData.data || []);
                 updateStats(cachedConnections);
             }
-
         } catch (err) {
             console.error("Dashboard Sync Error:", err);
         }
     }
 
+    // This function handles the "Awaiting Payment" vs "Paid" visual logic
+    function getStatusConfig(rawStatus) {
+        const s = (rawStatus || 'pending').toLowerCase();
+        if (s === 'paid' || s === 'accepted' || s === 'active' || s === 'confirmed') {
+            return { label: 'Paid & Active', class: 'text-green-700 bg-green-100' };
+        }
+        if (s === 'awaiting_payment' || s === 'pending_payment' || s === 'payment_initiated') {
+            return { label: 'Awaiting Payment', class: 'text-blue-700 bg-blue-100 animate-pulse-soft' };
+        }
+        return { label: s.replace(/_/g, ' '), class: 'text-secondary bg-secondary/10' };
+    }
+
     function updateUI(data) {
         const defaultAvatar = "https://via.placeholder.com/150?text=Profile";
-        // Map keys based on your FastAPI NannyResponse
         const profilePic = data.profile_photo_url || data.profile_image || defaultAvatar;
-
-        // Error fixed by adding elements to HTML above
-        const navImg = document.getElementById('nav_profile_img');
-        const heroImg = document.getElementById('hero_profile_img');
         
-        if (navImg) navImg.src = profilePic;
+        const heroImg = document.getElementById('hero_profile_img');
         if (heroImg) heroImg.src = profilePic;
         
         document.getElementById('nanny_name').innerText = data.name || data.full_name || "Nanny";
@@ -243,12 +230,8 @@
             badge.className = "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-green-100 text-green-700";
             badge.innerText = "VERIFIED";
             vText.innerText = "Profile Approved";
-        } else if (status === "rejected") {
-            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-red-100 text-red-700";
-            badge.innerText = "ACTION REQUIRED";
-            vText.innerText = "Verification Issues";
         } else {
-            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-blue-100 text-blue-700";
+            badge.className = "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-blue-100 text-blue-700 animate-pulse-soft";
             badge.innerText = "IN REVIEW";
             vText.innerText = "Checking Credentials";
         }
@@ -258,50 +241,53 @@
     }
 
     function updateStats(connections) {
-    const list = document.getElementById('activity_list');
-    const count = connections.length;
-    
-    // Update Total Connections
-    document.getElementById('connection_count').innerText = count;
+        const list = document.getElementById('activity_list');
+        document.getElementById('connection_count').innerText = connections.length;
 
-    // FIX: Robust filtering for active contracts
-    // We check for 'accepted', 'active', or 'signed' to be safe.
-    const activeContracts = connections.filter(c => {
-        const status = (c.status || "").toLowerCase();
-        return status === 'accepted' || status === 'active' || status === 'signed';
-    }).length;
+        const activeContracts = connections.filter(c => {
+            const s = (c.status || "").toLowerCase();
+            return ['accepted', 'active', 'signed', 'paid'].includes(s);
+        }).length;
+        document.getElementById('contract_count').innerText = activeContracts;
 
-    document.getElementById('contract_count').innerText = activeContracts;
-
-    // Log for debugging if the count is still 0 unexpectedly
-    console.log("Total Connections Found:", count);
-    console.log("Active Contracts Calculated:", activeContracts);
-
-    if (count > 0) {
-        list.innerHTML = connections.slice(0, 3).map(conn => `
-            <div class="bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between border border-outline-variant/10 hover:shadow-md transition-shadow group">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">family_restroom</span>
+        if (connections.length > 0) {
+            list.innerHTML = connections.slice(0, 3).map(conn => {
+                // LOOKUP: Tries top-level name, then looks inside a nested 'family' object
+                const familyName = conn.family_name || (conn.family && conn.family.name) || conn.name || 'New Family';
+                const statusCfg = getStatusConfig(conn.status);
+                
+                return `
+                    <div class="bg-surface-container-lowest p-5 rounded-xl flex items-center justify-between border border-outline-variant/10 hover:shadow-md transition-shadow group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-colors">
+                                <span class="material-symbols-outlined">family_restroom</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-primary">${familyName}</p>
+                                <p class="text-[11px] font-bold ${statusCfg.class} inline-block px-2 py-0.5 rounded uppercase tracking-tighter">
+                                    ${statusCfg.label}
+                                </p>
+                            </div>
+                        </div>
+                        <button onclick="openModal('${conn.id}')" class="bg-surface p-2 rounded-lg text-primary hover:bg-primary hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                        </button>
                     </div>
-                    <div>
-                        <p class="font-bold text-primary">${conn.family_name || 'New Family Connection'}</p>
-                        <p class="text-[11px] font-bold text-secondary uppercase tracking-tighter">View Match details</p>
-                    </div>
-                </div>
-                <button onclick="openModal('${conn.id}')" class="bg-surface p-2 rounded-lg text-primary hover:bg-primary hover:text-white transition-colors">
-                    <span class="material-symbols-outlined text-sm">chevron_right</span>
-                </button>
-            </div>
-        `).join('');
-    } else {
-        list.innerHTML = `<p class="text-sm text-on-surface-variant italic">Waiting for your first match...</p>`;
+                `;
+            }).join('');
+        } else {
+            list.innerHTML = `<p class="text-sm text-on-surface-variant italic">Waiting for your first match...</p>`;
+        }
     }
-}
-    // Modal functions remain the same
+
     function openModal(connId) {
-        const connection = cachedConnections.find(c => String(c.id) === String(connId));
-        if (!connection) return;
+        const conn = cachedConnections.find(c => String(c.id) === String(connId));
+        if (!conn) return;
+
+        // DATA MAPPING FIX: Searches for location and name in all common backend fields
+        const fName = conn.family_name || (conn.family && conn.family.name) || conn.name || 'Valued Family';
+        const fLoc = conn.household_location || (conn.family && conn.family.household_location) || conn.address || conn.household_location || 'Nairobi Area';
+        const statusCfg = getStatusConfig(conn.status);
 
         const content = document.getElementById('modal-content');
         content.innerHTML = `
@@ -310,18 +296,20 @@
                     <span class="material-symbols-outlined text-4xl">person</span>
                 </div>
                 <div class="text-center md:text-left">
-                    <h3 class="font-headline font-bold text-2xl text-primary">${connection.family_name || 'Valued Family'}</h3>
-                    <p class="text-sm text-on-surface-variant">Connected on ${new Date(connection.created_at || Date.now()).toLocaleDateString()}</p>
+                    <h3 class="font-headline font-bold text-2xl text-primary">${fName}</h3>
+                    <p class="text-sm text-on-surface-variant">Connected on ${new Date(conn.created_at || Date.now()).toLocaleDateString()}</p>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="p-4 bg-white border border-outline-variant/20 rounded-2xl">
                     <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Status</p>
-                    <p class="font-bold text-secondary uppercase text-sm">${connection.status || 'Pending Review'}</p>
+                    <div class="inline-block px-2 py-1 rounded-md font-bold uppercase text-[12px] ${statusCfg.class}">
+                        ${statusCfg.label}
+                    </div>
                 </div>
                 <div class="p-4 bg-white border border-outline-variant/20 rounded-2xl">
                     <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Location</p>
-                    <p class="font-bold text-primary text-sm">${connection.family_location || 'Not Specified'}</p>
+                    <p class="font-bold text-primary text-sm">${fLoc}</p>
                 </div>
             </div>
         `;
