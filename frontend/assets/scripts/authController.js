@@ -153,7 +153,7 @@ async function fetchStats() {
     }
 }
 
-// 🔷 RENDER NANNIES (Shared logic for initial fetch and search)
+// 🔷 RENDER NANNIES
 function renderNannies(nannies) {
     const container = document.getElementById("nanny-list");
     if (!container) return;
@@ -166,8 +166,21 @@ function renderNannies(nannies) {
 
     nannies.forEach(nanny => {
         const exp = parseInt(nanny.experience_years) || 0;
+        
+        // 💰 Dynamic Rate Calculation
         const baseRate = 250;
         const computedRate = baseRate + (exp * 50);
+
+        // ⭐ Fixed Dynamic Rating Logic for UUIDs
+        // Since nanny.id is a string (UUID), we extract a number from it to use for variance.
+        const idString = String(nanny.id || "0");
+        const charCodeSum = idString.charCodeAt(idString.length - 1) || 0;
+        
+        let baseRating = 3.8 + Math.min((exp * 0.15), 0.9); 
+        let variance = (charCodeSum % 4) * 0.1; // Produces 0.0, 0.1, 0.2, or 0.3
+        let finalRating = (baseRating + variance).toFixed(1);
+        
+        if (parseFloat(finalRating) > 5.0) finalRating = "5.0";
 
         const card = document.createElement("div");
         card.className = "nanny-card bg-white rounded-[2rem] overflow-hidden ambient-shadow border border-slate-50 flex flex-col group transition-all duration-300 hover:-translate-y-2";
@@ -177,13 +190,13 @@ function renderNannies(nannies) {
                 <img class="w-full h-full object-cover" src="${nanny.profile_image || './assets/images/default-avatar.png'}" alt="${nanny.full_name || 'Nanny'}" />
                 <div class="absolute top-4 right-4 glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-yellow-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="text-xs font-bold text-primary">4.9</span>
+                    <span class="text-xs font-bold text-primary">${finalRating}</span>
                 </div>
             </div>
             <div class="p-6 flex flex-col flex-1">
                 <div class="flex justify-between items-start mb-2">
                     <h3 class="text-xl font-headline font-bold text-primary">${nanny.full_name || "Name Unavailable"}</h3>
-                    <span class="text-secondary font-bold text-sm">KES ${computedRate.toLocaleString()}/hr</span>
+                    <span class="text-secondary font-bold text-sm">KES ${computedRate.toLocaleString()}/day</span>
                 </div>
                 <div class="flex items-center gap-2 text-slate-400 text-sm mb-4">
                     <span class="material-symbols-outlined text-sm">location_on</span>
@@ -206,7 +219,7 @@ function renderNannies(nannies) {
     });
 }
 
-// 🔷 IMPROVED SEARCH LOGIC (Filters by both Skill and Location)
+// 🔷 SEARCH LOGIC
 function setupSearch() {
     const skillInput = document.getElementById("skill-search");
     const locationInput = document.getElementById("location-search");
@@ -222,7 +235,6 @@ function setupSearch() {
             const location = (nanny.current_location || "").toLowerCase();
             const name = (nanny.full_name || "").toLowerCase();
 
-            // Match if skill term is in skills/name AND location term is in current_location
             const matchesSkill = skills.includes(skillTerm) || name.includes(skillTerm);
             const matchesLocation = location.includes(locationTerm);
 
@@ -242,7 +254,7 @@ async function fetchFeaturedNannies() {
         const data = await res.json();
 
         if (Array.isArray(data)) {
-            allNannies = data; // Store globally for searching
+            allNannies = data; 
             renderNannies(allNannies);
         }
     } catch (err) {
@@ -264,5 +276,5 @@ function handleView(nannyId) {
 document.addEventListener("DOMContentLoaded", () => {
     fetchStats();
     fetchFeaturedNannies();
-    setupSearch(); // Initialize search listener
+    setupSearch(); 
 });

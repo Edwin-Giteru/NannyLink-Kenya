@@ -12,7 +12,20 @@ class NannyService:
         self.db = db
         self.nanny_repository = NannyRepository(db)
         self.match_repository = MatchRepository(db)
-
+    async def get_paginated_nannies(
+        self, 
+        skip: int, 
+        limit: int, 
+        search: str | None, 
+        location: str | None
+    ):
+        # This matches the signature we just fixed in the repo
+        return await self.nanny_repository.get_public_nannies(
+            skip=skip,
+            limit=limit,
+            search=search,
+            location=location
+        )
     async def get_nanny_connections(self, user_id: uuid.UUID) -> Result:
         try:
             nanny = await self.nanny_repository.get_nanny_by_user_id(user_id)

@@ -34,5 +34,5 @@ class Match(Base):
     # Relationships
     family: Mapped["FamilyProfile"] = relationship("FamilyProfile", back_populates="matches")
     nanny: Mapped["NannyProfile"] = relationship("NannyProfile", back_populates="matches")
-    payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="match", cascade="all, delete-orphan")
+    payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="match")
     contract: Mapped["Contract | None"] = relationship("Contract", uselist=False, back_populates="match")

@@ -35,10 +35,43 @@
         .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
         html { scroll-behavior: smooth; }
         .nanny-card:hover .view-profile-btn { background-color: #00152f; color: white; }
+        .pagination-btn.active { background-color: #00152f !important; color: white !important; border-color: #00152f !important; }
+        
+        /* Floating Nav Styles */
+        .side-nav-link:hover { color: #835500; transform: translateX(5px); }
+        .floating-nav { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; transform: translateY(20px); }
+        .floating-nav.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
     </style>
 </head>
 
-<body class="bg-[#f8f9fa] font-body text-slate-900 antialiased">
+<body class="bg-[#f8f9fa] font-body text-slate-900 antialiased relative">
+
+<aside id="side-nav" class="floating-nav fixed right-8 top-1/2 -translate-y-1/2 z-[60] hidden lg:flex flex-col gap-4">
+    <div class="bg-white/80 backdrop-blur-lg border border-slate-100 p-3 rounded-3xl ambient-shadow flex flex-col gap-2">
+        <a href="#" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-primary text-white transition-all group relative">
+            <span class="material-symbols-outlined">home</span>
+            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">Home</span>
+        </a>
+        <a href="#about" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-white text-slate-400 hover:text-primary transition-all group relative border border-slate-50">
+            <span class="material-symbols-outlined">info</span>
+            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">About</span>
+        </a>
+        <a href="#services" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-white text-slate-400 hover:text-primary transition-all group relative border border-slate-50">
+            <span class="material-symbols-outlined">design_services</span>
+            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">Services</span>
+        </a>
+        <a href="#nannies" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-white text-slate-400 hover:text-primary transition-all group relative border border-slate-50">
+            <span class="material-symbols-outlined">search</span>
+            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">Find</span>
+        </a>
+    </div>
+</aside>
+
+<div id="mobile-fab" class="floating-nav fixed bottom-6 right-6 z-[60] lg:hidden">
+    <a href="#nannies" class="w-14 h-14 bg-primary text-white rounded-full ambient-shadow flex items-center justify-center shadow-2xl">
+        <span class="material-symbols-outlined">search</span>
+    </a>
+</div>
 
 <header class="w-full sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
     <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
@@ -62,7 +95,6 @@
 </header>
 
 <main class="max-w-7xl mx-auto px-6">
-    
     <section class="pt-16 pb-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div class="max-w-2xl">
             <p class="text-secondary font-bold text-sm tracking-widest mb-3 uppercase">Trusted Childcare</p>
@@ -119,89 +151,10 @@
             </div>
         </div>
 
-        <div id="nanny-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="nanny-card bg-white rounded-[2rem] overflow-hidden ambient-shadow border border-slate-50 flex flex-col group transition-all duration-300 hover:-translate-y-2">
-                <div class="relative h-64">
-                    <img class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Jane+W&background=0f2a4a&color=fff&size=512" alt="Jane W">
-                    <div class="absolute top-4 right-4 glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-yellow-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-                        <span class="text-xs font-bold text-primary">4.9 (42)</span>
-                    </div>
-                </div>
-                <div class="p-6 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-xl font-headline font-bold text-primary">Jane W.</h3>
-                        <span class="text-secondary font-bold text-sm">KES 45k/mo</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-slate-400 text-sm mb-4">
-                        <span class="material-symbols-outlined text-sm">location_on</span>
-                        <span>Nairobi, Kilimani</span>
-                    </div>
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">5 years exp</span>
-                        <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">CPR Certified</span>
-                    </div>
-                    <a href="../frontend/src/views/login.html" class="view-profile-btn mt-auto w-full py-4 bg-slate-50 text-primary text-center font-bold rounded-2xl transition-all">
-                        View Profile
-                    </a>
-                </div>
-            </div>
-
-            <div class="nanny-card bg-white rounded-[2rem] overflow-hidden ambient-shadow border border-slate-50 flex flex-col group transition-all duration-300 hover:-translate-y-2">
-                <div class="relative h-64">
-                    <img class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Grace+M&background=fcb650&color=00152f&size=512" alt="Grace M">
-                    <div class="absolute top-4 right-4 glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-yellow-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-                        <span class="text-xs font-bold text-primary">5.0 (18)</span>
-                    </div>
-                </div>
-                <div class="p-6 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-xl font-headline font-bold text-primary">Grace M.</h3>
-                        <span class="text-secondary font-bold text-sm">KES 52k/mo</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-slate-400 text-sm mb-4">
-                        <span class="material-symbols-outlined text-sm">location_on</span>
-                        <span>Nairobi, Karen</span>
-                    </div>
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">8 years exp</span>
-                        <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">First Aid</span>
-                    </div>
-                    <a href="../frontend/src/views/login.html" class="view-profile-btn mt-auto w-full py-4 bg-slate-50 text-primary text-center font-bold rounded-2xl transition-all">
-                        View Profile
-                    </a>
-                </div>
-            </div>
-
-            <div class="nanny-card bg-white rounded-[2rem] overflow-hidden ambient-shadow border border-slate-50 flex flex-col group transition-all duration-300 hover:-translate-y-2">
-                <div class="relative h-64">
-                    <img class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Sarah+O&background=485f82&color=fff&size=512" alt="Sarah O">
-                    <div class="absolute top-4 right-4 glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-yellow-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-                        <span class="text-xs font-bold text-primary">4.8 (56)</span>
-                    </div>
-                </div>
-                <div class="p-6 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-xl font-headline font-bold text-primary">Sarah O.</h3>
-                        <span class="text-secondary font-bold text-sm">KES 38k/mo</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-slate-400 text-sm mb-4">
-                        <span class="material-symbols-outlined text-sm">location_on</span>
-                        <span>Mombasa, Nyali</span>
-                    </div>
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">3 years exp</span>
-                        <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">Cook</span>
-                    </div>
-                    <a href="../frontend/src/views/login.html" class="view-profile-btn mt-auto w-full py-4 bg-slate-50 text-primary text-center font-bold rounded-2xl transition-all">
-                        View Profile
-                    </a>
-                </div>
-            </div>
-        </div>
+        <div id="nanny-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         
+        <div id="pagination-controls" class="mt-12 flex justify-center items-center gap-2"></div>
+
         <div class="mt-12 text-center">
             <a href="../frontend/src/views/login.html" class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-secondary hover:border-secondary transition-all">
                 Sign in to see all nannies
@@ -210,69 +163,65 @@
     </section>
 
     <section id="about" class="py-20">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div>
-            <span class="text-secondary font-black text-[10px] tracking-[0.3em] uppercase mb-4 block">Our Commitment</span>
-            <h2 class="text-4xl md:text-5xl font-headline font-extrabold text-primary mb-6">Our Mission for<br><span class="text-surface-tint italic text-4xl">Safe Childcare</span></h2>
-            <p class="text-slate-600 leading-relaxed mb-8 max-w-lg">
-                At NannyLink, we believe every family deserves peace of mind. Our mission is to connect parents with the most trustworthy, vetted, and compassionate caregivers in Kenya.
-            </p>
-            
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
-                <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <i class="fas fa-id-card text-secondary mb-2"></i>
-                    <span class="text-[10px] font-bold text-primary uppercase text-center">ID Verified</span>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+                <span class="text-secondary font-black text-[10px] tracking-[0.3em] uppercase mb-4 block">Our Commitment</span>
+                <h2 class="text-4xl md:text-5xl font-headline font-extrabold text-primary mb-6">Our Mission for<br><span class="text-surface-tint italic text-4xl">Safe Childcare</span></h2>
+                <p class="text-slate-600 leading-relaxed mb-8 max-w-lg">
+                    At NannyLink, we believe every family deserves peace of mind. Our mission is to connect parents with the most trustworthy, vetted, and compassionate caregivers in Kenya.
+                </p>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+                    <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                        <i class="fas fa-id-card text-secondary mb-2"></i>
+                        <span class="text-[10px] font-bold text-primary uppercase text-center">ID Verified</span>
+                    </div>
+                    <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                        <i class="fas fa-user-shield text-secondary mb-2"></i>
+                        <span class="text-[10px] font-bold text-primary uppercase text-center">Safe Matches</span>
+                    </div>
+                    <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                        <i class="fas fa-clipboard-check text-secondary mb-2"></i>
+                        <span class="text-[10px] font-bold text-primary uppercase text-center">References</span>
+                    </div>
+                    <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                        <i class="fas fa-comments text-secondary mb-2"></i>
+                        <span class="text-[10px] font-bold text-primary uppercase text-center">Interviews</span>
+                    </div>
                 </div>
-                <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <i class="fas fa-user-shield text-secondary mb-2"></i>
-                    <span class="text-[10px] font-bold text-primary uppercase text-center">Safe Matches</span>
-                </div>
-                <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <i class="fas fa-clipboard-check text-secondary mb-2"></i>
-                    <span class="text-[10px] font-bold text-primary uppercase text-center">References</span>
-                </div>
-                <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <i class="fas fa-comments text-secondary mb-2"></i>
-                    <span class="text-[10px] font-bold text-primary uppercase text-center">Interviews</span>
+            </div>
+            <div class="relative">
+                <div class="rounded-[3rem] overflow-hidden rotate-2 hover:rotate-0 transition-transform duration-500">
+                    <img src="./assets/images/cover image.jpg" alt="Childcare Support" class="w-full h-[400px] object-cover">
                 </div>
             </div>
         </div>
-        
-        <div class="relative">
-            <div class="rounded-[3rem] overflow-hidden rotate-2 hover:rotate-0 transition-transform duration-500">
-                <img src="./assets/images/cover image.jpg" alt="Childcare Support" class="w-full h-[400px] object-cover">
+    </section>
+
+    <section id="services" class="py-20 bg-primary text-white rounded-[4rem] px-10">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-5xl font-headline font-extrabold">A Seamless Experience</h2>
+            <p class="text-slate-400 mt-4">Safe connections for both families and caregivers.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+            <div class="group p-8 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+                <div class="w-12 h-12 bg-secondary-container rounded-xl flex items-center justify-center mb-6">
+                    <i class="fas fa-home text-primary"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">For Families</h3>
+                <p class="text-slate-400 text-sm mb-6">Views vetted nanny profiles and connects with trusted caregivers.</p>
+                <a href="../frontend/src/views/login.html" class="text-secondary-container font-bold text-sm flex items-center gap-2">Get Started <i class="fas fa-arrow-right text-[10px]"></i></a>
+            </div>
+            <div class="group p-8 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+                <div class="w-12 h-12 bg-surface-tint rounded-xl flex items-center justify-center mb-6">
+                    <i class="fas fa-user-graduate text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">For Nannies</h3>
+                <p class="text-slate-400 text-sm mb-6">Build a professional profile and find high-quality local jobs.</p>
+                <a href="../frontend/src/views/login.html" class="text-surface-tint font-bold text-sm flex items-center gap-2">Join Today <i class="fas fa-arrow-right text-[10px]"></i></a>
             </div>
         </div>
-    </div>
-</section>
-
-<section id="services" class="py-20 bg-primary text-white rounded-[4rem] px-10">
-    <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-5xl font-headline font-extrabold">A Seamless Experience</h2>
-        <p class="text-slate-400 mt-4">Safe connections for both families and caregivers.</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-        <div class="group p-8 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-            <div class="w-12 h-12 bg-secondary-container rounded-xl flex items-center justify-center mb-6">
-                <i class="fas fa-home text-primary"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-4">For Families</h3>
-            <p class="text-slate-400 text-sm mb-6">Views vetted nanny profiles and connects with trusted caregivers.</p>
-            <a href="../frontend/src/views/login.html" class="text-secondary-container font-bold text-sm flex items-center gap-2">Get Started <i class="fas fa-arrow-right text-[10px]"></i></a>
-        </div>
-
-        <div class="group p-8 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-            <div class="w-12 h-12 bg-surface-tint rounded-xl flex items-center justify-center mb-6">
-                <i class="fas fa-user-graduate text-white"></i>
-            </div>
-            <h3 class="text-2xl font-bold mb-4">For Nannies</h3>
-            <p class="text-slate-400 text-sm mb-6">Build a professional profile and find high-quality local jobs.</p>
-            <a href="../frontend/src/views/login.html" class="text-surface-tint font-bold text-sm flex items-center gap-2">Join Today <i class="fas fa-arrow-right text-[10px]"></i></a>
-        </div>
-    </div>
-</section>
-
+    </section>
 </main>
 
 <footer class="bg-white pt-20 pb-10 mt-20 border-t border-slate-100">
@@ -291,26 +240,6 @@
                 <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
-<!-- 
-        <div>
-            <h3 class="font-bold text-primary mb-6">For Families</h3>
-            <ul class="space-y-4 text-sm text-slate-500 font-medium">
-                <li><a href="#" class="hover:text-secondary">Search Nannies</a></li>
-                <li><a href="#" class="hover:text-secondary">How it Works</a></li>
-                <li><a href="#" class="hover:text-secondary">Safety & Vetting</a></li>
-                <li><a href="#" class="hover:text-secondary">Pricing</a></li>
-            </ul>
-        </div>
-
-        <div>
-            <h3 class="font-bold text-primary mb-6">For Nannies</h3>
-            <ul class="space-y-4 text-sm text-slate-500 font-medium">
-                <li><a href="#" class="hover:text-secondary">Vetting Requirements</a></li>
-                <li><a href="#" class="hover:text-secondary">Nanny Community</a></li>
-                <li><a href="#" class="hover:text-secondary">Training Resources</a></li>
-            </ul>
-        </div> -->
-
         <div>
             <h3 class="font-bold text-primary mb-6">Support</h3>
             <ul class="space-y-4 text-sm text-slate-500 font-medium">
@@ -321,7 +250,6 @@
             </ul>
         </div>
     </div>
-    
     <div class="max-w-7xl mx-auto px-6 pt-10 mt-10 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
         <p>© 2026 NannyLink Kenya. All rights reserved.</p>
         <p>Developed by Edwin Giteru</p>
@@ -329,5 +257,81 @@
 </footer>
 
 <script type="module" src="../frontend/assets/scripts/authController.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const nannyList = document.getElementById('nanny-list');
+        const paginationWrapper = document.getElementById('pagination-controls');
+        const sideNav = document.getElementById('side-nav');
+        const mobileFab = document.getElementById('mobile-fab');
+        const itemsPerPage = 10;
+        let currentPage = 1;
+
+        // Visibility Logic for Floating Nav
+        window.onscroll = () => {
+            if (window.scrollY > 300) {
+                sideNav.classList.add('visible');
+                mobileFab.classList.add('visible');
+            } else {
+                sideNav.classList.remove('visible');
+                mobileFab.classList.remove('visible');
+            }
+        };
+
+        function updatePagination() {
+            const children = Array.from(nannyList.children);
+            const totalItems = children.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            paginationWrapper.innerHTML = '';
+
+            if (totalPages > 1) {
+                for (let i = 1; i <= totalPages; i++) {
+                    const btn = document.createElement('button');
+                    btn.innerText = i;
+                    btn.className = `pagination-btn w-10 h-10 rounded-xl border-2 border-slate-200 font-bold text-sm transition-all hover:border-primary ${i === currentPage ? 'active' : ''}`;
+                    btn.onclick = () => {
+                        currentPage = i;
+                        showPage(currentPage);
+                        document.getElementById('nannies').scrollIntoView({ behavior: 'smooth' });
+                    };
+                    paginationWrapper.appendChild(btn);
+                }
+            }
+            showPage(currentPage);
+        }
+
+        function showPage(pageNumber) {
+            const children = Array.from(nannyList.children);
+            const start = (pageNumber - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+
+            children.forEach((child, index) => {
+                if (index >= start && index < end) {
+                    child.classList.remove('hidden');
+                    child.style.display = ''; 
+                } else {
+                    child.classList.add('hidden');
+                    child.style.display = 'none';
+                }
+            });
+
+            const buttons = paginationWrapper.querySelectorAll('button');
+            buttons.forEach((btn, idx) => {
+                if (idx + 1 === pageNumber) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        const observer = new MutationObserver(() => {
+            updatePagination();
+        });
+
+        observer.observe(nannyList, { childList: true });
+        updatePagination();
+    });
+</script>
 </body>
 </html>

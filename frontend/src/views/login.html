@@ -305,10 +305,21 @@
             showBanner("success", "Account created! Logging you in...");
             const lRes = await login(email, pw);
             if(lRes.success) handleRedirect(lRes.access_token);
+              // check if the result contains unique constraint error for email and show appropriate message
+              else if (lRes.message && lRes.message.includes("unique constraint") && lRes.message.includes("email")) {
+                showBanner("error", "Email or phone number already in use. Please use a different  or a phone number.");
+                $("btnSignupSubmit").disabled = false;
+                $("btnSignupSubmit").textContent = "Create Account";
+              }
         } else {
-            showBanner("error", res.message || "Signup failed. Try again.");
+          // if the error message contains "unique constraint" and "email", show a specific error about email already in use
+          if (res.message && res.message.includes("unique constraint") && res.message.includes("email")) {
+            showBanner("error", "Email or phone number already in use. Please use a different email or phone number.");
+          } else {
+            showBanner("error", "Signup failed. Try again.");
             $("btnSignupSubmit").disabled = false;
             $("btnSignupSubmit").textContent = "Create Account";
+          }
         }
     };
 

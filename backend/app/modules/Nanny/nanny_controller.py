@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from app.db.session import SessionDep
 from app.modules.Nanny.nanny_service import NannyService
 from app.modules.Nanny.nanny_schema import NannyCreate, NannyResponse, NannyUpdate
@@ -11,21 +11,34 @@ router = APIRouter(tags=["Nanny"], prefix="/nannies")
 # --- PUBLIC ENDPOINTS ---
 
 @router.get("/", response_model=list[dict])
-async def get_all_nannies(db: SessionDep):
-    """Publicly list nannies for browsing."""
+async def get_all_nannies(
+    db: SessionDep,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(6, le=50),
+    search: str | None = Query(None),
+    location: str | None = Query(None)
+):
+    """Publicly list nannies with Pagination and Search support."""
     service = NannyService(db)
-    nannies = await service.nanny_repository.get_public_nannies()
+    nannies = await service.get_paginated_nannies(
+        skip=skip, 
+        limit=limit, 
+        search=search, 
+        location=location
+        )
+    
+    # Map database models to the dictionary format expected by your JS frontend
     return [
         {
-            "id": n.id,
-            "full_name": n.name, # Changed from "name"
-            "experience_years": n.years_experience, # Changed from "experience"
-            "current_location": n.address, # Changed from "location"
+            "id": str(n.id),
+            "full_name": n.name,
+            "experience_years": n.years_experience,
+            "current_location": n.address,
             "preferred_location": getattr(n, 'preferred_location', 'Nairobi'),
             "status": n.vetting_status,
-            "profile_image": n.profile_photo_url, # Changed from "photo"
+            "profile_image": n.profile_photo_url,
             "skills": n.skills,
-            "availability": n.availability
+            "availability": n.availability,
         } for n in nannies
     ]
 @router.post("/profile", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
