@@ -24,7 +24,6 @@ class Payment(Base):
     amount: Mapped[float] = mapped_column(nullable=False)
     phone_number: Mapped[str] = mapped_column(String(20), nullable=False)
     
-    # M-Pesa Tracking
     checkout_request_id: Mapped[str | None] = mapped_column(String(255), index=True)
     merchant_request_id: Mapped[str | None] = mapped_column(String(255))
     mpesa_transaction_code: Mapped[str | None] = mapped_column(String(50))
@@ -40,8 +39,10 @@ class Payment(Base):
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="payments")
     
+    # Use overlaps to tell SQLAlchemy we know these relationships share the same underlying join table columns
     matches: Mapped[List["Match"]] = relationship(
         "Match", 
         secondary="payment_match_link",
-        backref="associated_payments" 
+        back_populates="payments",
+        overlaps="associated_payments" 
     )
