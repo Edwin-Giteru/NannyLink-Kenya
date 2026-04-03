@@ -18,7 +18,6 @@ class PaymentService:
         self.db = db
         self.payment_repository = PaymentRepository(db)
         self.match_service = MatchService(db)
-        # --- FIX: Initialize family_service here ---
         self.family_service = FamilyService(db)
 
     async def initiate_stk_push(
@@ -29,13 +28,10 @@ class PaymentService:
         amount: float = 1.0
     ) -> Result:
         try:
-            # 1. Get the Family Profile linked to this User
-            # Ensure your family_repository has 'get_family_by_user_id'
             family_profile = await self.family_service.family_repository.get_family_by_user_id(payer_user.id)
             if not family_profile:
                 return Result.fail("Family profile not found for this user", 404)
 
-            # 2. Verify the Match exists and belongs to this Family
             stmt = select(models.Match).where(
                 models.Match.id == match_id,
                 models.Match.family_id == family_profile.id
@@ -46,33 +42,43 @@ class PaymentService:
             if not match:
                 return Result.fail("No active match found for this connection", 404)
 
-            # 3. Create local payment record
-            payment_record = await self.payment_repository.create_payment(
-                user_id=payer_user.id,
-                match_id=match.id,
-                amount=amount,
-                phone_number=phone_number
+            # FIX: Reuse existing payment record instead of creating a duplicate
+            # The UniqueConstraint on (match_id, user_id) will cause an IntegrityError
+            # if we try to INSERT again, losing the checkout_request_id silently
+            existing_payments = await self.payment_repository.get_payments_by_match_id(match.id)
+            payment_record = next(
+                (p for p in existing_payments if str(p.user_id) == str(payer_user.id)),
+                None
             )
 
-            # 4. Trigger Safaricom STK Push
+            if not payment_record:
+                payment_record = await self.payment_repository.create_payment(
+                    user_id=payer_user.id,
+                    match_id=match.id,
+                    amount=amount,
+                    phone_number=phone_number
+                )
+
+            # Trigger STK Push
             base_url = os.getenv("BASE_URL")
             stk_response = await sendStkPush(
                 phone_number=phone_number,
                 amount=amount,
-                match_id=str(match.id), 
+                match_id=str(match.id),
                 base_url=base_url
             )
 
-            # 5. Update record with Daraja IDs
+            # FIX: Always overwrite Daraja IDs — this is what gets matched on callback
             payment_record.merchant_request_id = stk_response.get("MerchantRequestID")
             payment_record.checkout_request_id = stk_response.get("CheckoutRequestID")
+            payment_record.payment_status = models.PaymentStatus.PENDING
+            payment_record.phone_number = phone_number
 
-            # update match status to pending payment
-            await self.match_service.update_match_status(
-                match.id, 
-                models.MatchStatus.AWAITING_PAYMENT
+            logger.info(
+                f"STK initiated | match={match.id} "
+                f"checkout_id={payment_record.checkout_request_id}"
             )
-            
+
             await self.db.commit()
             return Result.ok(data=stk_response)
 
@@ -83,31 +89,61 @@ class PaymentService:
 
     async def process_callback(self, callback_data: dict) -> Result:
         """Handles the async response from Safaricom."""
+        logger.info(f"Callback received: {callback_data}")
+
         stk_payload = callback_data.get("Body", {}).get("stkCallback", {})
         checkout_id = stk_payload.get("CheckoutRequestID")
         result_code = stk_payload.get("ResultCode")
 
+        logger.info(f"Processing callback | checkout_id={checkout_id} result_code={result_code}")
+
+        if not checkout_id:
+            logger.error("Callback missing CheckoutRequestID")
+            return Result.fail("Missing CheckoutRequestID", 400)
+
         payment = await self.payment_repository.get_by_checkout_id(checkout_id)
         if not payment:
+            logger.error(f"No payment record found for checkout_id={checkout_id}")
             return Result.fail("Payment record not found", 404)
 
         if result_code == 0:
-            # Success logic
             metadata = stk_payload.get("CallbackMetadata", {}).get("Item", [])
             meta_dict = {item["Name"]: item.get("Value") for item in metadata}
 
+            logger.info(f"Payment metadata: {meta_dict}")
+
+            # FIX: assign enum value, not raw string
             payment.mpesa_transaction_code = meta_dict.get("MpesaReceiptNumber")
-            payment.payment_status = "completed"
-            
-            # Update Match Status to PAID
+            payment.payment_status = models.PaymentStatus.COMPLETED
+            payment.result_code = result_code
+            payment.result_description = stk_payload.get("ResultDesc")
+            # FIX: record the transaction timestamp from Safaricom
+            raw_date = meta_dict.get("TransactionDate")
+            if raw_date:
+                try:
+                    payment.transaction_date = datetime.datetime.strptime(
+                        str(raw_date), "%Y%m%d%H%M%S"
+                    )
+                except ValueError:
+                    payment.transaction_date = datetime.datetime.utcnow()
+            else:
+                payment.transaction_date = datetime.datetime.utcnow()
+
             await self.match_service.update_match_status(
-                payment.match_id, 
+                payment.match_id,
                 models.MatchStatus.COMPLETED
             )
-            logger.info(f"Payment Successful for Match {payment.match_id}")
+            logger.info(f"Payment completed | match={payment.match_id} receipt={payment.mpesa_transaction_code}")
+
         else:
-            payment.payment_status = "failed"
-            logger.warning(f"Payment Failed: {stk_payload.get('ResultDesc')}")
+            # FIX: assign enum, store result details for debugging
+            payment.payment_status = models.PaymentStatus.FAILED
+            payment.result_code = result_code
+            payment.result_description = stk_payload.get("ResultDesc")
+            logger.warning(
+                f"Payment failed | checkout_id={checkout_id} "
+                f"reason={stk_payload.get('ResultDesc')}"
+            )
 
         await self.db.commit()
         return Result.ok(data={"status": "processed"})

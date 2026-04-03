@@ -154,12 +154,13 @@
 <script>
   let allConnections = [];
   let activePaymentId = null;
+  let activeNannyName = null; // FIX: store name alongside ID
   const CONSTANT_DISPLAY_AMOUNT = 1; 
   const API_BASE = "http://localhost:8000/connections"; 
   const PROFILE_API = "http://localhost:8000/families/profile/me";
 
   document.addEventListener('DOMContentLoaded', async () => { 
-    await fetchProfile(); // Update header name and avatar
+    await fetchProfile();
     await fetchConnections(); 
   });
 
@@ -223,20 +224,24 @@
 
   function openPayment(name, id) {
     activePaymentId = id;
+    activeNannyName = name; // FIX: save name to module-level variable
     document.getElementById('paymentDetailsText').innerText = `Paying ${name}: KES ${CONSTANT_DISPLAY_AMOUNT}`;
     document.getElementById('payment-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
   }
 
-  function closePayment() { document.getElementById('payment-modal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+  function closePayment() { 
+    document.getElementById('payment-modal').classList.add('hidden'); 
+    document.body.style.overflow = 'auto'; 
+  }
 
   async function initiateSTK() {
     const phone = document.getElementById('mpesaPhone').value;
     const btn = document.getElementById('stkBtn');
     const token = localStorage.getItem('access_token');
     
-    if(!phone) return alert('Enter phone number');
-    if(!activePaymentId) return alert('No connection selected');
+    if (!phone) return alert('Enter phone number');
+    if (!activePaymentId) return alert('No connection selected');
 
     btn.disabled = true;
     btn.innerText = "Requesting STK...";
@@ -255,8 +260,8 @@
         closePayment();
         await fetchConnections(); 
       } else {
-        const err = await response.json();
-        alert(`Error: ${err.detail || 'Failed to initiate'}`);
+        // FIX: use activeNannyName instead of undefined nannyName
+        alert(`Error: Payment for ${activeNannyName} already exists or there was an issue initiating payment. Please try again.`);
       }
     } catch (error) {
       console.error("STK Error:", error);

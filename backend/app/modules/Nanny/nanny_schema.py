@@ -2,53 +2,43 @@ from pydantic import BaseModel, Field
 from app.db.models.types import NannyAvailability, VettingStatus
 import uuid
 
-class NannySchema(BaseModel):
+class NannyBase(BaseModel):
     national_id_number: str = Field(..., max_length=50)
     national_id_photo_url: str = Field(..., max_length=1024)
     name: str = Field(..., max_length=255)
     address: str = Field(..., max_length=255)
-    years_experience: int | None
-    skills: str 
+    years_experience: int | None = None
+    skills: str
     preferred_location: str | None = Field(None, max_length=255)
-    availability: NannyAvailability = Field(..., description="Nanny availability status", example=[NannyAvailability.FULL_TIME])
+    availability: NannyAvailability = Field(..., description="Nanny availability status")
     profile_photo_url: str | None = Field(None, max_length=1024)
-    vetting_status: VettingStatus = Field(..., description="Nanny's vetting status", example=[VettingStatus.APPROVED])
 
     class Config:
         orm_mode = True
-        schema_extra = {
-            "example": {
-                "national_id_number": "123456789",
-                "national_id_photo_url": "https://example.com/id_photo.jpg",
-                "address": "123 Main St, Nairobi, Kenya",
-                "years_experience": 5,
-                "skills": "Childcare, First Aid, Cooking",
-                "preferred_location": "Nairobi",
-                "availability": "FULL_TIME",
-                "profile_photo_url": "https://example.com/profile_photo.jpg"
-            }
-        }
 
-class NannyCreate(NannySchema):
+class NannyCreate(NannyBase):
+    # vetting_status deliberately excluded — system sets it, not the user
     pass
 
 class NannyUpdate(BaseModel):
     name: str | None = Field(None, max_length=255)
     national_id_photo_url: str | None = Field(None, max_length=1024)
     address: str | None = Field(None, max_length=255)
-    years_experience: int | None
-    skills: str | None
+    years_experience: int | None = None
+    skills: str | None = None
     preferred_location: str | None = Field(None, max_length=255)
-    availability: NannyAvailability | None
+    availability: NannyAvailability | None = None
     profile_photo_url: str | None = Field(None, max_length=1024)
 
     class Config:
         orm_mode = True
 
-
-class NannyResponse(NannySchema):
+class NannyResponse(NannyBase):
     id: uuid.UUID
+    # FIX: default to PENDING so it's never None, use_enum_values serializes to plain string
+    vetting_status: VettingStatus = VettingStatus.PENDING
 
     model_config = {
-        "from_attributes":  True
+        "from_attributes": True,
+        "use_enum_values": True
     }

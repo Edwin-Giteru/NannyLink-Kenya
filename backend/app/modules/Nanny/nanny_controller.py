@@ -21,7 +21,8 @@ async def get_all_nannies(db: SessionDep):
             "full_name": n.name, # Changed from "name"
             "experience_years": n.years_experience, # Changed from "experience"
             "current_location": n.address, # Changed from "location"
-            "preferred_location": getattr(n, 'preferred_location', 'Nairobi'), # Added
+            "preferred_location": getattr(n, 'preferred_location', 'Nairobi'),
+            "status": n.vetting_status,
             "profile_image": n.profile_photo_url, # Changed from "photo"
             "skills": n.skills,
             "availability": n.availability

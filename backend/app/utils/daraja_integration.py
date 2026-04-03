@@ -67,25 +67,24 @@ async def generate_access_token() -> str:
     return data["access_token"]
 
 
+from urllib.parse import urlparse, urlunparse
+
 async def sendStkPush(
     phone_number: str,
     amount: float,
     match_id: UUID,
-    base_url: str,          # ← renamed from callback_url; we build the full path here
+    base_url: str,
 ) -> dict:
-    """
-    Async STK push. base_url should be your BASE_URL env var
-    e.g. https://myapp.onrender.com  — we append /payments/callback internally.
-    """
     if not phone_number or not amount or not base_url:
         raise ValueError("phone_number, amount, and base_url are required.")
     if amount <= 0:
         raise ValueError("Amount must be greater than 0.")
 
-    # ── FIX 1: Build the full callback URL with the correct path ──────────
-    # Safaricom will POST to this exact URL when payment completes/fails.
-    # Without the path, FastAPI returns 404 and you never receive the callback.
-    callback_url = base_url.rstrip("/") + "/payments/callback"
+    # FIX: Strip any existing path from BASE_URL before appending /payments/callback
+    # Prevents double-path like https://myapp.onrender.com/payments/health/payments/callback
+    parsed = urlparse(base_url.rstrip("/"))
+    clean_base = urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
+    callback_url = clean_base + "/payments/callback"
     logger.info(f"Callback URL set to: {callback_url}")
 
     formatted_phone = validate_phone_number(phone_number)
@@ -103,12 +102,12 @@ async def sendStkPush(
         "Password": password,
         "Timestamp": timestamp,
         "TransactionType": "CustomerBuyGoodsOnline",
-        "Amount": int(amount),              
+        "Amount": int(amount),
         "PartyA": formatted_phone,
         "PartyB": TILL,
         "PhoneNumber": formatted_phone,
-        "CallBackURL": callback_url,       
-        "AccountReference": "NANNYLINK",  
+        "CallBackURL": callback_url,
+        "AccountReference": "NANNYLINK",
         "TransactionDesc": f"NannyLink connection fee - match {str(match_id)[:8]}",
     }
 
