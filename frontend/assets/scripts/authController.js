@@ -171,13 +171,12 @@ function renderNannies(nannies) {
         const baseRate = 250;
         const computedRate = baseRate + (exp * 50);
 
-        // ⭐ Fixed Dynamic Rating Logic for UUIDs
-        // Since nanny.id is a string (UUID), we extract a number from it to use for variance.
+        // ⭐ Fixed Dynamic Rating Logic
         const idString = String(nanny.id || "0");
         const charCodeSum = idString.charCodeAt(idString.length - 1) || 0;
         
         let baseRating = 3.8 + Math.min((exp * 0.15), 0.9); 
-        let variance = (charCodeSum % 4) * 0.1; // Produces 0.0, 0.1, 0.2, or 0.3
+        let variance = (charCodeSum % 4) * 0.1;
         let finalRating = (baseRating + variance).toFixed(1);
         
         if (parseFloat(finalRating) > 5.0) finalRating = "5.0";
@@ -248,9 +247,17 @@ function setupSearch() {
     locationInput.addEventListener("input", performFilter);
 }
 
+// 🔷 UPDATED FETCH LOGIC
 async function fetchFeaturedNannies() {
+    const token = localStorage.getItem('access_token');
+    const role = localStorage.getItem('user_role');
+    
+    // If logged in as family, use the discovery endpoint. Otherwise, use public list.
+    const endpoint = (token && role === 'family') ? `${API_BASE}/connections/` : `${API_BASE}/nannies/`;
+
     try {
-        const res = await fetch(`${API_BASE}/nannies/`); 
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const res = await fetch(endpoint, { headers });
         const data = await res.json();
 
         if (Array.isArray(data)) {
@@ -258,16 +265,22 @@ async function fetchFeaturedNannies() {
             renderNannies(allNannies);
         }
     } catch (err) {
-        console.error("Failed to fetch nannies:", err);
+        console.error("Failed to fetch discovery nannies:", err);
     }
 }
 
 function handleView(nannyId) {
     const token = localStorage.getItem('access_token'); 
+    const role = localStorage.getItem('user_role');
+
     if (!token) {
-        sessionStorage.setItem('redirect_after_login', `/views/nanny-profile.html?id=${nannyId}`);
+        // Redirect to login if not authenticated
         window.location.href = "../frontend/src/views/login.html";
+    } else if (role === 'family') {
+        // Logged-in families go to dashboard to initiate connection
+        window.location.href = "/frontend/src/family/views/familydashboard.html";
     } else {
+        // Other roles go to login or home
         window.location.href = "../frontend/src/views/login.html";
     }
 }

@@ -36,17 +36,30 @@ class MatchService:
             if role == "family":
                 from app.modules.Family.repository import FamilyRepository
                 family_repo = FamilyRepository(self.match_repo.db)
+                
+                # 1. Get the ACTUAL Family Profile ID first
                 profile = await family_repo.get_family_by_user_id(user_id)
-                matches = await self.match_repo.get_matches_for_family(profile.id)
+                if not profile:
+                    return Result.fail("Family profile not found", 404)
+
+                # 2. Pass the profile.id (the UUID in the family_profile table)
+                nannies = await self.match_repo.get_unconnected_nannies(profile.id)
+                
+                # Use your Nanny Schema for validation if you have one, 
+                # otherwise return the raw list
+                return Result.ok(data=nannies)
+                
             else:
+                # Logic for nannies remains as actual matches
                 from app.modules.Nanny.nanny_repo import NannyRepository
                 nanny_repo = NannyRepository(self.match_repo.db)
                 profile = await nanny_repo.get_nanny_by_user_id(user_id)
                 matches = await self.match_repo.get_matches_for_nanny(profile.id)
-
-            return Result.ok(data=[MatchResponse.model_validate(m) for m in matches])
+                return Result.ok(data=[MatchResponse.model_validate(m) for m in matches])
+                
         except Exception as e:
             return Result.fail(str(e), status_code=500)
+        
 
     async def get_connection_details(self, match_id: UUID) -> Result:
         match = await self.match_repo.get_match_by_id(match_id)

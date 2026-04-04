@@ -357,104 +357,91 @@
 <script type="module" src="../frontend/assets/scripts/authController.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const nannyList = document.getElementById('nanny-list');
-        const paginationWrapper = document.getElementById('pagination-controls');
-        const sideNav = document.getElementById('side-nav');
-        const mobileFab = document.getElementById('mobile-fab');
-        const itemsPerPage = 10;
-        let currentPage = 1;
+    // Replace your current <script> logic with this:
+document.addEventListener('DOMContentLoaded', () => {
+    const nannyList = document.getElementById('nanny-list');
+    const paginationWrapper = document.getElementById('pagination-controls');
+    const itemsPerPage = 6; // Set this to 6 to match your current display if desired
+    let currentPage = 1;
 
-        // Updated FAQ Toggle logic
-        const faqTriggers = document.querySelectorAll('.faq-trigger');
-        faqTriggers.forEach(trigger => {
-            trigger.addEventListener('click', () => {
-                const item = trigger.parentElement;
-                const icon = trigger.querySelector('.faq-icon');
-                const isOpen = item.classList.contains('active');
-
-                // Close all others
-                document.querySelectorAll('.faq-item').forEach(other => {
-                    other.classList.remove('active');
-                    other.querySelector('.faq-icon').innerText = 'add';
-                });
-
-                // Toggle current
-                if (!isOpen) {
-                    item.classList.add('active');
-                    icon.innerText = 'remove';
-                } else {
-                    item.classList.remove('active');
-                    icon.innerText = 'add';
-                }
+    // 1. FAQ Toggle Logic (Remains unchanged)
+    const faqTriggers = document.querySelectorAll('.faq-trigger');
+    faqTriggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const item = trigger.parentElement;
+            const icon = trigger.querySelector('.faq-icon');
+            const isOpen = item.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(other => {
+                other.classList.remove('active');
+                other.querySelector('.faq-icon').innerText = 'add';
             });
-        });
-
-        // Visibility Logic for Floating Nav
-        window.onscroll = () => {
-            if (window.scrollY > 300) {
-                sideNav.classList.add('visible');
-                mobileFab.classList.add('visible');
+            if (!isOpen) {
+                item.classList.add('active');
+                icon.innerText = 'remove';
             } else {
-                sideNav.classList.remove('visible');
-                mobileFab.classList.remove('visible');
+                item.classList.remove('active');
+                icon.innerText = 'add';
             }
-        };
+        });
+    });
 
-        function updatePagination() {
-            const children = Array.from(nannyList.children);
-            const totalItems = children.length;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-            paginationWrapper.innerHTML = '';
+    // 2. Pagination Logic - This now handles dynamic data
+    function setupPagination() {
+        const children = Array.from(nannyList.children);
+        const totalItems = children.length;
+        
+        // If no items are found yet, don't break the script
+        if (totalItems === 0) return;
 
-            if (totalPages > 1) {
-                for (let i = 1; i <= totalPages; i++) {
-                    const btn = document.createElement('button');
-                    btn.innerText = i;
-                    btn.className = `pagination-btn w-10 h-10 rounded-xl border-2 border-slate-200 font-bold text-sm transition-all hover:border-primary ${i === currentPage ? 'active' : ''}`;
-                    btn.onclick = () => {
-                        currentPage = i;
-                        showPage(currentPage);
-                        document.getElementById('nannies').scrollIntoView({ behavior: 'smooth' });
-                    };
-                    paginationWrapper.appendChild(btn);
-                }
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        paginationWrapper.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = i;
+            btn.className = `pagination-btn w-10 h-10 rounded-xl border-2 border-slate-200 font-bold text-sm transition-all hover:border-primary ${i === currentPage ? 'active' : ''}`;
+            btn.onclick = () => {
+                currentPage = i;
+                displayPage(i);
+            };
+            paginationWrapper.appendChild(btn);
+        }
+        displayPage(currentPage);
+    }
+
+    function displayPage(page) {
+        const children = Array.from(nannyList.children);
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        children.forEach((child, index) => {
+            if (index >= start && index < end) {
+                child.style.display = 'block';
+                child.classList.remove('hidden');
+            } else {
+                child.style.display = 'none';
+                child.classList.add('hidden');
             }
-            showPage(currentPage);
-        }
-
-        function showPage(pageNumber) {
-            const children = Array.from(nannyList.children);
-            const start = (pageNumber - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-
-            children.forEach((child, index) => {
-                if (index >= start && index < end) {
-                    child.classList.remove('hidden');
-                    child.style.display = ''; 
-                } else {
-                    child.classList.add('hidden');
-                    child.style.display = 'none';
-                }
-            });
-
-            const buttons = paginationWrapper.querySelectorAll('button');
-            buttons.forEach((btn, idx) => {
-                if (idx + 1 === pageNumber) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-        }
-
-        const observer = new MutationObserver(() => {
-            updatePagination();
         });
 
-        observer.observe(nannyList, { childList: true });
-        updatePagination();
+        // Update button styles
+        const buttons = paginationWrapper.querySelectorAll('button');
+        buttons.forEach((btn, idx) => {
+            if (idx + 1 === page) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+
+    // 3. The "Observer" Fix
+    // This watches the nanny-list and runs pagination ONLY when profiles are added
+    const observer = new MutationObserver((mutations) => {
+        if (nannyList.children.length > 0) {
+            setupPagination();
+        }
     });
+
+    observer.observe(nannyList, { childList: true });
+});
 </script>
 </body>
 </html>

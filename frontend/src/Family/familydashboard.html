@@ -188,15 +188,14 @@
     const API_BASE_URL = "http://localhost:8000";
     const LOGIN_PAGE_URL = "../views/login.html";
     
-    let allNannies = []; 
+    let allFilteredNannies = []; // Holds the list of nannies without connections
     let selectedCity = "All Cities";
     let selectedNannyIds = new Set();
     
     let currentPage = 1;
     const itemsPerPage = 6;
-    let hasMore = true;
 
-    const CONNECTION_FEE = 1.0; 
+    const CONNECTION_FEE = 1500; // Updated to realistic KES fee
     const MAX_SELECTION = 3;
 
     async function authenticatedFetch(url, options = {}) {
@@ -205,13 +204,11 @@
             window.location.href = LOGIN_PAGE_URL;
             return;
         }
-
         const headers = {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
             ...options.headers
         };
-
         try {
             const response = await fetch(url, { ...options, headers });
             if (response.status === 401) {
@@ -239,35 +236,50 @@
         fetchNannies();
     });
 
+    /**
+     * UPDATED: Fetches only unconnected nannies via the /connections discovery endpoint
+     */
     async function fetchNannies() {
-        const skip = (currentPage - 1) * itemsPerPage;
-        const search = document.getElementById('searchInput').value;
-        const city = selectedCity === "All Cities" ? "" : selectedCity;
-
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        
         try {
-            const response = await authenticatedFetch(`${API_BASE_URL}/nannies/?skip=${skip}&limit=${itemsPerPage}&search=${search}&location=${city}`);
+            // We call the GET /connections endpoint which our backend now filters for "unconnected" nannies
+            const response = await authenticatedFetch(`${API_BASE_URL}/connections/`);
             if (!response) return;
-            const data = await response.json();
-            allNannies = data;
-            renderGrid(data);
             
-            hasMore = data.length === itemsPerPage;
-            document.getElementById('nextBtn').disabled = !hasMore;
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('pageIndicator').textContent = `Page ${currentPage}`;
+            let data = await response.json();
+            
+            // Client-side filtering for search and location based on the returned list
+            allFilteredNannies = data.filter(nanny => {
+                const matchesSearch = nanny.full_name.toLowerCase().includes(search) || 
+                                     (nanny.skills && nanny.skills.toLowerCase().includes(search));
+                const matchesCity = selectedCity === "All Cities" || 
+                                   nanny.current_location.includes(selectedCity);
+                return matchesSearch && matchesCity;
+            });
+
+            renderGrid();
+            updatePaginationControls();
         } catch (error) {
-            document.getElementById('caregiverGrid').innerHTML = `<p class="col-span-full text-center py-10 text-slate-400">Error loading data.</p>`;
+            console.error(error);
+            document.getElementById('caregiverGrid').innerHTML = `<p class="col-span-full text-center py-10 text-slate-400">Error loading discovery data.</p>`;
         }
     }
 
-    function renderGrid(data) {
+    function renderGrid() {
         const grid = document.getElementById('caregiverGrid');
-        if (!data || data.length === 0) {
-            grid.innerHTML = `<div class="col-span-full text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100"><p class="text-slate-400 font-bold">No results found.</p></div>`;
+        
+        // Manual Pagination Slicing
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = allFilteredNannies.slice(start, end);
+
+        if (pageItems.length === 0) {
+            grid.innerHTML = `<div class="col-span-full text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100"><p class="text-slate-400 font-bold">No available nannies found.</p></div>`;
             return;
         }
 
-        grid.innerHTML = data.map(nanny => {
+        grid.innerHTML = pageItems.map(nanny => {
             const isSelected = selectedNannyIds.has(nanny.id);
             return `
             <div class="group bg-white rounded-[2rem] overflow-hidden ambient-shadow border-2 transition-all duration-300 ${isSelected ? 'border-secondary' : 'border-transparent'}">
@@ -285,6 +297,13 @@
         }).join('');
     }
 
+    function updatePaginationControls() {
+        const totalPages = Math.ceil(allFilteredNannies.length / itemsPerPage);
+        document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+        document.getElementById('prevBtn').disabled = currentPage === 1;
+        document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+    }
+
     function toggleNannySelection(id) {
         if (selectedNannyIds.has(id)) {
             selectedNannyIds.delete(id);
@@ -293,7 +312,7 @@
             selectedNannyIds.add(id);
         }
         updateCheckoutBar();
-        renderGrid(allNannies);
+        renderGrid();
     }
 
     function updateCheckoutBar() {
@@ -306,7 +325,7 @@
         document.getElementById('modalImage').src = nanny.profile_image || `https://ui-avatars.com/api/?name=${nanny.full_name}`;
         document.getElementById('modalName').textContent = nanny.full_name;
         document.getElementById('modalLocation').textContent = nanny.current_location;
-        document.getElementById('modalExp').textContent = `${nanny.experience_years} Yrs`;
+        document.getElementById('modalExp').textContent = `${nanny.experience_years} Yrs Exp`;
         
         const skills = Array.isArray(nanny.skills) ? nanny.skills : (nanny.skills ? nanny.skills.split(',') : []);
         document.getElementById('modalSkills').innerHTML = skills.map(s => `<span class="px-3 py-1 bg-slate-50 text-[9px] font-bold uppercase rounded-lg text-slate-500">${s.trim()}</span>`).join('');
@@ -337,8 +356,6 @@
 
         try {
             const connectionIds = [];
-            
-            // Your backend expects nanny_id as a query parameter: /connections/?nanny_id=...
             for (let nannyId of selectedNannyIds) {
                 const res = await authenticatedFetch(`${API_BASE_URL}/connections/?nanny_id=${nannyId}`, {
                     method: 'POST'
@@ -351,7 +368,6 @@
 
             if (connectionIds.length === 0) throw new Error("Connection records failed to create.");
 
-            // Payment route requires match_ids key
             const payRes = await authenticatedFetch(`${API_BASE_URL}/payments/initiate-batch`, {
                 method: 'POST',
                 body: JSON.stringify({ match_ids: connectionIds, phone_number: phone })
@@ -363,7 +379,6 @@
                 closePaymentModal();
                 updateCheckoutBar();
                 fetchNannies();
-                // redirect to connections.html after short delay to show success message
                 setTimeout(() => { window.location.href = 'connections.html'; }, 1500);
             } else {
                 const errorData = await payRes.json();
@@ -392,7 +407,7 @@
     }
 
     function closeAllDropdowns() { document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('active')); }
-    function changePage(dir) { currentPage += dir; fetchNannies(); window.scrollTo(0,0); }
+    function changePage(dir) { currentPage += dir; renderGrid(); updatePaginationControls(); window.scrollTo(0,0); }
     function resetAndFetch() { currentPage = 1; fetchNannies(); }
 </script>
 </body>

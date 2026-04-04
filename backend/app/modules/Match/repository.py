@@ -1,4 +1,6 @@
 # app/modules/Match/repository.py
+from operator import not_
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
@@ -20,6 +22,28 @@ class MatchRepository:
         selectinload(Match.family),
         selectinload(Match.contract),
     ]
+    async def get_unconnected_nannies(self, family_id: UUID) -> list[NannyProfile]:
+        """
+        Returns only nannies who do NOT have a record in the Match table 
+        for the given family_id.
+        """
+        # We join NannyProfile to Match, but only for THIS family
+        stmt = (
+            select(NannyProfile)
+            .outerjoin(
+                Match, 
+                and_(
+                    Match.nanny_id == NannyProfile.id, 
+                    Match.family_id == family_id
+                )
+            )
+            # Filter for rows where the JOIN failed (meaning no connection exists)
+            .where(Match.id == None) 
+            .order_by(NannyProfile.created_at.desc())
+        )
+        
+        result = await self.db.execute(stmt)
+        return list(result.scalars().all())
 
     async def get_match_by_id(self, match_id: UUID) -> Match | None:
         stmt = select(Match).where(Match.id == match_id).options(*self._load_opts)
