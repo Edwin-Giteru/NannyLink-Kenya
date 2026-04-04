@@ -11,7 +11,6 @@
     
     <script id="tailwind-config">
         tailwind.config = {
-            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
@@ -41,6 +40,22 @@
         .side-nav-link:hover { color: #835500; transform: translateX(5px); }
         .floating-nav { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; transform: translateY(20px); }
         .floating-nav.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+        /* FAQ Accordion Styles - FIXED */
+        .faq-content { 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .faq-item.active .faq-content { 
+            max-height: 1000px; /* High enough to accommodate content */
+            opacity: 1;
+            pointer-events: auto;
+            padding-bottom: 1.25rem;
+        }
+        .faq-item.active .faq-icon { transform: rotate(45deg); color: #835500; }
     </style>
 </head>
 
@@ -64,6 +79,10 @@
             <span class="material-symbols-outlined">search</span>
             <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">Find</span>
         </a>
+        <a href="#faq" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-white text-slate-400 hover:text-primary transition-all group relative border border-slate-50">
+            <span class="material-symbols-outlined">quiz</span>
+            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">FAQ</span>
+        </a>
     </div>
 </aside>
 
@@ -85,6 +104,7 @@
             <a href="#about" class="text-slate-600 hover:text-primary font-semibold transition-colors">About</a>
             <a href="#services" class="text-slate-600 hover:text-primary font-semibold transition-colors">Services</a>
             <a href="#nannies" class="text-slate-600 hover:text-primary font-semibold transition-colors">Find Nannies</a>
+            <a href="#faq" class="text-slate-600 hover:text-primary font-semibold transition-colors">FAQ</a>
         </nav>
 
         <div class="flex items-center gap-4">
@@ -133,35 +153,6 @@
         </div>
     </section>
 
-    <section id="nannies" class="py-12">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
-            <div>
-                <h2 class="text-3xl font-headline font-extrabold text-primary">Featured Nannies</h2>
-                <p class="text-slate-500">Browse trusted caregivers available near you</p>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <div class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-                    <input type="text" id="skill-search" placeholder="Search by skill..." class="pl-10 pr-4 py-3 bg-white border-slate-200 rounded-xl text-sm focus:ring-secondary focus:border-secondary w-full sm:w-48 lg:w-64">
-                </div>
-                <div class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">location_on</span>
-                    <input type="text" id="location-search" placeholder="Filter by location..." class="pl-10 pr-4 py-3 bg-white border-slate-200 rounded-xl text-sm focus:ring-secondary focus:border-secondary w-full sm:w-48 lg:w-64">
-                </div>
-            </div>
-        </div>
-
-        <div id="nanny-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-        
-        <div id="pagination-controls" class="mt-12 flex justify-center items-center gap-2"></div>
-
-        <div class="mt-12 text-center">
-            <a href="../frontend/src/views/login.html" class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-secondary hover:border-secondary transition-all">
-                Sign in to see all nannies
-            </a>
-        </div>
-    </section>
-
     <section id="about" class="py-20">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -198,6 +189,87 @@
         </div>
     </section>
 
+    <section id="faq" class="py-20 border-t border-slate-100">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-secondary font-black text-[10px] tracking-[0.3em] uppercase mb-4 block">Common Questions</span>
+                <h2 class="text-4xl font-headline font-extrabold text-primary">Frequently Asked Questions</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How are the nannies vetted?</span>
+                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+                    </button>
+                    <div class="faq-content px-6">
+                        <p class="text-sm text-slate-500 leading-relaxed">Every nanny undergoes a rigorous 4-step verification process: National ID verification, Certificate of Good Conduct check, mandatory phone/physical interviews, and direct verification of at least two previous employment references.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Is my payment secure?</span>
+                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+                    </button>
+                    <div class="faq-content px-6">
+                        <p class="text-sm text-slate-500 leading-relaxed">Yes. We use an escrow-style payment system. Your payment is held securely and only released to the nanny once the agreed-upon period is completed, ensuring accountability for both parties.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Can I interview a nanny before hiring?</span>
+                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+                    </button>
+                    <div class="faq-content px-6">
+                        <p class="text-sm text-slate-500 leading-relaxed">Absolutely. After matching with a nanny, our platform allows you to schedule a virtual or physical interview to ensure they are the right fit for your family dynamic.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">What happens if a match doesn't work out?</span>
+                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+                    </button>
+                    <div class="faq-content px-6">
+                        <p class="text-sm text-slate-500 leading-relaxed">We offer a 14-day replacement guarantee. If a match isn't working for a valid reason, we will prioritize finding you a new caregiver at no additional platform cost.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Do I need to sign a physical contract?</span>
+                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+                    </button>
+                    <div class="faq-content px-6">
+                        <p class="text-sm text-slate-500 leading-relaxed">No. NannyLink provides legally binding digital contracts that define duties, work hours, and salary. Both parties sign electronically, and the document is stored in your dashboard.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Are there nannies for special needs?</span>
+                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+                    </button>
+                    <div class="faq-content px-6">
+                        <p class="text-sm text-slate-500 leading-relaxed">Yes, we have specialized caregivers trained in handling children with autism, physical disabilities, and other neurodivergent conditions. You can filter for these specific skills in the search bar.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How much does NannyLink cost?</span>
+                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+                    </button>
+                    <div class="faq-content px-6">
+                        <p class="text-sm text-slate-500 leading-relaxed">Browsing is free. We charge a one-time connection fee once you decide to hire a nanny. This fee covers background checks, contract generation, and platform support.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="services" class="py-20 bg-primary text-white rounded-[4rem] px-10">
         <div class="text-center mb-16">
             <h2 class="text-3xl md:text-5xl font-headline font-extrabold">A Seamless Experience</h2>
@@ -220,6 +292,32 @@
                 <p class="text-slate-400 text-sm mb-6">Build a professional profile and find high-quality local jobs.</p>
                 <a href="../frontend/src/views/login.html" class="text-surface-tint font-bold text-sm flex items-center gap-2">Join Today <i class="fas fa-arrow-right text-[10px]"></i></a>
             </div>
+        </div>
+    </section>
+
+    <section id="nannies" class="py-12">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+            <div>
+                <h2 class="text-3xl font-headline font-extrabold text-primary">Featured Nannies</h2>
+                <p class="text-slate-500">Browse trusted caregivers available near you</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <div class="relative flex-1">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                    <input type="text" id="skill-search" placeholder="Search by skill..." class="pl-10 pr-4 py-3 bg-white border-slate-200 rounded-xl text-sm focus:ring-secondary focus:border-secondary w-full sm:w-48 lg:w-64">
+                </div>
+                <div class="relative flex-1">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">location_on</span>
+                    <input type="text" id="location-search" placeholder="Filter by location..." class="pl-10 pr-4 py-3 bg-white border-slate-200 rounded-xl text-sm focus:ring-secondary focus:border-secondary w-full sm:w-48 lg:w-64">
+                </div>
+            </div>
+        </div>
+        <div id="nanny-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        <div id="pagination-controls" class="mt-12 flex justify-center items-center gap-2"></div>
+        <div class="mt-12 text-center">
+            <a href="../frontend/src/views/login.html" class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-secondary hover:border-secondary transition-all">
+                Sign in to see all nannies
+            </a>
         </div>
     </section>
 </main>
@@ -266,6 +364,31 @@
         const mobileFab = document.getElementById('mobile-fab');
         const itemsPerPage = 10;
         let currentPage = 1;
+
+        // Updated FAQ Toggle logic
+        const faqTriggers = document.querySelectorAll('.faq-trigger');
+        faqTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const item = trigger.parentElement;
+                const icon = trigger.querySelector('.faq-icon');
+                const isOpen = item.classList.contains('active');
+
+                // Close all others
+                document.querySelectorAll('.faq-item').forEach(other => {
+                    other.classList.remove('active');
+                    other.querySelector('.faq-icon').innerText = 'add';
+                });
+
+                // Toggle current
+                if (!isOpen) {
+                    item.classList.add('active');
+                    icon.innerText = 'remove';
+                } else {
+                    item.classList.remove('active');
+                    icon.innerText = 'add';
+                }
+            });
+        });
 
         // Visibility Logic for Floating Nav
         window.onscroll = () => {

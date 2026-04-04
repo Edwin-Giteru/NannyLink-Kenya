@@ -79,3 +79,17 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_sess
         )
 
     return user
+
+from app.db.models.types import UserRole
+
+async def admin_required(current_user: User = Depends(get_current_user)) -> User:
+    """
+    Dependency that grants access only to users with the ADMIN role.
+    Reuses get_current_user to handle token validation and database lookup.
+    """
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have administrative privileges"
+        )
+    return current_user

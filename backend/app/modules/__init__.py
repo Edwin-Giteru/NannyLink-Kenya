@@ -8,6 +8,7 @@ from app.modules.Match.controller import router as match_router
 from app.modules.payments.controller import router as payments_router
 from app.modules.Contract.controller import router as contract_router
 from .Stats.controller import router as stats_router
+from .admin.controller import router as admin_router
 
 router = APIRouter()
 
@@ -20,3 +21,4 @@ router.include_router(match_router)
 router.include_router(payments_router)
 router.include_router(contract_router)
 router.include_router(stats_router)
+router.include_router(admin_router)

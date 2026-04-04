@@ -10,18 +10,17 @@ from app.db.models.types import MatchStatus
 from app.db.models.family_profile import FamilyProfile
 from app.db.models.nanny_profile import NannyProfile
 
-
 class MatchRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    # This ensures that whenever we query a Match, 
-    # SQLAlchemy fetches the related Family and Nanny in one go.
+    # Load Profile objects directly. These profiles contain the 'full_name' or 'name' fields.
     _load_opts = [
-        selectinload(Match.nanny).selectinload(NannyProfile.user), # Load User too!
-        selectinload(Match.family).selectinload(FamilyProfile.user), # Load User too!
+        selectinload(Match.nanny), 
+        selectinload(Match.family),
         selectinload(Match.contract),
     ]
+
     async def get_match_by_id(self, match_id: UUID) -> Match | None:
         stmt = select(Match).where(Match.id == match_id).options(*self._load_opts)
         result = await self.db.execute(stmt)
@@ -64,7 +63,6 @@ class MatchRepository:
         )
         self.db.add(new_match)
         await self.db.commit()
-        # After commit, we re-fetch using our load_opts to get the names/images
         return await self.get_match_by_id(new_match.id)
     
     async def count_matches(self) -> int:

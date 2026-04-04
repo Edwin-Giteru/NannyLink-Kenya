@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Payment Logs | NannyLink Kenya</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00152f",
+                        "primary-container": "#0f2a4a",
+                        "secondary": "#835500",
+                        "secondary-container": "#fcb650",
+                        "surface": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#43474e",
+                        "outline-variant": "#c4c6cf",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-fill { font-variation-settings: 'FILL' 1; }
+        body { font-family: 'Inter', sans-serif; min-height: 100dvh; }
+        .glass-sidebar { box-shadow: 20px 0px 40px rgba(0, 21, 47, 0.04); }
+        .match-row:hover { background-color: #f8f9fa; }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface flex overflow-x-hidden">
+
+    <aside class="hidden md:flex flex-col w-72 fixed left-0 top-0 h-full bg-slate-50 border-r border-slate-100 glass-sidebar z-40 py-8">
+        <div class="px-6 mb-10">
+            <h1 class="text-xl font-black text-primary uppercase tracking-tighter">NannyLink Kenya</h1>
+            <p class="text-[10px] text-slate-400 uppercase tracking-[0.2em] mt-1 font-bold">Admin Portal</p>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="statsoverview.html" class="flex items-center px-4 py-3 text-slate-500 hover:text-primary hover:bg-white rounded-2xl transition-all group">
+                <span class="material-symbols-outlined mr-3 group-hover:material-symbols-fill">dashboard</span>
+                <span class="font-bold text-sm">Stats Overview</span>
+            </a>
+            <a href="usermanagement.html" class="flex items-center px-4 py-3 text-slate-500 hover:text-primary hover:bg-white rounded-2xl transition-all group">
+                <span class="material-symbols-outlined mr-3 group-hover:material-symbols-fill">group</span>
+                <span class="font-bold text-sm">User Management</span>
+            </a>
+            <a href="matchoversight.html" class="flex items-center px-4 py-3 text-slate-500 hover:text-primary hover:bg-white rounded-2xl transition-all group">
+                <span class="material-symbols-outlined mr-3 group-hover:material-symbols-fill">handshake</span>
+                <span class="font-bold text-sm">Match Oversight</span>
+            </a>
+            <a href="auditpayments.html" class="flex items-center px-4 py-3 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 transition-all">
+                <span class="material-symbols-outlined material-symbols-fill mr-3">payments</span>
+                <span class="font-bold text-sm">Payment Logs</span>
+            </a>
+        </nav>
+
+        <div class="px-4 mt-auto">
+            <div class="p-4 bg-white rounded-2xl border border-slate-100 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white overflow-hidden ring-2 ring-primary/5">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=00152f&color=fff" alt="Admin" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <p class="text-xs font-black text-primary">System Admin</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Nairobi HQ</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 md:ml-72 min-h-screen pb-24 md:pb-12">
+        <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-end">
+            <div class="flex items-center gap-2 md:hidden mr-auto">
+                <span class="material-symbols-outlined text-primary material-symbols-fill">shield_with_heart</span>
+                <span class="font-headline font-black text-primary tracking-tighter">NannyLink</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button id="exportBtn" class="bg-secondary text-white px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-all flex items-center gap-2 shadow-md">
+                    <span class="material-symbols-outlined text-sm">download</span> Export Excel
+                </button>
+            </div>
+        </header>
+
+        <section class="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h2 class="text-3xl font-black text-primary font-headline tracking-tight">Payment Logs</h2>
+                    <p class="text-slate-500 text-sm mt-1">Audit M-Pesa transaction flows and agency commission settlement.</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="bg-white px-6 py-4 rounded-3xl border border-slate-100 flex items-center gap-4 shadow-sm">
+                        <div class="text-right">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Volume</p>
+                            <p class="text-xl font-black text-primary" id="totalVolume">KES 0</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined material-symbols-fill text-xl">trending_up</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-2xl">check_circle</span>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Success Rate</p>
+                        <p class="text-2xl font-black text-primary" id="successRate">0%</p>
+                    </div>
+                </div>
+                <div class="bg-primary p-6 rounded-[2rem] shadow-lg shadow-primary/20 flex items-center justify-between col-span-1 md:col-span-2 overflow-hidden relative">
+                    <div class="relative z-10">
+                        <p class="text-[10px] font-black text-blue-300 uppercase tracking-widest">Compliance Status</p>
+                        <p class="text-xl font-bold text-white mt-1">Audit Transparency Report</p>
+                    </div>
+                    <button class="relative z-10 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-2.5 rounded-2xl text-xs font-bold transition-all">
+                        Generate Audit Log
+                    </button>
+                    <span class="absolute -right-4 -bottom-4 material-symbols-outlined text-8xl text-white/5 rotate-12">verified_user</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-2 rounded-3xl border border-slate-100 flex flex-col md:flex-row items-center gap-2">
+                <div class="flex-1 flex gap-2 p-1">
+                    <div class="relative flex-1 max-w-md">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                        <input type="text" id="searchInput" placeholder="Filter by Checkout ID or Receipt..." class="w-full bg-slate-50 border-none rounded-2xl pl-10 pr-6 py-2.5 text-xs font-bold text-slate-600 focus:ring-2 focus:ring-primary/5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-50 bg-slate-50/30">
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date/Time</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Transaction IDs</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Amount</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentTableBody" class="divide-y divide-slate-50">
+                        </tbody>
+                </table>
+
+                <div class="px-8 py-6 bg-slate-50/50 border-t border-slate-50 flex items-center justify-between">
+                    <p id="showingText" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Showing 0 transactions</p>
+                    <div class="flex gap-2">
+                        <button id="prevBtn" class="w-10 h-10 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:text-primary transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-sm">chevron_left</span>
+                        </button>
+                        <button id="pageNumber" class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-md font-bold text-xs">1</button>
+                        <button id="nextBtn" class="w-10 h-10 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:text-primary transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50/50 p-8 rounded-[2.5rem] border border-blue-100 relative overflow-hidden">
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-black text-primary font-headline">Audit: Match Batch Links</h3>
+                        <p class="text-slate-500 text-sm mt-2 max-w-lg">Each payment entry is cryptographically linked to a batch of validated match_ids for commission auditing.</p>
+                        <div class="flex flex-wrap gap-2 mt-6">
+                            <div class="bg-white px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 text-[10px] font-black text-primary border border-blue-100/50">
+                                <span class="material-symbols-outlined text-xs text-blue-400">link</span> MATCH_ID: 88291-A
+                            </div>
+                            <div class="bg-white px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 text-[10px] font-black text-primary border border-blue-100/50">
+                                <span class="material-symbols-outlined text-xs text-blue-400">link</span> MATCH_ID: 88304-X
+                            </div>
+                            <div class="px-4 py-2 text-[10px] font-bold text-slate-400 italic">+ 12 others</div>
+                        </div>
+                    </div>
+                    <div class="w-32 h-32 bg-primary rounded-[2rem] flex items-center justify-center shadow-xl shadow-primary/20 rotate-3">
+                        <span class="material-symbols-outlined text-white text-5xl">verified</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-white/80 backdrop-blur-xl border-t border-slate-100">
+        <a href="statsoverview.html" class="flex flex-col items-center text-slate-400 p-2"><span class="material-symbols-outlined">analytics</span></a>
+        <a href="usermanagement.html" class="flex flex-col items-center text-slate-400 p-2"><span class="material-symbols-outlined">person_search</span></a>
+        <a href="matchoversight.html" class="flex flex-col items-center text-slate-400 p-2"><span class="material-symbols-outlined">handshake</span></a>
+        <a href="auditpayments.html" class="flex flex-col items-center bg-primary text-white rounded-2xl p-2 px-6 shadow-lg"><span class="material-symbols-outlined material-symbols-fill">receipt_long</span></a>
+    </nav>
+
+<script>
+    const API_BASE_URL = 'http://127.0.0.1:8000/admin/payments';
+    let currentPage = 1;
+    let currentPaymentData = []; // Store the latest fetched data for export
+
+    async function authorizedFetch(url, options = {}) {
+        const token = localStorage.getItem('access_token');
+        
+        if (!token) {
+            window.location.href = '../views/login.html';
+            return;
+        }
+
+        const headers = {
+            ...options.headers,
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+
+        try {
+            const response = await fetch(url, { ...options, headers });
+            if (response.status === 401) {
+                localStorage.removeItem('access_token');
+                window.location.href ="../views/login.html";
+                return;
+            }
+            return response;
+        } catch (error) {
+            console.error("Network Error:", error);
+            throw error;
+        }
+    }
+
+    function updateStats(stats) {
+        if (!stats) return;
+        document.getElementById('totalVolume').innerText = `KES ${stats.total_volume.toLocaleString()}`;
+        document.getElementById('successRate').innerText = `${stats.success_rate}%`;
+    }
+
+    function renderTable(payments) {
+        const tbody = document.getElementById('paymentTableBody');
+        tbody.innerHTML = ''; 
+
+        payments.forEach(payment => {
+            const date = new Date(payment.created_at);
+            
+            let statusClass = '';
+            const status = payment.payment_status.toLowerCase();
+
+            switch (status) {
+                case 'completed':
+                    statusClass = 'bg-green-100 text-green-700';
+                    break;
+                case 'pending':
+                    statusClass = 'bg-orange-100 text-orange-700';
+                    break;
+                case 'failed':
+                case 'cancelled':
+                    statusClass = 'bg-red-100 text-red-700';
+                    break;
+                default:
+                    statusClass = 'bg-slate-100 text-slate-700';
+            }
+            
+            const row = `
+                <tr class="match-row transition-all border-b border-slate-50">
+                    <td class="px-8 py-6">
+                        <p class="text-sm font-black text-primary tracking-tight">${date.toLocaleDateString()}</p>
+                        <p class="text-[10px] text-slate-400 font-bold">${date.toLocaleTimeString()}</p>
+                    </td>
+                    <td class="px-8 py-6">
+                        <p class="text-[10px] font-mono text-slate-500">${payment.checkout_request_id || 'N/A'}</p>
+                        <p class="text-xs font-bold text-primary">${payment.mpesa_transaction_code || 'Pending'}</p>
+                    </td>
+                    <td class="px-8 py-6 text-center">
+                        <span class="text-sm font-black text-primary">KES ${payment.amount.toLocaleString()}</span>
+                    </td>
+                    <td class="px-8 py-6">
+                        <span class="px-3 py-1 ${statusClass} text-[10px] font-black uppercase rounded-full tracking-wider">
+                            ${payment.payment_status}
+                        </span>
+                    </td>
+                    <td class="px-8 py-6 text-right">
+                        <button onclick="viewDetails('${payment.id}')" class="p-2 text-slate-300 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+        });
+    }
+
+    // Function to handle Excel Export
+    function exportToExcel() {
+        if (currentPaymentData.length === 0) {
+            alert("No data available to export.");
+            return;
+        }
+
+        // Map data to user-friendly Excel rows
+        const worksheetData = currentPaymentData.map(payment => ({
+            "Date": new Date(payment.created_at).toLocaleDateString(),
+            "Time": new Date(payment.created_at).toLocaleTimeString(),
+            "Checkout ID": payment.checkout_request_id || 'N/A',
+            "M-Pesa Code": payment.mpesa_transaction_code || 'Pending',
+            "Amount (KES)": payment.amount,
+            "Status": payment.payment_status.toUpperCase()
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Payments");
+
+        // Set column widths for better readability
+        const wscols = [
+            {wch: 15}, {wch: 15}, {wch: 35}, {wch: 20}, {wch: 15}, {wch: 15}
+        ];
+        worksheet['!cols'] = wscols;
+
+        // Generate file and trigger download
+        XLSX.writeFile(workbook, `NannyLink_Payments_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    async function loadPaymentLogs() {
+        const searchInput = document.getElementById('searchInput').value;
+        const url = `${API_BASE_URL}/?page=${currentPage}&search=${encodeURIComponent(searchInput)}`;
+        
+        try {
+            const response = await authorizedFetch(url);
+            if (!response) return;
+
+            const data = await response.json();
+            currentPaymentData = data.payments; // Update global state for export
+            renderTable(data.payments);
+            updateStats(data.stats);
+            
+            document.getElementById('showingText').innerText = 
+                `Showing ${data.payments.length} of ${data.total_count} transactions`;
+            document.getElementById('pageNumber').innerText = currentPage;
+            
+        } catch (error) {
+            console.error("Failed to load logs:", error);
+        }
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        currentPage++;
+        loadPaymentLogs();
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            loadPaymentLogs();
+        }
+    });
+
+    // Handle Export Button Click
+    document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentPage = 1;
+            loadPaymentLogs();
+        }, 500);
+    });
+
+    document.addEventListener('DOMContentLoaded', loadPaymentLogs);
+
+    function viewDetails(id) {
+        console.log("View:", id);
+    }
+</script>
+</body>
+</html>
