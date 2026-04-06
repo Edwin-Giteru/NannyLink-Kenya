@@ -41,7 +41,7 @@
         .floating-nav { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; transform: translateY(20px); }
         .floating-nav.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
-        /* FAQ Accordion Styles - FIXED */
+        /* FAQ Accordion Styles */
         .faq-content { 
             max-height: 0; 
             overflow: hidden; 
@@ -50,7 +50,7 @@
             pointer-events: none;
         }
         .faq-item.active .faq-content { 
-            max-height: 1000px; /* High enough to accommodate content */
+            max-height: 1000px; 
             opacity: 1;
             pointer-events: auto;
             padding-bottom: 1.25rem;
@@ -206,66 +206,85 @@
                         <p class="text-sm text-slate-500 leading-relaxed">Every nanny undergoes a rigorous 4-step verification process: National ID verification, Certificate of Good Conduct check, mandatory phone/physical interviews, and direct verification of at least two previous employment references.</p>
                     </div>
                 </div>
-
                 <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Is my payment secure?</span>
-                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-                    </button>
-                    <div class="faq-content px-6">
-                        <p class="text-sm text-slate-500 leading-relaxed">Yes. We use an escrow-style payment system. Your payment is held securely and only released to the nanny once the agreed-upon period is completed, ensuring accountability for both parties.</p>
-                    </div>
-                </div>
+    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How are the nannies vetted?</span>
+        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+    </button>
+    <div class="faq-content px-6">
+        <p class="text-sm text-slate-500 leading-relaxed">Every nanny undergoes a rigorous 4-step verification process: National ID verification, Certificate of Good Conduct check, mandatory phone/physical interviews, and direct verification of at least two previous employment references.</p>
+    </div>
+</div>
 
-                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Can I interview a nanny before hiring?</span>
-                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-                    </button>
-                    <div class="faq-content px-6">
-                        <p class="text-sm text-slate-500 leading-relaxed">Absolutely. After matching with a nanny, our platform allows you to schedule a virtual or physical interview to ensure they are the right fit for your family dynamic.</p>
-                    </div>
-                </div>
+<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How does the M-Pesa payment system work?</span>
+        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+    </button>
+    <div class="faq-content px-6">
+        <p class="text-sm text-slate-500 leading-relaxed">NannyLink uses a secure M-Pesa integration. For short-term bookings, payments are held in a secure escrow system and only released to the nanny once the service is confirmed as complete by the family, ensuring financial safety for everyone.</p>
+    </div>
+</div>
 
-                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">What happens if a match doesn't work out?</span>
-                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-                    </button>
-                    <div class="faq-content px-6">
-                        <p class="text-sm text-slate-500 leading-relaxed">We offer a 14-day replacement guarantee. If a match isn't working for a valid reason, we will prioritize finding you a new caregiver at no additional platform cost.</p>
-                    </div>
-                </div>
+<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Do I need to sign a physical contract?</span>
+        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+    </button>
+    <div class="faq-content px-6">
+        <p class="text-sm text-slate-500 leading-relaxed">No. Our platform generates legally binding digital contracts that define work hours, duties, and salary. Both the family and the nanny sign electronically within the app, and a copy is stored in your dashboard for future reference.</p>
+    </div>
+</div>
 
-                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Do I need to sign a physical contract?</span>
-                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-                    </button>
-                    <div class="faq-content px-6">
-                        <p class="text-sm text-slate-500 leading-relaxed">No. NannyLink provides legally binding digital contracts that define duties, work hours, and salary. Both parties sign electronically, and the document is stored in your dashboard.</p>
-                    </div>
-                </div>
+<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Are there nannies trained for special needs?</span>
+        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+    </button>
+    <div class="faq-content px-6">
+        <p class="text-sm text-slate-500 leading-relaxed">Yes. You can use our advanced filters to find nannies with specialized training in handling children with autism, physical disabilities, or neurodivergent conditions. These caregivers have verified certifications in their respective fields.</p>
+    </div>
+</div>
 
-                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Are there nannies for special needs?</span>
-                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-                    </button>
-                    <div class="faq-content px-6">
-                        <p class="text-sm text-slate-500 leading-relaxed">Yes, we have specialized caregivers trained in handling children with autism, physical disabilities, and other neurodivergent conditions. You can filter for these specific skills in the search bar.</p>
-                    </div>
-                </div>
+<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+        <span class="font-bold text-primary group-hover:text-secondary transition-colors">What if the nanny isn't a good fit?</span>
+        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+    </button>
+    <div class="faq-content px-6">
+        <p class="text-sm text-slate-500 leading-relaxed">We offer a 14-day satisfaction guarantee. If the match doesn't work out within the first two weeks, our team will provide a replacement caregiver at no additional connection fee.</p>
+    </div>
+</div>
 
-                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How much does NannyLink cost?</span>
-                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-                    </button>
-                    <div class="faq-content px-6">
-                        <p class="text-sm text-slate-500 leading-relaxed">Browsing is free. We charge a one-time connection fee once you decide to hire a nanny. This fee covers background checks, contract generation, and platform support.</p>
-                    </div>
-                </div>
+<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+        <span class="font-bold text-primary group-hover:text-secondary transition-colors">What are the requirements to join as a nanny?</span>
+        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+    </button>
+    <div class="faq-content px-6">
+        <p class="text-sm text-slate-500 leading-relaxed">Applicants must have a valid Kenyan National ID, a recent Certificate of Good Conduct (less than 6 months old), at least two verifiable references, and a passion for childcare. Training in First Aid is a significant advantage.</p>
+    </div>
+</div>
+
+<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Is there support in case of emergencies?</span>
+        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+    </button>
+    <div class="faq-content px-6">
+        <p class="text-sm text-slate-500 leading-relaxed">Our support team is available to mediate any disputes or handle emergency logistical changes. We also encourage all our caregivers to participate in regular safety and emergency response training sessions.</p>
+    </div>
+</div>
+
+<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
+    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
+        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How much does it cost to use NannyLink?</span>
+        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
+    </button>
+    <div class="faq-content px-6">
+        <p class="text-sm text-slate-500 leading-relaxed">Creating an account and browsing profiles is completely free. We only charge a small one-time connection fee when you successfully hire a nanny, which covers the background checks and administrative costs of the contract.</p>
+    </div>
+</div>
             </div>
         </div>
     </section>
@@ -312,7 +331,7 @@
                 </div>
             </div>
         </div>
-        <div id="nanny-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        <div id="caregiverGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         <div id="pagination-controls" class="mt-12 flex justify-center items-center gap-2"></div>
         <div class="mt-12 text-center">
             <a href="../frontend/src/views/login.html" class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-secondary hover:border-secondary transition-all">
@@ -357,45 +376,54 @@
 <script type="module" src="../frontend/assets/scripts/authController.js"></script>
 
 <script>
-    // Replace your current <script> logic with this:
 document.addEventListener('DOMContentLoaded', () => {
-    const nannyList = document.getElementById('nanny-list');
-    const paginationWrapper = document.getElementById('pagination-controls');
-    const itemsPerPage = 6; // Set this to 6 to match your current display if desired
-    let currentPage = 1;
+    // 1. Navigation Visibility Fix
+    const sideNav = document.getElementById('side-nav');
+    const mobileFab = document.getElementById('mobile-fab');
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 200) {
+            sideNav.classList.add('visible');
+            mobileFab.classList.add('visible');
+        } else {
+            sideNav.classList.remove('visible');
+            mobileFab.classList.remove('visible');
+        }
+    });
 
-    // 1. FAQ Toggle Logic (Remains unchanged)
+    // 2. FAQ Toggle Logic
     const faqTriggers = document.querySelectorAll('.faq-trigger');
     faqTriggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
             const item = trigger.parentElement;
             const icon = trigger.querySelector('.faq-icon');
             const isOpen = item.classList.contains('active');
+            
             document.querySelectorAll('.faq-item').forEach(other => {
                 other.classList.remove('active');
                 other.querySelector('.faq-icon').innerText = 'add';
             });
+            
             if (!isOpen) {
                 item.classList.add('active');
                 icon.innerText = 'remove';
-            } else {
-                item.classList.remove('active');
-                icon.innerText = 'add';
             }
         });
     });
 
-    // 2. Pagination Logic - This now handles dynamic data
+    // 3. Global Pagination Logic
+    const caregiverGrid = document.getElementById('caregiverGrid');
+    const paginationWrapper = document.getElementById('pagination-controls');
+    const itemsPerPage = 6;
+    let currentPage = 1;
+
     function setupPagination() {
-        const children = Array.from(nannyList.children);
-        const totalItems = children.length;
+        const children = Array.from(caregiverGrid.children);
+        const totalPages = Math.ceil(children.length / itemsPerPage);
         
-        // If no items are found yet, don't break the script
-        if (totalItems === 0) return;
+        if (children.length === 0) return;
 
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
         paginationWrapper.innerHTML = '';
-
         for (let i = 1; i <= totalPages; i++) {
             const btn = document.createElement('button');
             btn.innerText = i;
@@ -410,21 +438,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayPage(page) {
-        const children = Array.from(nannyList.children);
+        const children = Array.from(caregiverGrid.children);
         const start = (page - 1) * itemsPerPage;
         const end = start + itemsPerPage;
 
         children.forEach((child, index) => {
-            if (index >= start && index < end) {
-                child.style.display = 'block';
-                child.classList.remove('hidden');
-            } else {
-                child.style.display = 'none';
-                child.classList.add('hidden');
-            }
+            child.style.display = (index >= start && index < end) ? 'flex' : 'none';
         });
 
-        // Update button styles
         const buttons = paginationWrapper.querySelectorAll('button');
         buttons.forEach((btn, idx) => {
             if (idx + 1 === page) btn.classList.add('active');
@@ -432,16 +453,84 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. The "Observer" Fix
-    // This watches the nanny-list and runs pagination ONLY when profiles are added
-    const observer = new MutationObserver((mutations) => {
-        if (nannyList.children.length > 0) {
+    // Observer to handle dynamic content from renderNannies function
+    const observer = new MutationObserver(() => {
+        if (caregiverGrid.children.length > 0) {
             setupPagination();
         }
     });
 
-    observer.observe(nannyList, { childList: true });
+    observer.observe(caregiverGrid, { childList: true });
 });
+
+// The Rendering Function for the API
+function renderNannies(nannies) {
+    const container = document.getElementById("caregiverGrid");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (!nannies || nannies.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-24 text-slate-400">No nannies found.</div>`;
+        return;
+    }
+
+    nannies.forEach(item => {
+        // 1. NORMALIZE DATA: Handle both NannyProfile and MatchResponse structures
+        // If it's a MatchResponse, the nanny data is nested inside item.nanny
+        const data = item.nanny ? item.nanny : item;
+        
+        // 2. FIELD MAPPING (Matches your SQLAlchemy + Pydantic exact names)
+        const nannyName = data.name || "Verified Nanny";
+        
+        // Check both possible photo keys from your Pydantic/SQLAlchemy models
+        const photo = data.profile_photo_url || data.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nannyName)}&background=random`;
+        
+        // Experience only exists on the full Profile, not the Brief schema
+        const exp = parseInt(data.years_experience) || 0;
+        
+        // Location (preferred_location on profile, location on brief)
+        const location = data.preferred_location || data.location || "Nairobi";
+
+        // 💰 Rate Calculation
+        const rate = 250 + (exp * 50);
+
+        const card = document.createElement("div");
+        card.className = "group bg-white rounded-[2rem] overflow-hidden ambient-shadow border-2 border-transparent transition-all duration-300 hover:-translate-y-2 hover:border-secondary flex flex-col";
+        
+        card.innerHTML = `
+            <div class="relative h-64">
+                <img class="w-full h-full object-cover" 
+                     src="${photo}" 
+                     alt="${nannyName}" 
+                     crossOrigin="anonymous"
+                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(nannyName)}&background=f1f5f9&color=64748b'"/>
+                
+                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                    <span class="material-symbols-outlined text-yellow-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+                    <span class="text-xs font-black text-primary">4.8</span>
+                </div>
+            </div>
+            <div class="p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-lg font-headline font-extrabold text-primary">${nannyName}</h3>
+                    <span class="text-secondary font-black text-xs uppercase">KES ${rate}/day</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">
+                    <span class="material-symbols-outlined text-xs">location_on</span>
+                    <span>${location}</span>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="bg-slate-50 px-3 py-1 rounded-lg text-[9px] font-black text-slate-500 uppercase border border-slate-100">${exp} Yrs Exp</span>
+                    <span class="bg-emerald-50 px-3 py-1 rounded-lg text-[9px] font-black text-emerald-600 uppercase border border-emerald-100 italic">Vetted</span>
+                </div>
+                <a href="../frontend/src/views/login.html" class="block w-full py-3.5 bg-slate-50 text-primary text-center text-xs font-black rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm">
+                    View Profile
+                </a>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
 </script>
 </body>
 </html>

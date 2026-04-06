@@ -167,7 +167,7 @@
 
   <section id="caregiverGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></section>
   
-  <div class="mt-12 flex justify-center items-center gap-6">
+  <div id="paginationContainer" class="mt-12 flex justify-center items-center gap-6">
     <button id="prevBtn" onclick="changePage(-1)" class="p-4 bg-white rounded-full shadow-sm disabled:opacity-30">
         <span class="material-symbols-outlined">arrow_back</span>
     </button>
@@ -175,8 +175,25 @@
     <button id="nextBtn" onclick="changePage(1)" class="p-4 bg-white rounded-full shadow-sm disabled:opacity-30">
         <span class="material-symbols-outlined">arrow_forward</span>
     </button>
-  </div>
+  </div><div id="toastContainer" class="fixed top-6 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-3 pointer-events-none"></div>
+
+<style>
+    .toast-card {
+        animation: slideInDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes slideInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .toast-fade-out {
+        animation: fadeOut 0.5s ease-in forwards;
+    }
+    @keyframes fadeOut {
+        to { opacity: 0; transform: translateY(-10px); scale: 0.95; }
+    }
+</style>
 </main>
+
 
 <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-xl z-50 rounded-t-[2.5rem] border-t border-slate-100">
     <a href="contracts.html" class="flex flex-col items-center text-slate-400"><span class="material-symbols-outlined">description</span><span class="text-[9px] font-bold">Contracts</span></a>
@@ -188,14 +205,14 @@
     const API_BASE_URL = "http://localhost:8000";
     const LOGIN_PAGE_URL = "../views/login.html";
     
-    let allFilteredNannies = []; // Holds the list of nannies without connections
+    let allFilteredNannies = []; 
     let selectedCity = "All Cities";
     let selectedNannyIds = new Set();
     
     let currentPage = 1;
     const itemsPerPage = 6;
 
-    const CONNECTION_FEE = 1500; // Updated to realistic KES fee
+    const CONNECTION_FEE = 1; 
     const MAX_SELECTION = 3;
 
     async function authenticatedFetch(url, options = {}) {
@@ -236,59 +253,65 @@
         fetchNannies();
     });
 
-    /**
-     * UPDATED: Fetches only unconnected nannies via the /connections discovery endpoint
-     */
     async function fetchNannies() {
-        const search = document.getElementById('searchInput').value.toLowerCase();
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
         
         try {
-            // We call the GET /connections endpoint which our backend now filters for "unconnected" nannies
             const response = await authenticatedFetch(`${API_BASE_URL}/connections/`);
             if (!response) return;
             
             let data = await response.json();
             
-            // Client-side filtering for search and location based on the returned list
+            // Syncing with Backend Model: 
+            // nanny.name, nanny.skills, nanny.preferred_location
             allFilteredNannies = data.filter(nanny => {
-                const matchesSearch = nanny.full_name.toLowerCase().includes(search) || 
-                                     (nanny.skills && nanny.skills.toLowerCase().includes(search));
+                const name = (nanny.name || "").toLowerCase();
+                const skills = (nanny.skills || "").toLowerCase();
+                const location = (nanny.preferred_location || "").toLowerCase();
+
+                const matchesSearch = name.includes(searchInput) || skills.includes(searchInput);
+                
                 const matchesCity = selectedCity === "All Cities" || 
-                                   nanny.current_location.includes(selectedCity);
+                                   location.includes(selectedCity.toLowerCase());
+                                   
                 return matchesSearch && matchesCity;
             });
 
             renderGrid();
             updatePaginationControls();
         } catch (error) {
-            console.error(error);
-            document.getElementById('caregiverGrid').innerHTML = `<p class="col-span-full text-center py-10 text-slate-400">Error loading discovery data.</p>`;
+            console.error("Filter Error:", error);
+            const grid = document.getElementById('caregiverGrid');
+            grid.innerHTML = `<div class="col-span-full text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100"><p class="text-slate-400 font-bold">Unable to load data. Please try again later.</p></div>`;
         }
     }
 
     function renderGrid() {
         const grid = document.getElementById('caregiverGrid');
+        const pagination = document.getElementById('paginationContainer');
         
-        // Manual Pagination Slicing
+        if (allFilteredNannies.length === 0) {
+            grid.innerHTML = `<div class="col-span-full text-center py-24 bg-white rounded-[3rem] ambient-shadow border-2 border-dashed border-slate-100">...</div>`;
+            pagination.classList.add('hidden');
+            return;
+        }
+
+        pagination.classList.remove('hidden');
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
         const pageItems = allFilteredNannies.slice(start, end);
 
-        if (pageItems.length === 0) {
-            grid.innerHTML = `<div class="col-span-full text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100"><p class="text-slate-400 font-bold">No available nannies found.</p></div>`;
-            return;
-        }
-
         grid.innerHTML = pageItems.map(nanny => {
             const isSelected = selectedNannyIds.has(nanny.id);
+            // Syncing UI: nanny.name, nanny.profile_photo_url, nanny.preferred_location
             return `
             <div class="group bg-white rounded-[2rem] overflow-hidden ambient-shadow border-2 transition-all duration-300 ${isSelected ? 'border-secondary' : 'border-transparent'}">
                 <div onclick='openNannyModal(${JSON.stringify(nanny).replace(/'/g, "&apos;")})' class="relative h-56 cursor-pointer">
-                    <img src="${nanny.profile_image || 'https://ui-avatars.com/api/?name='+nanny.full_name}" class="w-full h-full object-cover"/>
+                    <img src="${nanny.profile_photo_url || 'https://ui-avatars.com/api/?name='+nanny.name}" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name='+nanny.name"/>
                 </div>
                 <div class="p-6">
-                    <h3 class="font-headline text-lg font-extrabold text-primary">${nanny.full_name}</h3>
-                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-4">${nanny.current_location}</p>
+                    <h3 class="font-headline text-lg font-extrabold text-primary">${nanny.name || 'Anonymous'}</h3>
+                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-4">${nanny.preferred_location || 'N/A'}</p>
                     <button onclick="toggleNannySelection('${nanny.id}')" class="w-full py-3 rounded-xl font-bold text-xs transition-all ${isSelected ? 'bg-secondary text-white' : 'bg-slate-50 text-primary hover:bg-slate-100'}">
                         ${isSelected ? 'Selected' : 'Connect'}
                     </button>
@@ -299,7 +322,13 @@
 
     function updatePaginationControls() {
         const totalPages = Math.ceil(allFilteredNannies.length / itemsPerPage);
-        document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+        if (totalPages <= 1) {
+            document.getElementById('paginationContainer').classList.add('hidden');
+            return;
+        }
+
+        document.getElementById('paginationContainer').classList.remove('hidden');
+        document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
         document.getElementById('prevBtn').disabled = currentPage === 1;
         document.getElementById('nextBtn').disabled = currentPage >= totalPages;
     }
@@ -308,7 +337,7 @@
         if (selectedNannyIds.has(id)) {
             selectedNannyIds.delete(id);
         } else {
-            if (selectedNannyIds.size >= MAX_SELECTION) return alert("Select up to 3 only.");
+            if (selectedNannyIds.size >= MAX_SELECTION) return alert("You can select up to 3 nannies at a time.");
             selectedNannyIds.add(id);
         }
         updateCheckoutBar();
@@ -318,14 +347,15 @@
     function updateCheckoutBar() {
         const bar = document.getElementById('checkoutBar');
         bar.classList.toggle('hidden', selectedNannyIds.size === 0);
-        document.getElementById('selectionCountText').textContent = `${selectedNannyIds.size} Nannies • KES ${selectedNannyIds.size * CONNECTION_FEE}`;
+        document.getElementById('selectionCountText').textContent = `${selectedNannyIds.size} Nannies selected • KES ${selectedNannyIds.size * CONNECTION_FEE}`;
     }
 
     function openNannyModal(nanny) {
-        document.getElementById('modalImage').src = nanny.profile_image || `https://ui-avatars.com/api/?name=${nanny.full_name}`;
-        document.getElementById('modalName').textContent = nanny.full_name;
-        document.getElementById('modalLocation').textContent = nanny.current_location;
-        document.getElementById('modalExp').textContent = `${nanny.experience_years} Yrs Exp`;
+        // Syncing Modal: nanny.years_experience
+        document.getElementById('modalImage').src = nanny.profile_photo_url || `https://ui-avatars.com/api/?name=${nanny.name}`;
+        document.getElementById('modalName').textContent = nanny.name;
+        document.getElementById('modalLocation').textContent = nanny.preferred_location;
+        document.getElementById('modalExp').textContent = `${nanny.years_experience || 0} Yrs Exp`;
         
         const skills = Array.isArray(nanny.skills) ? nanny.skills : (nanny.skills ? nanny.skills.split(',') : []);
         document.getElementById('modalSkills').innerHTML = skills.map(s => `<span class="px-3 py-1 bg-slate-50 text-[9px] font-bold uppercase rounded-lg text-slate-500">${s.trim()}</span>`).join('');
@@ -346,51 +376,86 @@
     }
     function closePaymentModal() { document.getElementById('paymentModal').classList.replace('flex', 'hidden'); }
 
-    async function initiateBatchPayment() {
-        const phone = document.getElementById('mpesaPhone').value;
-        if (!/^254\d{9}$/.test(phone)) return alert("Format: 2547XXXXXXXX");
 
-        const btn = document.getElementById('payNowBtn');
-        btn.disabled = true;
-        document.getElementById('payBtnText').textContent = "Processing...";
+    // Helper function to show modern notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+            const icon = type === 'success' ? 'check_circle' : 'error';
 
-        try {
-            const connectionIds = [];
-            for (let nannyId of selectedNannyIds) {
-                const res = await authenticatedFetch(`${API_BASE_URL}/connections/?nanny_id=${nannyId}`, {
-                    method: 'POST'
-                });
-                if (res && res.ok) {
-                    const data = await res.json();
-                    connectionIds.push(data.id);
-                }
-            }
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 min-w-[300px] animate-slide-in`;
+            toast.innerHTML = `
+                <span class="material-symbols-outlined text-white">${icon}</span>
+                <div class="flex-1">
+                    <p class="text-xs font-black uppercase tracking-tighter opacity-80">${type}</p>
+                    <p class="font-bold text-sm">${message}</p>
+                </div>
+            `;
 
-            if (connectionIds.length === 0) throw new Error("Connection records failed to create.");
+            container.appendChild(toast);
 
-            const payRes = await authenticatedFetch(`${API_BASE_URL}/payments/initiate-batch`, {
-                method: 'POST',
-                body: JSON.stringify({ match_ids: connectionIds, phone_number: phone })
-            });
-
-            if (payRes && payRes.ok) {
-                alert("STK Push sent successfully!");
-                selectedNannyIds.clear();
-                closePaymentModal();
-                updateCheckoutBar();
-                fetchNannies();
-                setTimeout(() => { window.location.href = 'connections.html'; }, 1500);
-            } else {
-                const errorData = await payRes.json();
-                throw new Error(errorData.detail || "Payment initiation failed.");
-            }
-        } catch (err) {
-            alert(err.message || "Something went wrong.");
-        } finally {
-            btn.disabled = false;
-            document.getElementById('payBtnText').textContent = "Pay with M-Pesa";
+            // Auto-remove after 4 seconds
+            setTimeout(() => {
+                toast.classList.replace('animate-slide-in', 'animate-slide-out');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
         }
-    }
+
+        // Updated initiateBatchPayment
+        async function initiateBatchPayment() {
+            const phone = document.getElementById('mpesaPhone').value;
+            if (!/^254\d{9}$/.test(phone)) {
+                return showToast("Use format 2547XXXXXXXX", "error");
+            }
+
+            const btn = document.getElementById('payNowBtn');
+            const btnText = document.getElementById('payBtnText');
+            btn.disabled = true;
+            btnText.textContent = "Connecting...";
+
+            try {
+                const connectionIds = [];
+                for (let nannyId of selectedNannyIds) {
+                    const res = await authenticatedFetch(`${API_BASE_URL}/connections/?nanny_id=${nannyId}`, {
+                        method: 'POST'
+                    });
+                    if (res && res.ok) {
+                        const data = await res.json();
+                        connectionIds.push(data.id);
+                    }
+                }
+
+                if (connectionIds.length === 0) throw new Error("Could not initialize connections.");
+
+                const payRes = await authenticatedFetch(`${API_BASE_URL}/payments/initiate-batch`, {
+                    method: 'POST',
+                    body: JSON.stringify({ match_ids: connectionIds, phone_number: phone })
+                });
+
+                if (payRes && payRes.ok) {
+                    // SUCCESS NOTIFICATION
+                    showToast("M-Pesa prompt sent! Check your phone.");
+                    
+                    selectedNannyIds.clear();
+                    closePaymentModal();
+                    updateCheckoutBar();
+                    fetchNannies();
+                    
+                    // Wait for user to see the toast before redirecting
+                    setTimeout(() => { window.location.href = 'connections.html'; }, 3000);
+                } else {
+                    const errorData = await payRes.json();
+                    throw new Error(errorData.detail || "Payment failed.");
+                }
+            } catch (err) {
+                showToast(err.message || "An unexpected error occurred.", "error");
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = "Pay with M-Pesa";
+            }
+        }
 
     function selectLocation(loc) {
         selectedCity = loc;

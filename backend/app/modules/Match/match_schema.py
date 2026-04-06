@@ -17,8 +17,10 @@ class NannyBrief(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    name: str # Matches NannyProfile.name
-    profile_picture_url: Optional[str] = None
+    name: str 
+    # Change profile_picture_url to profile_photo_url to match the DB
+    profile_photo_url: Optional[str] = None 
+    years_experience: Optional[int] = 0
 
 class MatchResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

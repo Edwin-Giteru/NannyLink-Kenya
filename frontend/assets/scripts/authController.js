@@ -1,7 +1,6 @@
 import { login, signup } from "../service/nannyProfileService.js";
 
-// Global state to store nannies for filtering
-let allNannies = [];
+
 
 const showModal = (message, type = "info") => {
     let modal = document.getElementById("customAlertModal");
@@ -139,86 +138,121 @@ if (signupForm) {
 }
 
 const API_BASE = "http://localhost:8000"; 
+let allNannies = [];
 
-// 🔷 FETCH STATS
-async function fetchStats() {
-    try {
-        const res = await fetch(`${API_BASE}/stats/`);
-        const stats = await res.json();
-        document.getElementById("stat-nannies").innerText = stats.nannies || 0;
-        document.getElementById("stat-families").innerText = stats.families || 0;
-        document.getElementById("stat-matches").innerText = stats.matches || 0;
-    } catch (err) {
-        console.warn("Stats failed to load:", err);
-    }
-}
-
-// 🔷 RENDER NANNIES
+/**
+ * 🔷 RENDER NANNIES (Landing Page Version)
+ * Updated to match the Backend SQLAlchemy Model (full_name, experience_years)
+ */
+// function getPhotoUrl(photoPath, name) {
+//     if (!photoPath) {
+//         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`;
+//     }
+//     // If the path is relative (doesn't start with http), prepend the API_BASE
+//     if (!photoPath.startsWith('http')) {
+//         // Ensure there is a single slash between API_BASE and the path
+//         const cleanPath = photoPath.startsWith('/') ? photoPath : `/${photoPath}`;
+//         return `${API_BASE}${cleanPath}`;
+//     }
+//     return photoPath;
+// }
 function renderNannies(nannies) {
-    const container = document.getElementById("nanny-list");
+    const container = document.getElementById("caregiverGrid");
     if (!container) return;
     container.innerHTML = "";
 
-    if (nannies.length === 0) {
-        container.innerHTML = "<p class='col-span-full text-center py-10 text-slate-400 font-bold'>No nannies found matching your criteria.</p>";
+    // 1. Handle Empty State
+    if (!nannies || nannies.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-24 bg-white rounded-[3rem] ambient-shadow border-2 border-dashed border-slate-100">
+                <span class="material-symbols-outlined text-slate-200 text-6xl mb-4">person_search</span>
+                <h3 class="text-xl font-headline font-extrabold text-primary mb-2">No nannies found</h3>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">Check back soon for more verified caregivers.</p>
+            </div>`;
         return;
     }
 
     nannies.forEach(nanny => {
-        const exp = parseInt(nanny.experience_years) || 0;
-        
-        // 💰 Dynamic Rate Calculation
+        // 2. BACKEND SYNC: Use both potential keys to ensure data displays correctly
+        const exp = parseInt(nanny.experience_years || nanny.years_experience) || 0;
+        const nannyName = nanny.full_name || nanny.name || "Verified Nanny";
+        const location = nanny.current_location || nanny.preferred_location || "Nairobi";
+        const photo = (nanny.profile_photo_url && nanny.profile_photo_url !== "") 
+                      ? nanny.profile_photo_url 
+                      : `https://ui-avatars.com/api/?name=${encodeURIComponent(nannyName)}&background=random`;
         const baseRate = 250;
         const computedRate = baseRate + (exp * 50);
 
         // ⭐ Fixed Dynamic Rating Logic
         const idString = String(nanny.id || "0");
         const charCodeSum = idString.charCodeAt(idString.length - 1) || 0;
-        
         let baseRating = 3.8 + Math.min((exp * 0.15), 0.9); 
         let variance = (charCodeSum % 4) * 0.1;
         let finalRating = (baseRating + variance).toFixed(1);
-        
         if (parseFloat(finalRating) > 5.0) finalRating = "5.0";
 
+        // 3. Create the Card Element
         const card = document.createElement("div");
-        card.className = "nanny-card bg-white rounded-[2rem] overflow-hidden ambient-shadow border border-slate-50 flex flex-col group transition-all duration-300 hover:-translate-y-2";
+        card.className = "group bg-white rounded-[2rem] overflow-hidden ambient-shadow border-2 border-transparent transition-all duration-300 hover:-translate-y-2 hover:border-secondary flex flex-col";
         
         card.innerHTML = `
             <div class="relative h-64">
-                <img class="w-full h-full object-cover" src="${nanny.profile_image || './assets/images/default-avatar.png'}" alt="${nanny.full_name || 'Nanny'}" />
-                <div class="absolute top-4 right-4 glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                <img class="w-full h-full object-cover" src="${photo}" alt="${nannyName}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(nannyName)}'" />
+                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
                     <span class="material-symbols-outlined text-yellow-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="text-xs font-bold text-primary">${finalRating}</span>
+                    <span class="text-xs font-black text-primary">${finalRating}</span>
                 </div>
             </div>
-            <div class="p-6 flex flex-col flex-1">
+            <div class="p-6 flex flex-col">
                 <div class="flex justify-between items-start mb-2">
-                    <h3 class="text-xl font-headline font-bold text-primary">${nanny.full_name || "Name Unavailable"}</h3>
-                    <span class="text-secondary font-bold text-sm">KES ${computedRate.toLocaleString()}/day</span>
+                    <h3 class="text-lg font-headline font-extrabold text-primary">${nannyName}</h3>
+                    <span class="text-secondary font-black text-xs uppercase">KES ${computedRate}/day</span>
                 </div>
-                <div class="flex items-center gap-2 text-slate-400 text-sm mb-4">
-                    <span class="material-symbols-outlined text-sm">location_on</span>
-                    <span>${nanny.current_location || "Not specified"}</span>
+                <div class="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">
+                    <span class="material-symbols-outlined text-xs">location_on</span>
+                    <span>${location}</span>
                 </div>
                 <div class="flex flex-wrap gap-2 mb-6">
-                    <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">${exp} years exp</span>
-                    <span class="bg-slate-50 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider border border-slate-100">${nanny.skills || 'Vetted'}</span>
+                    <span class="bg-slate-50 px-3 py-1 rounded-lg text-[9px] font-black text-slate-500 uppercase border border-slate-100">${exp} Yrs Exp</span>
+                    <span class="bg-emerald-50 px-3 py-1 rounded-lg text-[9px] font-black text-emerald-600 uppercase border border-emerald-100 italic">Vetted</span>
                 </div>
-                <button class="view-btn mt-auto w-full py-4 bg-slate-50 text-primary text-center font-bold rounded-2xl transition-all hover:bg-primary hover:text-white" data-id="${nanny.id}">
+                <a href="../frontend/src/views/login.html" class="block w-full py-3.5 bg-slate-50 text-primary text-center text-xs font-black rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm">
                     View Profile
-                </button>
+                </a>
             </div>
         `;
         container.appendChild(card);
     });
-
-    document.querySelectorAll(".view-btn").forEach(btn => {
-        btn.addEventListener("click", () => handleView(btn.dataset.id));
-    });
 }
 
-// 🔷 SEARCH LOGIC
+/**
+ * 🔷 FETCH DATA
+ * Updated to handle the Result.ok(data=nannies) response structure
+ */
+async function fetchFeaturedNannies() {
+    const token = localStorage.getItem('access_token');
+    const role = localStorage.getItem('user_role');
+    
+    const endpoint = (token && role === 'family') ? `${API_BASE}/connections/` : `${API_BASE}/nannies/`;
+
+    try {
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const res = await fetch(endpoint, { headers });
+        const json = await res.json();
+
+        // Check if the response is the raw array or wrapped in a Result object
+        let data = Array.isArray(json) ? json : (json.data || []);
+
+        allNannies = data; 
+        renderNannies(allNannies);
+    } catch (err) {
+        console.error("Failed to fetch nannies:", err);
+    }
+}
+
+/**
+ * 🔷 SEARCH & FILTER
+ */
 function setupSearch() {
     const skillInput = document.getElementById("skill-search");
     const locationInput = document.getElementById("location-search");
@@ -231,8 +265,8 @@ function setupSearch() {
 
         const filtered = allNannies.filter(nanny => {
             const skills = (nanny.skills || "").toLowerCase();
-            const location = (nanny.current_location || "").toLowerCase();
-            const name = (nanny.full_name || "").toLowerCase();
+            const location = (nanny.current_location || nanny.preferred_location || "").toLowerCase();
+            const name = (nanny.full_name || nanny.name || "").toLowerCase();
 
             const matchesSkill = skills.includes(skillTerm) || name.includes(skillTerm);
             const matchesLocation = location.includes(locationTerm);
@@ -247,25 +281,18 @@ function setupSearch() {
     locationInput.addEventListener("input", performFilter);
 }
 
-// 🔷 UPDATED FETCH LOGIC
-async function fetchFeaturedNannies() {
-    const token = localStorage.getItem('access_token');
-    const role = localStorage.getItem('user_role');
-    
-    // If logged in as family, use the discovery endpoint. Otherwise, use public list.
-    const endpoint = (token && role === 'family') ? `${API_BASE}/connections/` : `${API_BASE}/nannies/`;
-
+/**
+ * 🔷 FETCH STATS
+ */
+async function fetchStats() {
     try {
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-        const res = await fetch(endpoint, { headers });
-        const data = await res.json();
-
-        if (Array.isArray(data)) {
-            allNannies = data; 
-            renderNannies(allNannies);
-        }
+        const res = await fetch(`${API_BASE}/stats/`);
+        const stats = await res.json();
+        if(document.getElementById("stat-nannies")) document.getElementById("stat-nannies").innerText = stats.nannies || 0;
+        if(document.getElementById("stat-families")) document.getElementById("stat-families").innerText = stats.families || 0;
+        if(document.getElementById("stat-matches")) document.getElementById("stat-matches").innerText = stats.matches || 0;
     } catch (err) {
-        console.error("Failed to fetch discovery nannies:", err);
+        console.warn("Stats failed to load");
     }
 }
 
@@ -274,13 +301,10 @@ function handleView(nannyId) {
     const role = localStorage.getItem('user_role');
 
     if (!token) {
-        // Redirect to login if not authenticated
         window.location.href = "../frontend/src/views/login.html";
     } else if (role === 'family') {
-        // Logged-in families go to dashboard to initiate connection
         window.location.href = "/frontend/src/family/views/familydashboard.html";
     } else {
-        // Other roles go to login or home
         window.location.href = "../frontend/src/views/login.html";
     }
 }

@@ -24,10 +24,12 @@ class MatchRepository:
     ]
     async def get_unconnected_nannies(self, family_id: UUID) -> list[NannyProfile]:
         """
-        Returns only nannies who do NOT have a record in the Match table 
-        for the given family_id.
+        Returns nannies who do NOT have a connection with THIS specific family_id.
         """
-        # We join NannyProfile to Match, but only for THIS family
+        from sqlalchemy import and_
+        
+        # We join NannyProfile to Match ONLY where the family_id matches the current user.
+        # If a nanny is connected to someone else, the Match.id for THIS family_id will still be NULL.
         stmt = (
             select(NannyProfile)
             .outerjoin(
@@ -37,14 +39,12 @@ class MatchRepository:
                     Match.family_id == family_id
                 )
             )
-            # Filter for rows where the JOIN failed (meaning no connection exists)
-            .where(Match.id == None) 
+            .where(Match.id == None) # This now correctly means "No match exists for THIS family"
             .order_by(NannyProfile.created_at.desc())
         )
         
         result = await self.db.execute(stmt)
         return list(result.scalars().all())
-
     async def get_match_by_id(self, match_id: UUID) -> Match | None:
         stmt = select(Match).where(Match.id == match_id).options(*self._load_opts)
         result = await self.db.execute(stmt)
