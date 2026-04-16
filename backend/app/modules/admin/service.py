@@ -303,8 +303,35 @@ class AdminService:
         )
         stats = await self.repository.get_payment_stats()
         
+        formatted_payments = []
+        for p in payments:
+            family_name = "Unknown Family"
+            nanny_name = "N/A (Direct Payment)"
+            
+            if p.matches and len(p.matches) > 0:
+                primary_match = p.matches[0]
+                
+                if primary_match.family:
+                    family_name = primary_match.family.name.strip() if primary_match.family.name else "Unknown Family"
+                
+                if primary_match.nanny:
+                    nanny_name = primary_match.nanny.name.strip() if primary_match.nanny.name else "Unknown Nanny"
+            
+            formatted_payments.append({
+                "id": str(p.id),
+                "amount": p.amount,
+                "phone_number": p.phone_number,
+                "payment_status": p.payment_status,
+                "mpesa_transaction_code": p.mpesa_transaction_code or "---",
+                "checkout_request_id": p.checkout_request_id,
+                "created_at": p.created_at.isoformat() if p.created_at else None,
+                "family_name": family_name,
+                "nanny_name": nanny_name,
+                "matches": [] # Keep empty to satisfy schema or omit if schema allows
+            })
+        
         return {
-            "payments": payments,
+            "payments": formatted_payments,
             "stats": stats,
             "total_count": total_count
         }

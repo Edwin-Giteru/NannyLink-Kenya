@@ -228,259 +228,266 @@
         </div>
     </div>
 </div>
-    <script>
-        const API_BASE = "http://localhost:8000/admin";
-        let currentPage = 1;
-        let selectedStatus = "";
+<script>
+    const API_BASE = "http://localhost:8000/admin";
+    let currentPage = 1;
+    let selectedStatus = "";
 
-        // AUTHENTICATION LOGIC: Redirect if unauthorized or session expired
-        const checkAuth = (status) => {
-            if (status === 401) {
-                // Clear any local session indicators if you have them
-                localStorage.removeItem('access_token'); 
-                window.location.href = "../views/login.html";
-                return true;
-            }
-            return false;
-        };
+    // AUTHENTICATION LOGIC
+    const checkAuth = (status) => {
+        if (status === 401) {
+            localStorage.removeItem('access_token'); 
+            window.location.href = "../views/login.html";
+            return true;
+        }
+        return false;
+    };
 
-        const loadMatches = async () => {
-            try {
-                const params = new URLSearchParams({
-                    page: currentPage,
-                    status: selectedStatus
-                });
-
-                const response = await fetch(`${API_BASE}/matches?${params}`);
-                
-                // Check if session is valid
-                if (checkAuth(response.status)) return;
-
-                const result = await response.json();
-                renderMatches(result.data.matches); // Updated to result.data.matches based on your service structure
-                updateUI(result.data);
-            } catch (error) {
-                console.error("Error loading matches:", error);
-            }
-        };
-
-        const renderMatches = (matches) => {
-            const tbody = document.getElementById('matchTableBody');
-            tbody.innerHTML = '';
-
-            if (!matches || matches.length === 0) {
-                const emptyRow = document.createElement('tr');
-                emptyRow.innerHTML = `
-                    <td colspan="4" class="px-8 py-20 text-center">
-                        <div class="flex flex-col items-center justify-center text-slate-400">
-                            <span class="material-symbols-outlined text-5xl mb-4">search_off</span>
-                            <p class="text-sm font-bold uppercase tracking-widest">No matches found</p>
-                            <p class="text-[10px] mt-1">Try adjusting your filters or search criteria.</p>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(emptyRow);
-                return;
-            }
-
-            matches.forEach(m => {
-                let badgeClass = "";
-                switch(m.status) {
-                    case 'completed':
-                        badgeClass = "bg-green-100 text-green-700";
-                        break;
-                    case 'cancelled':
-                        badgeClass = "bg-red-100 text-red-700";
-                        break;
-                    case 'awaiting_payment':
-                        badgeClass = "bg-amber-100 text-amber-700";
-                        break;
-                    default:
-                        badgeClass = "bg-slate-100 text-slate-700";
-                }
-
-                const row = document.createElement('tr');
-                row.className = "match-row transition-all";
-                row.innerHTML = `
-                    <td class="px-8 py-6">
-                        <p class="text-xs font-mono font-black text-primary">${m.match_code}</p>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">${m.nanny.name}</p>
-                    </td>
-                    <td class="px-8 py-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-slate-100 overflow-hidden">
-                                <img src="${m.family.avatar_url}" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <p class="text-sm font-black text-primary tracking-tight">${m.family.name}</p>
-                                <p class="text-[10px] text-slate-400 font-bold">${m.family.location || 'Location N/A'}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-8 py-6">
-                        <span class="px-3 py-1 ${badgeClass} rounded-full text-[10px] font-black uppercase tracking-wider">
-                            ${m.status.replace('_', ' ')}
-                        </span>
-                    </td>
-                    <td class="px-8 py-6 text-right">
-                        ${m.status === 'awaiting_payment' ? 
-                            `<button onclick="forceComplete('${m.id}')" class="px-4 py-2 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90">Force Complete</button>` : 
-                            `<button class="p-2 text-slate-300 hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>`
-                        }
-                    </td>
-                `;
-                tbody.appendChild(row);
+    const loadMatches = async () => {
+        try {
+            const params = new URLSearchParams({
+                page: currentPage,
+                status: selectedStatus
             });
-        };
 
-       let matchIdToProcess = null;
-
-        const forceComplete = (matchId) => {
-            matchIdToProcess = matchId;
-            const modal = document.getElementById('confirmModal');
-            const confirmBtn = document.getElementById('confirmModalBtn');
+            const response = await fetch(`${API_BASE}/matches?${params}`);
             
-            confirmBtn.disabled = false;
-            confirmBtn.innerText = "Confirm";
-            confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
+            if (checkAuth(response.status)) return;
 
-        document.getElementById('cancelModalBtn').onclick = () => {
-            const modal = document.getElementById('confirmModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            matchIdToProcess = null;
-        };
+            const result = await response.json();
 
-        document.getElementById('confirmModalBtn').onclick = async () => {
-            if (!matchIdToProcess) return;
+            // FIX: Safely access matches regardless of whether they are in result.data or just result
+            const matches = result.data?.matches ?? result.matches ?? [];
+            const metaData = result.data ?? result;
 
-            const confirmBtn = document.getElementById('confirmModalBtn');
-            confirmBtn.disabled = true;
-            confirmBtn.innerText = "Processing...";
-            confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            renderMatches(matches);
+            updateUI(metaData);
+        } catch (error) {
+            console.error("Error loading matches:", error);
+            // Render empty state on network error so UI doesn't hang
+            renderMatches([]);
+        }
+    };
 
-            try {
-                const response = await fetch(`${API_BASE}/matches/${matchIdToProcess}/force-complete`, { 
-                    method: 'POST' 
-                });
+    const renderMatches = (matches) => {
+        const tbody = document.getElementById('matchTableBody');
+        tbody.innerHTML = '';
 
-                if (checkAuth(response.status)) return;
+        if (!matches || matches.length === 0) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.innerHTML = `
+                <td colspan="4" class="px-8 py-20 text-center">
+                    <div class="flex flex-col items-center justify-center text-slate-400">
+                        <span class="material-symbols-outlined text-5xl mb-4">search_off</span>
+                        <p class="text-sm font-bold uppercase tracking-widest">No matches found</p>
+                        <p class="text-[10px] mt-1">Try adjusting your filters or search criteria.</p>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(emptyRow);
+            return;
+        }
 
-                if (response.ok) {
-                    document.getElementById('cancelModalBtn').click();
-                    loadMatches();
-                } else {
-                    const error = await response.json();
-                    alert(error.detail || "Action failed");
-                    confirmBtn.disabled = false;
-                    confirmBtn.innerText = "Confirm";
-                    confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                }
-            } catch (err) {
-                console.error("Override failed:", err);
-                alert("A network error occurred. Please try again.");
+        matches.forEach(m => {
+            let badgeClass = "";
+            switch(m.status) {
+                case 'completed': badgeClass = "bg-green-100 text-green-700"; break;
+                case 'cancelled': badgeClass = "bg-red-100 text-red-700"; break;
+                case 'awaiting_payment': badgeClass = "bg-amber-100 text-amber-700"; break;
+                default: badgeClass = "bg-slate-100 text-slate-700";
+            }
+
+            const row = document.createElement('tr');
+            row.className = "match-row transition-all";
+            row.innerHTML = `
+                <td class="px-8 py-6">
+                    <p class="text-xs font-mono font-black text-primary">
+                        ${m.id ? m.id.substring(0, 8).toUpperCase() + '...' : 'N/A'}
+                    </p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">${m.nanny?.name || 'Unknown Nanny'}</p>
+                </td>
+                <td class="px-8 py-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 overflow-hidden">
+                            <img src="${m.family?.avatar_url || 'https://ui-avatars.com/api/?name=Family'}" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <p class="text-sm font-black text-primary tracking-tight">${m.family?.name || 'Unknown Family'}</p>
+                            <p class="text-[10px] text-slate-400 font-bold">${m.family?.location || 'Location N/A'}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-8 py-6">
+                    <span class="px-3 py-1 ${badgeClass} rounded-full text-[10px] font-black uppercase tracking-wider">
+                        ${(m.status || 'unknown').replace('_', ' ')}
+                    </span>
+                </td>
+                <td class="px-8 py-6 text-right">
+                    ${m.status === 'awaiting_payment' ? 
+                        `<button onclick="forceComplete('${m.id}')" class="px-4 py-2 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90">Force Complete</button>` : 
+                        `<button class="p-2 text-slate-300 hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>`
+                    }
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    };
+
+    let matchIdToProcess = null;
+
+    const forceComplete = (matchId) => {
+        matchIdToProcess = matchId;
+        const modal = document.getElementById('confirmModal');
+        const confirmBtn = document.getElementById('confirmModalBtn');
+        
+        confirmBtn.disabled = false;
+        confirmBtn.innerText = "Confirm";
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+    document.getElementById('cancelModalBtn').onclick = () => {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        matchIdToProcess = null;
+    };
+
+    document.getElementById('confirmModalBtn').onclick = async () => {
+        if (!matchIdToProcess) return;
+
+        const confirmBtn = document.getElementById('confirmModalBtn');
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "Processing...";
+        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        try {
+            const response = await fetch(`${API_BASE}/matches/${matchIdToProcess}/force-complete`, { 
+                method: 'POST' 
+            });
+
+            if (checkAuth(response.status)) return;
+
+            if (response.ok) {
+                document.getElementById('cancelModalBtn').click();
+                loadMatches();
+            } else {
+                const error = await response.json();
+                alert(error.detail || "Action failed");
                 confirmBtn.disabled = false;
                 confirmBtn.innerText = "Confirm";
                 confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
-        };
+        } catch (err) {
+            console.error("Override failed:", err);
+            alert("A network error occurred.");
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = "Confirm";
+            confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    };
 
-        const openManualMatchModal = async () => {
-            const modal = document.getElementById('manualMatchModal');
-            const familySelect = document.getElementById('manualFamilySelect');
-            const nannySelect = document.getElementById('manualNannySelect');
+    const openManualMatchModal = async () => {
+        const modal = document.getElementById('manualMatchModal');
+        const familySelect = document.getElementById('manualFamilySelect');
+        const nannySelect = document.getElementById('manualNannySelect');
 
-            modal.classList.replace('hidden', 'flex');
-            
-            try {
-                const response = await fetch(`${API_BASE}/match-candidates`);
-                
-                if (checkAuth(response.status)) return;
+        modal.classList.replace('hidden', 'flex');
+        
+        try {
+            const response = await fetch(`${API_BASE}/match-candidates`);
+            if (checkAuth(response.status)) return;
 
-                const result = await response.json();
-                const { families, nannies } = result.data;
+            const result = await response.json();
+            const families = result.data?.families ?? result.families ?? [];
+            const nannies = result.data?.nannies ?? result.nannies ?? [];
 
-                familySelect.innerHTML = families.length 
-                    ? families.map(f => `<option value="${f.id}">${f.name}</option>`).join('')
-                    : '<option value="">No eligible families found</option>';
+            familySelect.innerHTML = families.length 
+                ? families.map(f => `<option value="${f.id}">${f.name}</option>`).join('')
+                : '<option value="">No eligible families found</option>';
 
-                nannySelect.innerHTML = nannies.length 
-                    ? nannies.map(n => `<option value="${n.id}">${n.name}</option>`).join('')
-                    : '<option value="">No eligible nannies found</option>';
+            nannySelect.innerHTML = nannies.length 
+                ? nannies.map(n => `<option value="${n.id}">${n.name}</option>`).join('')
+                : '<option value="">No eligible nannies found</option>';
 
-            } catch (err) {
-                console.error("Failed to load candidates:", err);
-            }
-        };
+        } catch (err) {
+            console.error("Failed to load candidates:", err);
+        }
+    };
 
-        document.querySelector('header button').onclick = openManualMatchModal;
+    document.querySelector('header button').onclick = openManualMatchModal;
 
-        const closeManualModal = () => {
-            document.getElementById('manualMatchModal').classList.replace('flex', 'hidden');
-        };
+    const closeManualModal = () => {
+        document.getElementById('manualMatchModal').classList.replace('flex', 'hidden');
+    };
 
-        document.getElementById('submitManualMatch').onclick = async () => {
-            const family_id = document.getElementById('manualFamilySelect').value;
-            const nanny_id = document.getElementById('manualNannySelect').value;
-            const btn = document.getElementById('submitManualMatch');
+    document.getElementById('submitManualMatch').onclick = async () => {
+        const family_id = document.getElementById('manualFamilySelect').value;
+        const nanny_id = document.getElementById('manualNannySelect').value;
+        const btn = document.getElementById('submitManualMatch');
 
-            if (!family_id || !nanny_id) return alert("Please select both participants.");
+        if (!family_id || !nanny_id) return alert("Please select both participants.");
 
-            btn.disabled = true;
-            btn.innerText = "Creating...";
+        btn.disabled = true;
+        btn.innerText = "Creating...";
 
-            try {
-                const response = await fetch(`${API_BASE}/matches/manual`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ family_id, nanny_id })
-                });
+        try {
+            const response = await fetch(`${API_BASE}/matches/manual`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ family_id, nanny_id })
+            });
 
-                if (checkAuth(response.status)) return;
+            if (checkAuth(response.status)) return;
 
-                if (response.ok) {
-                    closeManualModal();
-                    loadMatches();
-                } else {
-                    const err = await response.json();
-                    alert(err.detail || "Could not create match.");
-                }
-            } catch (err) {
-                console.error("Submission error:", err);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Create Match";
-            }
-        };
-
-        const updateUI = (data) => {
-            document.getElementById('totalMatchCount').innerText = data.active_count || 0;
-            const start = ((currentPage - 1) * 10) + 1;
-            const end = Math.min(currentPage * 10, data.total_count);
-            document.getElementById('paginationLabel').innerText = `Showing ${data.total_count > 0 ? start : 0}-${end} of ${data.total_count} matches`;
-            
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = end >= data.total_count;
-        };
-
-        document.querySelectorAll('.status-filter-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('.status-filter-btn').forEach(b => b.className = "status-filter-btn px-6 py-2.5 text-slate-500 hover:bg-slate-50 rounded-2xl text-xs font-bold transition-all");
-                btn.className = "status-filter-btn px-6 py-2.5 bg-primary text-white rounded-2xl text-xs font-bold shadow-md";
-                selectedStatus = btn.getAttribute('data-status');
-                currentPage = 1;
+            if (response.ok) {
+                closeManualModal();
                 loadMatches();
-            };
-        });
+            } else {
+                const err = await response.json();
+                alert(err.detail || "Could not create match.");
+            }
+        } catch (err) {
+            console.error("Submission error:", err);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Create Match";
+        }
+    };
 
-        document.getElementById('prevBtn').onclick = () => { if(currentPage > 1) { currentPage--; loadMatches(); } };
-        document.getElementById('nextBtn').onclick = () => { currentPage++; loadMatches(); };
+    const updateUI = (data) => {
+        const total = data.total_count ?? 0;
+        const active = data.active_count ?? 0;
+        
+        document.getElementById('totalMatchCount').innerText = active;
+        const start = ((currentPage - 1) * 10) + 1;
+        const end = Math.min(currentPage * 10, total);
+        
+        document.getElementById('paginationLabel').innerText = 
+            `Showing ${total > 0 ? start : 0}-${end} of ${total} matches`;
+        
+        document.getElementById('prevBtn').disabled = currentPage === 1;
+        document.getElementById('nextBtn').disabled = end >= total;
+    };
 
-        window.onload = loadMatches;
-    </script>
+    document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.status-filter-btn').forEach(b => 
+                b.className = "status-filter-btn px-6 py-2.5 text-slate-500 hover:bg-slate-50 rounded-2xl text-xs font-bold transition-all"
+            );
+            btn.className = "status-filter-btn px-6 py-2.5 bg-primary text-white rounded-2xl text-xs font-bold shadow-md";
+            selectedStatus = btn.getAttribute('data-status');
+            currentPage = 1;
+            loadMatches();
+        };
+    });
+
+    document.getElementById('prevBtn').onclick = () => { if(currentPage > 1) { currentPage--; loadMatches(); } };
+    document.getElementById('nextBtn').onclick = () => { currentPage++; loadMatches(); };
+
+    window.onload = loadMatches;
+</script>
 </body>
 </html>

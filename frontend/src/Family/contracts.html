@@ -89,10 +89,7 @@
 
     async function init() {
         const token = localStorage.getItem('access_token');
-        if (!token) {
-            window.location.href = "../views/login.html";
-            return;
-        };
+        if (!token) { window.location.href = "../views/login.html"; return; };
         try {
             const [cRes, ctRes] = await Promise.all([
                 fetch(`${API_CONNECTIONS}/`, { headers: { 'Authorization': `Bearer ${token}` } }),
@@ -105,33 +102,46 @@
                 return;
             }
 
-            successfulMatches = await cRes.json();
+            const connectionData = await cRes.json();
+            
+            // --- FIX STARTS HERE ---
+            // If connectionData is an object with a 'nannies' key, use that.
+            // If it's already an array (for the nanny role), use it directly.
+            if (connectionData && typeof connectionData === 'object' && !Array.isArray(connectionData)) {
+                successfulMatches = connectionData.nannies || [];
+            } else {
+                successfulMatches = connectionData || [];
+            }
+            // --- FIX ENDS HERE ---
+
             existingContracts = await ctRes.json();
             renderMatches();
-        } catch (e) { console.error("Initialization Error:", e); }
+        } catch (e) { 
+            console.error("Initialization Error:", e); 
+        }
     }
-
     function renderMatches() {
         const list = document.getElementById('matchList');
-        // Ensure data is an array before filtering
-        const matches = Array.isArray(successfulMatches) ? successfulMatches : [];
-        
-        if (matches.length === 0) {
+        if (successfulMatches.length === 0) {
             list.innerHTML = `<p class="text-[10px] font-bold text-slate-400 text-center py-4 uppercase">No active connections</p>`;
             return;
         }
 
-        list.innerHTML = matches.map(m => {
+        list.innerHTML = successfulMatches.map(m => {
+            // m.id is now the MATCH UUID, which is what generateNow(matchId) needs
             const contract = existingContracts.find(c => c.match_id === m.id);
-            // Accessing profile-level name directly as requested
+            
+            // Accessing nested nanny info from the Match object
             const name = m.nanny?.full_name || m.nanny?.name || "Caregiver";
+            const statusLabel = m.status || "Connected";
+            
             return `
                 <div onclick="selectMatch('${m.id}')" class="bg-white p-4 rounded-2xl border border-slate-100 cursor-pointer hover:border-secondary transition-all group">
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-primary truncate">${name}</span>
                         ${contract ? '<span class="material-symbols-outlined text-green-500 text-xs">verified</span>' : ''}
                     </div>
-                    <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">${m.status.replace('_', ' ')}</p>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">${statusLabel}</p>
                 </div>
             `;
         }).join('');
@@ -139,11 +149,19 @@
 
     function selectMatch(matchId) {
         const match = successfulMatches.find(m => m.id === matchId);
+        if (!match) return;
+
         const contract = existingContracts.find(c => c.match_id === matchId);
         const workspace = document.getElementById('workspace');
 
+        // Robust name check: Checks nanny.full_name, nanny.name, or a direct .name property on the match
+        const name = match.nanny?.full_name || 
+                    match.nanny?.name || 
+                    match.full_name || 
+                    match.name || 
+                    "Caregiver";
+
         if (!contract) {
-            const name = match.nanny?.full_name || match.nanny?.name || "Caregiver";
             workspace.innerHTML = `
                 <div class="p-10 flex flex-col h-full bg-slate-50/30">
                     <h2 class="text-3xl font-headline font-black text-primary mb-2">New Agreement</h2>
@@ -163,17 +181,25 @@
         const btn = document.getElementById('genBtn');
         btn.innerHTML = "Processing...";
         btn.disabled = true;
+        
         try {
+            // This now sends the Match UUID (ea5b8e28...) correctly
             const res = await fetch(`${API_CONTRACTS}/generate/${matchId}?custom_terms=${encodeURIComponent(terms)}`, {
                 method: 'POST', 
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            const newContract = await res.json();
-            existingContracts.push(newContract);
+            
+            const data = await res.json();
+            
+            if (!res.ok) {
+                throw new Error(data.detail || "Failed to generate");
+            }
+
+            existingContracts.push(data);
             renderMatches();
-            renderContractView(newContract, successfulMatches.find(m => m.id === matchId));
+            renderContractView(data, successfulMatches.find(m => m.id === matchId));
         } catch (e) { 
-            alert("Error generating contract"); 
+            alert(`Error: ${e.message}`); 
             btn.innerHTML = "Generate Formal Contract";
             btn.disabled = false;
         }

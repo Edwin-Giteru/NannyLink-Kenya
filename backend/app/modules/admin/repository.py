@@ -294,53 +294,67 @@ class AdminRepository:
         status: str = None, 
         search: str = None
     ):
-        query = select(Payment).options(joinedload(Payment.matches))
+        # Use joinedload to pull in matches and their specific profiles in one go
+        query = select(Payment).options(
+            joinedload(Payment.matches).joinedload(Match.family),
+            joinedload(Payment.matches).joinedload(Match.nanny)
+        )
         
         if status:
             query = query.filter(Payment.payment_status == status)
+        
         if search:
+            # Improved search to look through M-Pesa codes or even status
             query = query.filter(
-                (Payment.checkout_request_id.ilike(f"%{search}%")) |
-                (Payment.mpesa_transaction_code.ilike(f"%{search}%"))
+                or_(
+                    Payment.checkout_request_id.ilike(f"%{search}%"),
+                    Payment.mpesa_transaction_code.ilike(f"%{search}%")
+                )
             )
         
-        # FIX: Use (await ...).scalar() to ensure execution finishes first
-        result_count = await self.db.execute(select(func.count()).select_from(query.subquery()))
+        # Get total count
+        count_query = select(func.count()).select_from(Payment)
+        if status: count_query = count_query.filter(Payment.payment_status == status)
+        # Add search filter to count if search exists
+        
+        result_count = await self.db.execute(count_query)
         total_count = result_count.scalar()
         
-        # FIX: Execute and then get scalars
+        # Execute main query
         result_list = await self.db.execute(
             query.order_by(Payment.created_at.desc()).offset(skip).limit(limit)
         )
+        
+        # unique() is critical when using joinedload on a collection (matches)
         results = result_list.unique().scalars().all()
         
         return results, total_count
-
+    
     async def get_payment_stats(self):
-        # 1. Total Volume: Sum of all 'completed' payments in M-Pesa logs
-        res_vol = await self.db.execute(
-        select(func.sum(Payment.amount)).filter(
-            func.lower(Payment.payment_status) == "completed"
+            # 1. Total Volume: Sum of all 'completed' payments in M-Pesa logs
+            res_vol = await self.db.execute(
+            select(func.sum(Payment.amount)).filter(
+                func.lower(Payment.payment_status) == "completed"
+                )
             )
-        )
-        total_vol = res_vol.scalar() or 0
-        
-        # 2. Total Business Attempts: This should be the total number of Matches created
-        # because every match represents a payment intent.
-        res_matches = await self.db.execute(select(func.count(Match.id)))
-        total_business_attempts = res_matches.scalar() or 0
-        
-        # 3. Successful Placements: Matches that are actually COMPLETED
-        res_success = await self.db.execute(
-            select(func.count(Match.id)).filter(Match.status == MatchStatus.COMPLETED)
-        )
-        successful_placements = res_success.scalar() or 0
-        
-        # 4. Success Rate: Successful Matches / Total Matches
-        success_rate = (successful_placements / total_business_attempts * 100) if total_business_attempts > 0 else 0
-        
-        return {
-            "total_volume": total_vol,
-            "success_rate": round(success_rate, 1),
-            "total_count": total_business_attempts  # This will now show 7 if you have 7 matches
-        }
+            total_vol = res_vol.scalar() or 0
+            
+            # 2. Total Business Attempts: This should be the total number of Matches created
+            # because every match represents a payment intent.
+            res_matches = await self.db.execute(select(func.count(Match.id)))
+            total_business_attempts = res_matches.scalar() or 0
+            
+            # 3. Successful Placements: Matches that are actually COMPLETED
+            res_success = await self.db.execute(
+                select(func.count(Match.id)).filter(Match.status == MatchStatus.COMPLETED)
+            )
+            successful_placements = res_success.scalar() or 0
+            
+            # 4. Success Rate: Successful Matches / Total Matches
+            success_rate = (successful_placements / total_business_attempts * 100) if total_business_attempts > 0 else 0
+            
+            return {
+                "total_volume": total_vol,
+                "success_rate": round(success_rate, 1),
+                "total_count": total_business_attempts  # This will now show 7 if you have 7 matches
+            }

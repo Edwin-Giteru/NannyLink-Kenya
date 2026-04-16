@@ -3,9 +3,8 @@ from app.db.session import SessionDep
 from app.utils.security import admin_required
 from app.modules.admin.schema import DashboardStatsSchema, ManualMatchRequest, MatchListResponse, PaymentListResponse, RecentTransactionSchema, UserListResponse, AdminCreateUserRequest
 from app.modules.admin.schema import RecentTransactionSchema
-from app.modules.admin.service import AdminService # Assuming you have an admin checker
+from app.modules.admin.service import AdminService 
 from typing import List, Optional
-
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -29,7 +28,6 @@ async def get_recent_transactions(
     service = AdminService(db)
     result = await service.get_recent_transactions()
     
-    # Check if result was successful before returning data
     if not result.success:
         raise HTTPException(status_code=400, detail=result.error)
         
@@ -50,10 +48,6 @@ async def get_managed_users(
     )
     return result.data
 
-# app/modules/admin/router.py
-
-# app/modules/admin/router.py
-
 @router.patch("/users/{user_id}/verify")
 async def verify_nanny_user(
     user_id: str,
@@ -67,13 +61,11 @@ async def verify_nanny_user(
     result = await service.approve_nanny(user_id)
     
     if not result.success:
-        # result.error contains the string passed to Result.fail()
         raise HTTPException(
             status_code=result.status_code, 
             detail=result.error
         )
         
-    # result.data contains the string "Nanny verified successfully."
     return {"detail": result.data}
 
 @router.post("/users", response_model=dict, status_code=status.HTTP_201_CREATED)
@@ -96,8 +88,6 @@ async def add_managed_user(
         
     return result.data
 
-# Inside app/modules/admin/router.py
-
 @router.delete("/{user_id}")
 async def delete_user(
     user_id: str,
@@ -109,7 +99,6 @@ async def delete_user(
     """
     admin_service = AdminService(db)
     
-    # FIX: Added 'await' because the service logic is now async
     result = await admin_service.delete_user_account(
         user_id=user_id, 
         current_admin_id=admin.id
@@ -163,12 +152,11 @@ async def get_candidates(
     currently have an active connection.
     """
     service = AdminService(db)
-
-
     result = await service.get_manual_match_candidates()
+    
     if not result.success:
         raise HTTPException(status_code=400, detail=result.error)
-    return result
+    return result.data
 
 @router.post("/matches/manual")
 async def create_manual_match(
@@ -182,11 +170,10 @@ async def create_manual_match(
     )
     
     if not result.success:
-        # Map business logic failures to 409, tech failures to 500
         status_code = status.HTTP_409_CONFLICT if "exists" in result.error else status.HTTP_500_INTERNAL_SERVER_ERROR
         raise HTTPException(status_code=status_code, detail=result.error)
         
-    return {"message": result.data} # result.data contains the success string
+    return {"message": result.data} 
 
 @router.get("/payments", response_model=PaymentListResponse)
 async def get_payments(
@@ -197,10 +184,11 @@ async def get_payments(
     current_admin = Depends(admin_required)
 ):
     """
-    Fetch paginated payment logs with summary statistics for the admin dashboard.
+    Fetch paginated payment logs with summary statistics.
+    Updated to match the formatted data from AdminService.
     """
-    try:
-        service = AdminService(db)
-        return await service.get_payment_logs(page=page, status=status, search=search)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    service = AdminService(db)
+    # The updated service returns pa dict directly containing payments, stats, and total_count
+    data = await service.get_payment_logs(page=page, status=status, search=search)
+    print("Controller received payment logs data:", data)  # Debug log to check the structure of the returned data
+    return data

@@ -3,7 +3,6 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from uuid import UUID
 from datetime import datetime
-
 from app.db.models.contract import Contract
 from app.db.models.contract_acceptance import ContractAcceptance
 from app.db.models.match import Match
@@ -12,28 +11,20 @@ class ContractRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    # Eager-load acceptance relationships to ensure the API returns full status
+    # Helper to load all nested data needed by the frontend
     __load_options = [
-    selectinload(Contract.acceptance),
-    selectinload(Contract.match).selectinload(Match.family),
-    selectinload(Contract.match).selectinload(Match.nanny)
-]
+        selectinload(Contract.acceptance),
+        selectinload(Contract.match).selectinload(Match.family),
+        selectinload(Contract.match).selectinload(Match.nanny)
+    ]
 
     async def get_by_id(self, contract_id: UUID) -> Contract | None:
-        stmt = (
-            select(Contract)
-            .where(Contract.id == contract_id)
-            .options(*self.__load_options)
-        )
+        stmt = select(Contract).where(Contract.id == contract_id).options(*self.__load_options)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_by_match_id(self, match_id: UUID) -> Contract | None:
-        stmt = (
-            select(Contract)
-            .where(Contract.match_id == match_id)
-            .options(*self.__load_options)
-        )
+        stmt = select(Contract).where(Contract.match_id == match_id).options(*self.__load_options)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
 
@@ -52,8 +43,7 @@ class ContractRepository:
         stmt = (
             select(Contract)
             .join(Match, Contract.match_id == Match.id)
-            # CHANGED: Use 'nanny_id' instead of 'selected_nanny_id'
-            .where(Match.nanny_id == nanny_profile_id) 
+            .where(Match.nanny_id == nanny_profile_id)
             .options(*self.__load_options)
             .order_by(Contract.created_at.desc())
         )
@@ -69,7 +59,6 @@ class ContractRepository:
         self.db.add(new_contract)
         await self.db.flush() 
 
-        # Initialize acceptance record with NO acting_user_id (since no one signed yet)
         acceptance = ContractAcceptance(
             contract_id=new_contract.id,
             family_accepted=False,

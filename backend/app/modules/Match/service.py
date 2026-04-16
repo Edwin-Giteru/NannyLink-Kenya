@@ -24,57 +24,54 @@ class MatchService:
             if existing:
                 return Result.ok(data=MatchResponse.model_validate(existing), status_code=200)
 
+            current_matches = await self.match_repo.get_matches_for_family(family.id)
+            active_count = sum(1 for m in current_matches if m.status != MatchStatus.CANCELLED)
+
+            if active_count >= 3:
+                return Result.fail(
+                    f"Global limit reached. You already have {active_count} active connections.",
+                    status_code=400
+                )
+
             match = await self.match_repo.create_connection(family.id, nanny_id)
             full_match = await self.match_repo.get_match_by_id(match.id)
             return Result.ok(data=MatchResponse.model_validate(full_match), status_code=201)
 
         except Exception as e:
-            return Result.fail(f"Connection failed: {str(e)}", status_code=500)
+            return Result.fail(f"Internal error: {str(e)}", status_code=500)
 
     async def list_user_connections(self, user_id: UUID, role: str) -> Result:
         try:
             if role == "family":
                 from app.modules.Family.repository import FamilyRepository
                 family_repo = FamilyRepository(self.match_repo.db)
-                
-                # 1. Get the ACTUAL Family Profile ID first
                 profile = await family_repo.get_family_by_user_id(user_id)
                 if not profile:
                     return Result.fail("Family profile not found", 404)
 
-                # 2. Pass the profile.id (the UUID in the family_profile table)
-                nannies = await self.match_repo.get_unconnected_nannies(profile.id)
-                
-                # Use your Nanny Schema for validation if you have one, 
-                # otherwise return the raw list
-                return Result.ok(data=nannies)
-                
+                # ✅ FIX: Return actual Match objects so the frontend gets real match IDs
+                matches = await self.match_repo.get_matches_for_family(profile.id)
+                active_matches = [m for m in matches if m.status != MatchStatus.CANCELLED]
+
+                return Result.ok(data={
+                    "nannies": [MatchResponse.model_validate(m) for m in active_matches],
+                    "active_connection_count": len(active_matches)
+                })
             else:
-                # Logic for nannies remains as actual matches
                 from app.modules.Nanny.nanny_repo import NannyRepository
                 nanny_repo = NannyRepository(self.match_repo.db)
                 profile = await nanny_repo.get_nanny_by_user_id(user_id)
                 matches = await self.match_repo.get_matches_for_nanny(profile.id)
                 return Result.ok(data=[MatchResponse.model_validate(m) for m in matches])
-                
+
         except Exception as e:
             return Result.fail(str(e), status_code=500)
-        
 
     async def get_connection_details(self, match_id: UUID) -> Result:
         match = await self.match_repo.get_match_by_id(match_id)
         if not match:
             return Result.fail("Connection not found.", status_code=404)
         return Result.ok(data=MatchResponse.model_validate(match))
-
-    async def get_match_by_id(self, match_id: UUID) -> Result:
-        try:
-            match = await self.match_repo.get_match_by_id(match_id)
-            if not match:
-                return Result.fail("Match connection not found", 404)
-            return Result.ok(data=match)
-        except Exception as e:
-            return Result.fail(f"Error retrieving match: {str(e)}", 500)
 
     async def update_match_status(self, match_id: UUID, new_status: MatchStatus) -> Result:
         try:
@@ -84,9 +81,8 @@ class MatchService:
                 .values(status=new_status)
             )
             await self.match_repo.db.execute(stmt)
-            await self.match_repo.db.commit()  
-
+            await self.match_repo.db.commit()
             return Result.ok(data={"match_id": match_id, "new_status": new_status})
         except Exception as e:
-            await self.match_repo.db.rollback()  
+            await self.match_repo.db.rollback()
             return Result.fail(f"Failed to update match status: {str(e)}", 500)

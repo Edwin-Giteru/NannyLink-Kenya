@@ -19,8 +19,10 @@ async def create_connection(
     service = MatchService(db)
     result = await service.initiate_connection(current_user.id, nanny_id)
     
+    # This will now catch the "Limit reached" 400 error from the service
     if not result.success:
         raise HTTPException(status_code=result.status_code, detail=result.error)
+        
     return result.data
 
 @router.get("/", status_code=200)

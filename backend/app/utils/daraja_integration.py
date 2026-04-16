@@ -6,16 +6,17 @@ from datetime import datetime
 from loguru import logger
 from dotenv import load_dotenv
 from uuid import UUID
+from urllib.parse import urlparse, urlunparse
 
 load_dotenv()
 
+# Use generic names or ensure these match your .env exactly
 CONSUMER_KEY = os.getenv("DARAJA_LIVE_CONSUMER_KEY")
 CONSUMER_SECRET = os.getenv("DARAJA_LIVE_CONSUMER_SECRET")
-URL = os.getenv("DARAJA_LIVE_BASE_URL")
+URL = os.getenv("DARAJA_LIVE_BASE_URL", "").rstrip("/")
 SHORT_CODE = os.getenv("DARAJA_LIVE_SHORT_CODE")
 PASSKEY = os.getenv("DARAJA_LIVE_PASSKEY")
-TILL = os.getenv("DARAJA_TILL_NO")
-
+TILL = os.getenv("DARAJA_TILL_NO") # Only used if TransactionType is BuyGoods
 
 def validate_phone_number(phone_number: str) -> str:
     phone = phone_number.replace(" ", "").replace("-", "").replace("+", "")
@@ -23,110 +24,80 @@ def validate_phone_number(phone_number: str) -> str:
         phone = "254" + phone[1:]
     elif phone.startswith("7") or phone.startswith("1"):
         phone = "254" + phone
-    elif not phone.startswith("254"):
-        raise ValueError("Invalid phone number. Must start with 0, 7, 1 or 254.")
-    if len(phone) != 12:
-        raise ValueError("Phone number must be 12 digits in 254XXXXXXXXX format.")
+    if not phone.startswith("254") or len(phone) != 12:
+        raise ValueError("Invalid phone format. Use 2547XXXXXXXX.")
     return phone
-
 
 def generate_timestamp() -> str:
     return datetime.now().strftime("%Y%m%d%H%M%S")
 
-
 def generate_password() -> tuple[str, str]:
     timestamp = generate_timestamp()
+    # Password = Base64(ShortCode + Passkey + Timestamp)
     raw = f"{SHORT_CODE}{PASSKEY}{timestamp}"
     return base64.b64encode(raw.encode()).decode(), timestamp
 
-
 async def generate_access_token() -> str:
-    """Async — fetches Daraja OAuth token."""
     if not CONSUMER_KEY or not CONSUMER_SECRET:
-        raise Exception("DARAJA_LIVE_CONSUMER_KEY and DARAJA_LIVE_CONSUMER_SECRET must be set.")
+        raise Exception("Daraja API Keys are missing in .env")
 
     api_url = f"{URL}/oauth/v1/generate?grant_type=client_credentials"
     encoded = base64.b64encode(f"{CONSUMER_KEY}:{CONSUMER_SECRET}".encode()).decode()
-    headers = {
-        "Authorization": f"Basic {encoded}",
-        "Content-Type": "application/json",
-    }
+    headers = {"Authorization": f"Basic {encoded}"}
 
-    logger.info(f"Fetching Daraja access token from {api_url}")
-
-    async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=15) as client:
         resp = await client.get(api_url, headers=headers)
-
-    resp.raise_for_status()
-    data = resp.json()
-
-    if "access_token" not in data:
-        raise Exception(f"No access_token in response: {data}")
-
-    logger.info("Daraja access token generated successfully.")
-    return data["access_token"]
-
-
-from urllib.parse import urlparse, urlunparse
+        if resp.status_code != 200:
+            logger.error(f"Auth Failed: {resp.text}")
+            raise Exception("Failed to generate Daraja access token.")
+        return resp.json()["access_token"]
 
 async def sendStkPush(
     phone_number: str,
     amount: float,
-    match_id: UUID,
+    match_id: str, # Changed from UUID to str for flexibility
     base_url: str,
 ) -> dict:
-    if not phone_number or not amount or not base_url:
-        raise ValueError("phone_number, amount, and base_url are required.")
-    if amount <= 0:
-        raise ValueError("Amount must be greater than 0.")
-
-    # FIX: Strip any existing path from BASE_URL before appending /payments/callback
-    # Prevents double-path like https://myapp.onrender.com/payments/health/payments/callback
+    # 1. Format Callback URL
     parsed = urlparse(base_url.rstrip("/"))
     clean_base = urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
-    callback_url = clean_base + "/payments/callback"
-    logger.info(f"Callback URL set to: {callback_url}")
-
+    callback_url = f"{clean_base}/payments/callback"
+    
     formatted_phone = validate_phone_number(phone_number)
     password, timestamp = generate_password()
     access_token = await generate_access_token()
 
-    api_url = f"{URL}/mpesa/stkpush/v1/processrequest"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-    }
+    # 2. Prepare Payload
+    # NOTE: If using a Paybill, TransactionType="CustomerPayBillOnline" and PartyB=SHORT_CODE
+    # If using Buy Goods, TransactionType="CustomerBuyGoodsOnline" and PartyB=TILL
+    transaction_type = "CustomerBuyGoodsOnline" if TILL else "CustomerPayBillOnline"
+    party_b = TILL if TILL else SHORT_CODE
 
     payload = {
         "BusinessShortCode": SHORT_CODE,
         "Password": password,
         "Timestamp": timestamp,
-        "TransactionType": "CustomerBuyGoodsOnline",
+        "TransactionType": transaction_type,
         "Amount": int(amount),
         "PartyA": formatted_phone,
-        "PartyB": TILL,
+        "PartyB": party_b,
         "PhoneNumber": formatted_phone,
         "CallBackURL": callback_url,
-        "AccountReference": "NANNYLINK",
-        "TransactionDesc": f"NannyLink connection fee - match {str(match_id)[:8]}",
+        "AccountReference": "NannyLink_Batch",
+        "TransactionDesc": f"Pay_{match_id[:8]}"
     }
 
-    logger.info(f"STK Push payload: {json.dumps({**payload, 'Password': '***'}, indent=2)}")
+    api_url = f"{URL}/mpesa/stkpush/v1/processrequest"
+    headers = {"Authorization": f"Bearer {access_token}"}
 
     async with httpx.AsyncClient(timeout=30) as client:
-        resp = await client.post(api_url, headers=headers, json=payload)
-
-    try:
-        resp.raise_for_status()
-    except httpx.HTTPStatusError as e:
-        logger.error(f"STK Push HTTP error {resp.status_code}: {resp.text}")
-        raise Exception(f"STK Push failed ({resp.status_code}): {resp.text}")
-
+        logger.info(f"Triggering STK Push for {formatted_phone} amount {amount}")
+        resp = await client.post(api_url, json=payload, headers=headers)
+        
     response_json = resp.json()
-    logger.info(f"STK Push response: {json.dumps(response_json, indent=2)}")
-
-    if response_json.get("ResponseCode") != "0":
-        err = response_json.get("ResponseDescription", "Unknown error")
-        raise Exception(f"STK Push rejected by Safaricom: {err}")
+    
+    if resp.status_code != 200:
+        logger.error(f"Safaricom rejected request: {response_json}")
+        raise Exception(response_json.get("errorMessage", "STK Push Request Failed"))
 
     return response_json

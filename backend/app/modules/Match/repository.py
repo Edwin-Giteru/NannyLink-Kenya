@@ -22,6 +22,7 @@ class MatchRepository:
         selectinload(Match.family),
         selectinload(Match.contract),
     ]
+    
     async def get_unconnected_nannies(self, family_id: UUID) -> list[NannyProfile]:
         """
         Returns nannies who do NOT have a connection with THIS specific family_id.

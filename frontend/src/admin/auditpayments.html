@@ -149,7 +149,7 @@
                 <div class="flex-1 flex gap-2 p-1">
                     <div class="relative flex-1 max-w-md">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-                        <input type="text" id="searchInput" placeholder="Filter by Checkout ID or Receipt..." class="w-full bg-slate-50 border-none rounded-2xl pl-10 pr-6 py-2.5 text-xs font-bold text-slate-600 focus:ring-2 focus:ring-primary/5">
+                        <input type="text" id="searchInput" placeholder="Filter by M-Pesa Code or Parties..." class="w-full bg-slate-50 border-none rounded-2xl pl-10 pr-6 py-2.5 text-xs font-bold text-slate-600 focus:ring-2 focus:ring-primary/5">
                     </div>
                 </div>
             </div>
@@ -159,7 +159,8 @@
                     <thead>
                         <tr class="border-b border-slate-50 bg-slate-50/30">
                             <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date/Time</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Transaction IDs</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Parties (Family & Nanny)</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">M-Pesa Code</th>
                             <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Amount</th>
                             <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                             <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
@@ -183,26 +184,7 @@
                 </div>
             </div>
 
-            <div class="bg-blue-50/50 p-8 rounded-[2.5rem] border border-blue-100 relative overflow-hidden">
-                <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
-                    <div class="flex-1">
-                        <h3 class="text-2xl font-black text-primary font-headline">Audit: Match Batch Links</h3>
-                        <p class="text-slate-500 text-sm mt-2 max-w-lg">Each payment entry is cryptographically linked to a batch of validated match_ids for commission auditing.</p>
-                        <div class="flex flex-wrap gap-2 mt-6">
-                            <div class="bg-white px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 text-[10px] font-black text-primary border border-blue-100/50">
-                                <span class="material-symbols-outlined text-xs text-blue-400">link</span> MATCH_ID: 88291-A
-                            </div>
-                            <div class="bg-white px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 text-[10px] font-black text-primary border border-blue-100/50">
-                                <span class="material-symbols-outlined text-xs text-blue-400">link</span> MATCH_ID: 88304-X
-                            </div>
-                            <div class="px-4 py-2 text-[10px] font-bold text-slate-400 italic">+ 12 others</div>
-                        </div>
-                    </div>
-                    <div class="w-32 h-32 bg-primary rounded-[2rem] flex items-center justify-center shadow-xl shadow-primary/20 rotate-3">
-                        <span class="material-symbols-outlined text-white text-5xl">verified</span>
-                    </div>
-                </div>
-            </div>
+            
         </section>
     </main>
 
@@ -216,7 +198,7 @@
 <script>
     const API_BASE_URL = 'http://127.0.0.1:8000/admin/payments';
     let currentPage = 1;
-    let currentPaymentData = []; // Store the latest fetched data for export
+    let currentPaymentData = []; 
 
     async function authorizedFetch(url, options = {}) {
         const token = localStorage.getItem('access_token');
@@ -253,71 +235,81 @@
     }
 
     function renderTable(payments) {
-        const tbody = document.getElementById('paymentTableBody');
-        tbody.innerHTML = ''; 
+    const tbody = document.getElementById('paymentTableBody');
+    tbody.innerHTML = ''; 
 
-        payments.forEach(payment => {
-            const date = new Date(payment.created_at);
-            
-            let statusClass = '';
-            const status = payment.payment_status.toLowerCase();
+    payments.forEach(payment => {
+        const date = new Date(payment.created_at);
+        
+        let statusClass = '';
+        const status = (payment.payment_status || '').toLowerCase();
 
-            switch (status) {
-                case 'completed':
-                    statusClass = 'bg-green-100 text-green-700';
-                    break;
-                case 'pending':
-                    statusClass = 'bg-orange-100 text-orange-700';
-                    break;
-                case 'failed':
-                case 'cancelled':
-                    statusClass = 'bg-red-100 text-red-700';
-                    break;
-                default:
-                    statusClass = 'bg-slate-100 text-slate-700';
-            }
-            
-            const row = `
-                <tr class="match-row transition-all border-b border-slate-50">
-                    <td class="px-8 py-6">
-                        <p class="text-sm font-black text-primary tracking-tight">${date.toLocaleDateString()}</p>
-                        <p class="text-[10px] text-slate-400 font-bold">${date.toLocaleTimeString()}</p>
-                    </td>
-                    <td class="px-8 py-6">
-                        <p class="text-[10px] font-mono text-slate-500">${payment.checkout_request_id || 'N/A'}</p>
-                        <p class="text-xs font-bold text-primary">${payment.mpesa_transaction_code || 'Pending'}</p>
-                    </td>
-                    <td class="px-8 py-6 text-center">
-                        <span class="text-sm font-black text-primary">KES ${payment.amount.toLocaleString()}</span>
-                    </td>
-                    <td class="px-8 py-6">
-                        <span class="px-3 py-1 ${statusClass} text-[10px] font-black uppercase rounded-full tracking-wider">
-                            ${payment.payment_status}
-                        </span>
-                    </td>
-                    <td class="px-8 py-6 text-right">
-                        <button onclick="viewDetails('${payment.id}')" class="p-2 text-slate-300 hover:text-primary transition-colors">
-                            <span class="material-symbols-outlined">visibility</span>
-                        </button>
-                    </td>
-                </tr>
-            `;
-            tbody.insertAdjacentHTML('beforeend', row);
-        });
-    }
+        switch (status) {
+            case 'completed':
+                statusClass = 'bg-green-100 text-green-700';
+                break;
+            case 'pending':
+                statusClass = 'bg-orange-100 text-orange-700';
+                break;
+            case 'failed':
+            case 'cancelled':
+                statusClass = 'bg-red-100 text-red-700';
+                break;
+            default:
+                statusClass = 'bg-slate-100 text-slate-700';
+        }
+        
+        // These keys must exist in your Pydantic PaymentResponse model
+        const fName = payment.family_name || 'Unknown Family';
+        const nName = payment.nanny_name || 'Not Assigned';
+        
+        const row = `
+            <tr class="match-row transition-all border-b border-slate-50 hover:bg-slate-50/50">
+                <td class="px-8 py-6">
+                    <p class="text-sm font-black text-primary tracking-tight">${date.toLocaleDateString()}</p>
+                    <p class="text-[10px] text-slate-400 font-bold">${date.toLocaleTimeString()}</p>
+                </td>
+                <td class="px-8 py-6">
+                    <div class="flex items-center gap-2">
+                         <div class="text-left">
+                            <p class="text-xs font-black text-primary">${fName}</p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">Matched with ${nName}</p>
+                         </div>
+                    </div>
+                </td>
+                <td class="px-8 py-6">
+                    <p class="text-xs font-bold text-primary font-mono">${payment.mpesa_transaction_code || '---'}</p>
+                </td>
+                <td class="px-8 py-6 text-center">
+                    <span class="text-sm font-black text-primary">KES ${payment.amount.toLocaleString()}</span>
+                </td>
+                <td class="px-8 py-6">
+                    <span class="px-3 py-1 ${statusClass} text-[10px] font-black uppercase rounded-full tracking-wider">
+                        ${payment.payment_status}
+                    </span>
+                </td>
+                <td class="px-8 py-6 text-right">
+                    <button onclick="viewDetails('${payment.id}')" class="p-2 text-slate-300 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                </td>
+            </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
+}
 
-    // Function to handle Excel Export
     function exportToExcel() {
         if (currentPaymentData.length === 0) {
             alert("No data available to export.");
             return;
         }
 
-        // Map data to user-friendly Excel rows
         const worksheetData = currentPaymentData.map(payment => ({
             "Date": new Date(payment.created_at).toLocaleDateString(),
             "Time": new Date(payment.created_at).toLocaleTimeString(),
-            "Checkout ID": payment.checkout_request_id || 'N/A',
+            "Family Name": payment.family_name || 'N/A',
+            "Nanny Name": payment.nanny_name || 'N/A',
             "M-Pesa Code": payment.mpesa_transaction_code || 'Pending',
             "Amount (KES)": payment.amount,
             "Status": payment.payment_status.toUpperCase()
@@ -327,13 +319,11 @@
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Payments");
 
-        // Set column widths for better readability
         const wscols = [
-            {wch: 15}, {wch: 15}, {wch: 35}, {wch: 20}, {wch: 15}, {wch: 15}
+            {wch: 15}, {wch: 15}, {wch: 25}, {wch: 25}, {wch: 20}, {wch: 15}, {wch: 15}
         ];
         worksheet['!cols'] = wscols;
 
-        // Generate file and trigger download
         XLSX.writeFile(workbook, `NannyLink_Payments_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
@@ -346,7 +336,8 @@
             if (!response) return;
 
             const data = await response.json();
-            currentPaymentData = data.payments; // Update global state for export
+            // Data format matches service: { payments: [], stats: {}, total_count: X }
+            currentPaymentData = data.payments; 
             renderTable(data.payments);
             updateStats(data.stats);
             
@@ -371,7 +362,6 @@
         }
     });
 
-    // Handle Export Button Click
     document.getElementById('exportBtn').addEventListener('click', exportToExcel);
 
     let searchTimeout;
@@ -386,7 +376,7 @@
     document.addEventListener('DOMContentLoaded', loadPaymentLogs);
 
     function viewDetails(id) {
-        console.log("View:", id);
+        console.log("View Details for Payment ID:", id);
     }
 </script>
 </body>

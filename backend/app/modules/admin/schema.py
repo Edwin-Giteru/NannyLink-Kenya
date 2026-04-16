@@ -97,7 +97,8 @@ class PaymentResponse(BaseModel):
     mpesa_transaction_code: Optional[str]
     amount: float
     payment_status: str
-    # This matches the 'matches' relationship in your Payment model
+    family_name: Optional[str] = "Unknown Family"
+    nanny_name: Optional[str] = "N/A (Direct Payment)"
     matches: List[PaymentMatchInfo] = []
 
     class Config:
@@ -112,3 +113,4 @@ class PaymentListResponse(BaseModel):
     payments: List[PaymentResponse]
     stats: PaymentDashboardStats
     total_count: int
+
