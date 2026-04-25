@@ -1,382 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to NannyLink</title>
-  
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <script id="tailwind-config">
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            "primary": "#00152f",
-            "secondary": "#835500",
-            "surface": "#f8f9fa",
-          },
-          fontFamily: {
-            "headline": ["Manrope"],
-            "body": ["Inter"]
-          }
-        },
-      },
-    }
-  </script>
-
-  <style>
-    body { 
-      font-family: 'Inter', sans-serif; 
-      background: radial-gradient(circle at top left, #f8f9fa 0%, #e2e8f0 100%);
-      min-height: 100vh; 
-    }
-    .form-view { display: none; }
-    .form-view.active { display: block; animation: slideUp 0.4s ease-out; }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .input-wrap.is-error { border-color: #ef4444; background-color: #fef2f2; }
-    .mode-toggle-track { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .signup-mode .mode-toggle-track { transform: translateX(100%); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Welcome to NannyLink</title>
     
-    button:disabled { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
-  </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../assets/styles/auth.css" />
 </head>
-<body class="antialiased flex items-center justify-center p-4">
-
-  <main class="w-full max-w-[480px] bg-white rounded-[2.5rem] shadow-2xl shadow-primary/5 border border-white p-8 sm:p-12 relative overflow-hidden">
-    
-    <div class="flex flex-col items-center mb-8">        
-        <span class="text-2xl font-black text-primary font-headline tracking-tighter">NannyLink</span>
-        <p class="text-[10px] font-bold text-secondary uppercase tracking-[0.2em] mt-1">Kenya's Premium Care Network</p>
-    </div>
-
-    <div class="bg-slate-100 p-1 rounded-2xl relative flex items-center h-12 border border-slate-200 mb-8" id="modeToggle">
-      <div class="mode-toggle-track absolute left-1 top-1 w-[calc(50%-4px)] h-10 bg-white rounded-xl shadow-sm z-0"></div>
-      <button class="relative z-10 flex-1 text-sm font-bold text-primary transition-colors" id="btnLogin">Sign In</button>
-      <button class="relative z-10 flex-1 text-sm font-bold text-slate-400 transition-colors" id="btnSignup">Sign Up</button>
-    </div>
-
-    <div class="hidden p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-xs font-medium items-center gap-3 mb-6" id="bannerError">
-        <i class="fas fa-circle-exclamation"></i><span id="bannerErrorText"></span>
-    </div>
-    <div class="hidden p-4 rounded-2xl bg-green-50 border border-green-100 text-green-600 text-xs font-medium items-center gap-3 mb-6" id="bannerSuccess">
-        <i class="fas fa-circle-check"></i><span id="bannerSuccessText"></span>
-    </div>
-
-    <div class="form-view active" id="viewLogin">
-      <div class="mb-8 text-center">
-          <h1 class="text-2xl font-extrabold font-headline text-primary tracking-tight">Welcome Back</h1>
-          <p class="text-slate-400 text-sm mt-1">Enter your details to access your dashboard</p>
-      </div>
-
-      <form id="formLogin" class="space-y-4" novalidate>
-        <div class="space-y-1">
-          <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Email Address</label>
-          <div id="wrapLoginEmail" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5">
-            <i class="fas fa-envelope text-slate-400 text-sm mr-3"></i>
-            <input type="email" id="loginEmail" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="name@example.com" required>
-          </div>
-          <span class="text-[10px] text-red-500 font-medium ml-1" id="errLoginEmail"></span>
-        </div>
-
-        <div class="space-y-1">
-          <div class="flex justify-between items-center mb-1">
-              <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Password</label>
-              <button type="button" class="text-[10px] font-bold text-secondary underline" id="btnForgot">Forgot password?</button>
-          </div>
-          <div id="wrapLoginPw" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
-            <i class="fas fa-lock text-slate-400 text-sm mr-3"></i>
-            <input type="password" id="loginPw" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="••••••••" required>
-            <button type="button" class="pw-eye text-slate-400" data-target="loginPw"><i class="fas fa-eye"></i></button>
-          </div>
-          <span class="text-[10px] text-red-500 font-medium ml-1" id="errLoginPw"></span>
-        </div>
-
-        <button type="submit" class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/10 hover:bg-slate-900 transition-all mt-4" id="btnLoginSubmit">
-          Sign In
-        </button>
-      </form>
-    </div>
-
-    <div class="form-view" id="viewSignup">
-      <div class="mb-8 text-center">
-          <h1 class="text-2xl font-extrabold font-headline text-primary tracking-tight">Create Account</h1>
-          <p class="text-slate-400 text-sm mt-1">Join the network for free today</p>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3 mb-6" id="signupRoleGrid">
-          <button type="button" class="role-card active flex flex-col items-center p-3 rounded-2xl border-2 border-primary bg-slate-50 transition-all" data-role="nanny">
-              <span class="text-[11px] font-bold text-primary uppercase">Joining as Nanny</span>
-          </button>
-          <button type="button" class="role-card flex flex-col items-center p-3 rounded-2xl border-2 border-slate-100 transition-all" data-role="family">
-              <span class="text-[11px] font-bold text-slate-400 uppercase">Joining as Family</span>
-          </button>
-      </div>
-
-      <form id="formSignup" class="space-y-4" novalidate>
-        <div class="space-y-1">
-          <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Phone Number</label>
-          <div id="wrapSignupPhone" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
-            <i class="fas fa-phone text-slate-400 text-sm mr-3"></i>
-            <input type="tel" id="signupPhone" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="0712345678" required>
-          </div>
-          <span class="text-[10px] text-red-500 font-medium ml-1" id="errSignupPhone"></span>
-        </div>
-
-        <div class="space-y-1">
-          <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Email Address</label>
-          <div id="wrapSignupEmail" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
-            <i class="fas fa-envelope text-slate-400 text-sm mr-3"></i>
-            <input type="email" id="signupEmail" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="your@email.com" required>
-          </div>
-          <span class="text-[10px] text-red-500 font-medium ml-1" id="errSignupEmail"></span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="space-y-1">
-            <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Password</label>
-            <div id="wrapSignupPw" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
-              <input type="password" id="signupPw" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="Create" required>
-              <button type="button" class="pw-eye text-slate-400 px-2" data-target="signupPw"><i class="fas fa-eye"></i></button>
+<body>
+    <main class="auth-container">
+        <div class="auth-card">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <span class="logo-text">NannyLink</span>
+                <p class="logo-subtitle">Kenya's Premium Care Network</p>
             </div>
-          </div>
-          <div class="space-y-1">
-            <label class="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Confirm</label>
-            <div id="wrapSignupConfirm" class="input-wrap flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 transition-all focus-within:border-primary">
-              <input type="password" id="signupConfirm" class="bg-transparent border-none p-0 w-full text-sm focus:ring-0" placeholder="Repeat" required>
-              <button type="button" class="pw-eye text-slate-400 px-2" data-target="signupConfirm"><i class="fas fa-eye"></i></button>
+
+            <!-- Mode Toggle -->
+            <div class="mode-toggle" id="modeToggle">
+                <div class="mode-track" id="modeTrack"></div>
+                <button class="mode-btn active" id="btnLogin">Sign In</button>
+                <button class="mode-btn" id="btnSignup">Sign Up</button>
             </div>
-          </div>
+
+            <!-- Error Banner -->
+            <div id="bannerError" class="banner error hidden">
+                <i class="fas fa-circle-exclamation"></i>
+                <span id="bannerErrorText"></span>
+            </div>
+
+            <!-- Success Banner -->
+            <div id="bannerSuccess" class="banner success hidden">
+                <i class="fas fa-circle-check"></i>
+                <span id="bannerSuccessText"></span>
+            </div>
+
+            <!-- Login Form -->
+            <div id="viewLogin" class="form-view active">
+                <div class="form-header">
+                    <h1 class="form-title">Welcome Back</h1>
+                    <p class="form-subtitle">Enter your details to access your dashboard</p>
+                </div>
+
+                <form id="formLogin" class="auth-form" novalidate>
+                    <div class="input-field">
+                        <label class="input-label">Email Address</label>
+                        <div class="input-wrapper" id="wrapLoginEmail">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="loginEmail" class="auth-input" placeholder="name@example.com" required>
+                        </div>
+                        <span class="error-message" id="errLoginEmail"></span>
+                    </div>
+
+                    <div class="input-field">
+                            <div class="label-row">
+                                <label class="input-label">Password</label>
+                                <a href="../views/reset-password.html" class="forgot-link">Forgot password?</a>
+                            </div>
+                                                    <div class="input-wrapper" id="wrapLoginPw">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="loginPw" class="auth-input" placeholder="••••••••" required>
+                            <button type="button" class="password-toggle" data-target="loginPw">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" id="errLoginPw"></span>
+                    </div>
+
+                    <button type="submit" class="auth-submit" id="btnLoginSubmit">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="viewSignup" class="form-view">
+                <div class="form-header">
+                    <h1 class="form-title">Create Account</h1>
+                    <p class="form-subtitle">Join the network for free today</p>
+                </div>
+
+                <!-- Role Selection -->
+                <div class="role-grid" id="signupRoleGrid">
+                    <button type="button" class="role-card active" data-role="nanny">
+                        <span>Joining as Nanny</span>
+                    </button>
+                    <button type="button" class="role-card" data-role="family">
+                        <span>Joining as Family</span>
+                    </button>
+                </div>
+
+                <form id="formSignup" class="auth-form" novalidate>
+                    <div class="input-field">
+                        <label class="input-label">Phone Number</label>
+                        <div class="input-wrapper" id="wrapSignupPhone">
+                            <i class="fas fa-phone input-icon"></i>
+                            <input type="tel" id="signupPhone" class="auth-input" placeholder="0712345678" required>
+                        </div>
+                        <span class="error-message" id="errSignupPhone"></span>
+                    </div>
+
+                    <div class="input-field">
+                        <label class="input-label">Email Address</label>
+                        <div class="input-wrapper" id="wrapSignupEmail">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="signupEmail" class="auth-input" placeholder="your@email.com" required>
+                        </div>
+                        <span class="error-message" id="errSignupEmail"></span>
+                    </div>
+
+                    <div class="row-grid">
+                        <div class="input-field">
+                            <label class="input-label">Password</label>
+                            <div class="input-wrapper" id="wrapSignupPw">
+                                <input type="password" id="signupPw" class="auth-input" placeholder="Create password" required>
+                                <button type="button" class="password-toggle" data-target="signupPw">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div id="passwordStrength" class="password-strength hidden">
+                                <div class="strength-bar" id="strengthBar"></div>
+                                <span class="strength-text" id="strengthText">Weak</span>
+                            </div>
+                            <span class="error-message" id="errSignupPw"></span>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="input-label">Confirm Password</label>
+                            <div class="input-wrapper" id="wrapSignupConfirm">
+                                <input type="password" id="signupConfirm" class="auth-input" placeholder="Repeat password" required>
+                                <button type="button" class="password-toggle" data-target="signupConfirm">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <span class="error-message" id="errSignupConfirm"></span>
+                        </div>
+                    </div>
+
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="signupTerms">
+                        <label for="signupTerms">
+                            I agree to the <a href="../views/terms.html" class="terms-link">Terms of Service</a>.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="auth-submit" id="btnSignupSubmit">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="auth-footer" id="footerContainer">
+                <p id="footerText">
+                    Don't have an account? <button type="button" class="footer-link" id="footerAction">Sign up now</button>
+                </p>
+            </div>
         </div>
+    </main>
 
-        <div class="flex items-start gap-3 p-1">
-          <input type="checkbox" id="signupTerms" class="mt-1 rounded border-slate-300 text-primary focus:ring-primary">
-          <label class="text-[10px] text-slate-500 leading-tight">
-              I agree to the <a href="#" class="text-primary font-bold underline">Terms of Service</a>.
-          </label>
-        </div>
-
-        <button type="submit" class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/10 hover:bg-slate-900 transition-all mt-2" id="btnSignupSubmit">
-          Create Account
-        </button>
-      </form>
-    </div>
-
-    <div class="mt-8 pt-6 border-t border-slate-100 text-center">
-        <p class="text-xs text-slate-400 font-medium" id="footerText">
-            Don't have an account? <button type="button" class="text-primary font-bold hover:underline" id="footerAction">Sign up now</button>
-        </p>
-    </div>
-
-  </main>
-
-  <script type="module">
-    import { login, signup } from "../utils/authService.js";
-    import { validateEmail } from "../utils/authValidation.js";
-
-    const $ = (id) => document.getElementById(id);
-    const state = { mode: "login", signupRole: "nanny" };
-
-    function clearErrors() {
-      document.querySelectorAll('.input-wrap').forEach(w => w.classList.remove('is-error'));
-      document.querySelectorAll('[id^="err"]').forEach(e => e.textContent = "");
-      hideBanners();
-    }
-
-    function markError(wrapId, errId, msg) {
-        $(wrapId)?.classList.add("is-error");
-        if($(errId)) $(errId).textContent = msg;
-    }
-
-    function showBanner(type, msg) {
-        const b = type === "error" ? $("bannerError") : $("bannerSuccess");
-        const t = type === "error" ? $("bannerErrorText") : $("bannerSuccessText");
-        hideBanners();
-        t.textContent = msg;
-        b.classList.remove("hidden");
-        b.classList.add("flex");
-    }
-
-    function hideBanners() {
-        $("bannerError").classList.add("hidden");
-        $("bannerSuccess").classList.add("hidden");
-    }
-
-    function setMode(mode) {
-      state.mode = mode;
-      clearErrors();
-      const isSignup = mode === "signup";
-      $("modeToggle").classList.toggle("signup-mode", isSignup);
-      $("viewLogin").classList.toggle("active", !isSignup);
-      $("viewSignup").classList.toggle("active", isSignup);
-      
-      $("footerText").innerHTML = isSignup 
-        ? `Already have an account? <button type="button" class="text-primary font-bold hover:underline" id="toLogin">Sign in instead</button>`
-        : `Don't have an account? <button type="button" class="text-primary font-bold hover:underline" id="toSignup">Sign up now</button>`;
-      
-      $("toLogin")?.addEventListener("click", () => setMode("login"));
-      $("toSignup")?.addEventListener("click", () => setMode("signup"));
-    }
-
-    function initRoles(gridId, key) {
-        $(gridId).querySelectorAll(".role-card").forEach(card => {
-            card.addEventListener("click", () => {
-                $(gridId).querySelectorAll(".role-card").forEach(c => {
-                    c.classList.remove("active", "border-primary", "bg-slate-50");
-                    c.classList.add("border-slate-100");
-                    c.querySelector('span').classList.replace("text-primary", "text-slate-400");
-                });
-                card.classList.add("active", "border-primary", "bg-slate-50");
-                card.querySelector('span').classList.replace("text-slate-400", "text-primary");
-                state[key] = card.dataset.role;
-            });
-        });
-    }
-
-    async function handleRedirect(token) {
-    // 1. Store the token first
-    localStorage.setItem("access_token", token);
-
-    try {
-        // 2. Decode the JWT payload
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(window.atob(base64));
-        
-        console.log("Decoded Token Payload:", payload); // Debugging: Check if key is 'role' or 'Role'
-
-        // Ensure we handle case-sensitivity or missing keys
-        const role = payload.role || payload.Role; 
-
-        // 3. ADMIN REDIRECT (High Priority)
-        // We do this BEFORE the profile fetch because admins don't have family/nanny profiles
-        if (role === "admin") {
-            window.location.href = "../admin/statsoverview.html";
-            return; // Exit function so it doesn't try to fetch profiles below
-        }
-
-        // 4. FAMILY/NANNY PROFILE CHECK
-        const endpoint = role === "family" ? "families" : "nannies";
-        
-        const res = await fetch(`http://127.0.0.1:8000/${endpoint}/profile/me`, {
-            method: 'GET',
-            headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        // 5. REDIRECT BASED ON ROLE AND PROFILE STATUS
-        if (role === "family") {
-            window.location.href = res.ok 
-                ? "../Family/familydashboard.html" 
-                : "../Family/createprofile.html";
-        } else if (role === "nanny") {
-            window.location.href = res.ok 
-                ? "../nanny/nannydashboard.html" 
-                : "../nanny/profilecreation.html";
-        } else {
-            // Fallback for unexpected roles
-            console.error("Unknown role detected:", role);
-            showBanner("error", "Unauthorized role.");
-        }
-
-    } catch (err) {
-        console.error("Redirect logic failed:", err);
-        showBanner("error", "Session validation failed.");
-    }
-}
-
-    $("formLogin").onsubmit = async (e) => {
-        e.preventDefault();
-        clearErrors();
-        const email = $("loginEmail").value;
-        const pw = $("loginPw").value;
-
-        if(!validateEmail(email).valid) return markError("wrapLoginEmail", "errLoginEmail", "Invalid email");
-        if(!pw) return markError("wrapLoginPw", "errLoginPw", "Password required");
-
-        $("btnLoginSubmit").disabled = true;
-        $("btnLoginSubmit").innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Verifying...`;
-
-        const res = await login(email, pw);
-        if(res.success) {
-            showBanner("success", "Login successful! Redirecting...");
-            handleRedirect(res.access_token);
-        } else {
-            showBanner("error", res.message || "Invalid credentials");
-            $("btnLoginSubmit").disabled = false;
-            $("btnLoginSubmit").textContent = "Sign In";
-        }
-    };
-
-    $("formSignup").onsubmit = async (e) => {
-        e.preventDefault();
-        clearErrors();
-        const email = $("signupEmail").value;
-        const phone = $("signupPhone").value;
-        const pw = $("signupPw").value;
-        const cpw = $("signupConfirm").value;
-
-        if(!validateEmail(email).valid) return markError("wrapSignupEmail", "errSignupEmail", "Invalid email");
-        if(phone.length < 10) return markError("wrapSignupPhone", "errSignupPhone", "Invalid phone number");
-        if(pw !== cpw) return showBanner("error", "Passwords do not match");
-        if(!$("signupTerms").checked) return showBanner("error", "Please agree to the Terms of Service");
-
-        $("btnSignupSubmit").disabled = true;
-        $("btnSignupSubmit").innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Creating Account...`;
-
-        const res = await signup({ email, phone, password: pw, role: state.signupRole });
-        if(res.success) {
-            showBanner("success", "Account created! Logging you in...");
-            const lRes = await login(email, pw);
-            if(lRes.success) handleRedirect(lRes.access_token);
-              // check if the result contains unique constraint error for email and show appropriate message
-              else if (lRes.message && lRes.message.includes("unique constraint") && lRes.message.includes("email")) {
-                showBanner("error", "Email or phone number already in use. Please use a different  or a phone number.");
-                $("btnSignupSubmit").disabled = false;
-                $("btnSignupSubmit").textContent = "Create Account";
-              }
-        } else {
-          // if the error message contains "unique constraint" and "email", show a specific error about email already in use
-          if (res.message && res.message.includes("unique constraint") && res.message.includes("email")) {
-            showBanner("error", "Email or phone number already in use. Please use a different email or phone number.");
-          } else {
-            showBanner("error", "Signup failed. Try again.");
-            $("btnSignupSubmit").disabled = false;
-            $("btnSignupSubmit").textContent = "Create Account";
-          }
-        }
-    };
-
-    document.addEventListener("DOMContentLoaded", () => {
-        $("btnLogin").onclick = () => setMode("login");
-        $("btnSignup").onclick = () => setMode("signup");
-        $("footerAction").onclick = () => setMode("signup");
-        initRoles("signupRoleGrid", "signupRole");
-        
-        document.querySelectorAll(".pw-eye").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                const inputId = btn.getAttribute("data-target");
-                const input = $(inputId);
-                const icon = btn.querySelector("i");
-                
-                if (input.type === "password") {
-                    input.type = "text";
-                    icon.classList.replace("fa-eye", "fa-eye-slash");
-                } else {
-                    input.type = "password";
-                    icon.classList.replace("fa-eye-slash", "fa-eye");
-                }
-            });
-        });
-    });
-  </script>
+    <!-- JavaScript -->
+    <script type="module" src="../../assets/scripts/auth.js"></script>
 </body>
 </html>

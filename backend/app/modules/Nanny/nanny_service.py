@@ -19,7 +19,6 @@ class NannyService:
         search: str | None, 
         location: str | None
     ):
-        # This matches the signature we just fixed in the repo
         return await self.nanny_repository.get_public_nannies(
             skip=skip,
             limit=limit,

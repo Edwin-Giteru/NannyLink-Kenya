@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.modules.Auth.auth_service import AuthService
 from app.modules.Auth.auth_schema import UserCreate, UserResponse, LoginRequest
 from fastapi.responses import JSONResponse
+from app.modules.Auth.auth_schema import PasswordResetRequest, PasswordResetConfirm
+
 
 router = APIRouter(tags=["Auth"])
 
@@ -66,6 +68,49 @@ async def login(login_request: LoginRequest, db: SessionDep):
         })
 
         return response
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.post("/password-reset/request")
+async def request_password_reset(
+    request: PasswordResetRequest,
+    db: SessionDep
+):
+    """Request a password reset link"""
+    try:
+        auth_service = AuthService(db)
+        result = await auth_service.request_password_reset(request.email)
+        
+        if not result.success:
+            raise HTTPException(
+                status_code=result.status_code,
+                detail=result.error
+            )
+        return result.data
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/password-reset/confirm")
+async def confirm_password_reset(
+    request: PasswordResetConfirm,
+    db: SessionDep
+):
+    """Confirm password reset with token"""
+    try:
+        auth_service = AuthService(db)
+        result = await auth_service.confirm_password_reset(request.token, request.new_password)
+        
+        if not result.success:
+            raise HTTPException(
+                status_code=result.status_code,
+                detail=result.error
+            )
+        return result.data
     except HTTPException as he:
         raise he
     except Exception as e:

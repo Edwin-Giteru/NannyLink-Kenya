@@ -6,7 +6,9 @@ import uuid
 
 from app.db.models.nanny_profile import NannyProfile
 from app.modules.Nanny.nanny_schema import NannyCreate
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func, or_, not_
+from app.db.models.types import MatchStatus, VettingStatus
+from app.db.models.match import Match
 
 class NannyRepository:
     def __init__(self, db: AsyncSession):
@@ -30,15 +32,29 @@ class NannyRepository:
         search: str | None = None, 
         location: str | None = None
     ) -> list[NannyProfile]:
-        """Fetch nannies with pagination and filtering."""
-        stmt = select(NannyProfile)
+        """Fetch nannies WITHOUT active connections (available for hire)."""
+        
+        # Subquery: nannies that have active matches
+        active_match_subquery = (
+            select(Match.nanny_id)
+            .where(
+                Match.status.in_([MatchStatus.AWAITING_PAYMENT, MatchStatus.COMPLETED])
+            )
+            .distinct()
+            .subquery()
+        )
+        
+        # Main query: exclude nannies with active matches
+        stmt = select(NannyProfile).where(
+            NannyProfile.vetting_status == VettingStatus.APPROVED,
+            not_(NannyProfile.id.in_(select(active_match_subquery.c.nanny_id)))
+        )
 
-        # 1. Filter by Location (Address)
-        if location and location != "All Cities":
-            # Using ilike for case-insensitive matching
+        # Filter by Location (Address)
+        if location and location != "All Cities" and location != "":
             stmt = stmt.where(NannyProfile.address.ilike(f"%{location}%"))
 
-        # 2. Search by Name or Skills
+        # Search by Name or Skills
         if search:
             stmt = stmt.where(
                 or_(
@@ -47,12 +63,46 @@ class NannyRepository:
                 )
             )
 
-        # 3. Apply Pagination and Ordering
-        # Note: We use NannyProfile.created_at.desc() to show newest first
+        # Apply Pagination and Ordering
         stmt = stmt.order_by(NannyProfile.created_at.desc()).offset(skip).limit(limit)
         
         result = await self.db.execute(stmt)
         return list(result.scalars().all())
+    
+    async def count_available_nannies(
+        self, 
+        search: str | None = None, 
+        location: str | None = None
+    ) -> int:
+        """Count available nannies (without active connections)"""
+        
+        active_match_subquery = (
+            select(Match.nanny_id)
+            .where(
+                Match.status.in_([MatchStatus.AWAITING_PAYMENT, MatchStatus.COMPLETED])
+            )
+            .distinct()
+            .subquery()
+        )
+        
+        stmt = select(func.count(NannyProfile.id)).where(
+            NannyProfile.vetting_status == VettingStatus.APPROVED,
+            not_(NannyProfile.id.in_(select(active_match_subquery.c.nanny_id)))
+        )
+        
+        if location and location != "All Cities" and location != "":
+            stmt = stmt.where(NannyProfile.address.ilike(f"%{location}%"))
+            
+        if search:
+            stmt = stmt.where(
+                or_(
+                    NannyProfile.name.ilike(f"%{search}%"),
+                    NannyProfile.skills.ilike(f"%{search}%")
+                )
+            )
+            
+        result = await self.db.execute(stmt)
+        return result.scalar() or 0
     async def save(self, nanny: NannyProfile) -> NannyProfile:
         self.db.add(nanny)
         await self.db.flush()

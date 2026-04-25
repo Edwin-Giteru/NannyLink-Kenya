@@ -18,29 +18,29 @@ async def get_all_nannies(
     search: str | None = Query(None),
     location: str | None = Query(None)
 ):
-    """Publicly list nannies with Pagination and Search support."""
+    """Publicly list nannies with Pagination and Search support. Only shows nannies without existing connections."""
     service = NannyService(db)
     nannies = await service.get_paginated_nannies(
         skip=skip, 
         limit=limit, 
         search=search, 
         location=location
-        )
+    )
     
-    # Map database models to the dictionary format expected by your JS frontend
     return [
         {
             "id": str(n.id),
             "full_name": n.name,
-            "experience_years": n.years_experience,
+            "experience_years": n.years_experience or 0,
             "current_location": n.address,
-            "preferred_location": getattr(n, 'preferred_location', 'Nairobi'),
-            "status": n.vetting_status,
+            "preferred_location": getattr(n, 'preferred_location', n.address or 'Nairobi'),
+            "status": n.vetting_status.value if n.vetting_status else "pending",
             "profile_image": n.profile_photo_url,
-            "skills": n.skills,
-            "availability": n.availability,
+            "skills": n.skills or "",
+            "availability": n.availability or "full_time",
         } for n in nannies
     ]
+
 @router.post("/profile", response_model=NannyResponse, status_code=status.HTTP_201_CREATED)
 async def create_my_profile(
     nanny_data: NannyCreate, 

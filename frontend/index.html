@@ -1,536 +1,324 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>NannyLink Kenya | Trusted Childcare Connections</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <script id="tailwind-config">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#00152f",
-                        "secondary": "#835500",
-                        "surface-bright": "#f8f9fa",
-                        "primary-container": "#0f2a4a",
-                        "secondary-container": "#fcb650",
-                        "surface-tint": "#485f82",
-                    },
-                    fontFamily: {
-                        "headline": ["Manrope"],
-                        "body": ["Inter"],
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        .ambient-shadow { box-shadow: 0px 20px 40px rgba(0, 21, 47, 0.06); }
-        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
-        html { scroll-behavior: smooth; }
-        .nanny-card:hover .view-profile-btn { background-color: #00152f; color: white; }
-        .pagination-btn.active { background-color: #00152f !important; color: white !important; border-color: #00152f !important; }
-        
-        /* Floating Nav Styles */
-        .side-nav-link:hover { color: #835500; transform: translateX(5px); }
-        .floating-nav { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; transform: translateY(20px); }
-        .floating-nav.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
-
-        /* FAQ Accordion Styles */
-        .faq-content { 
-            max-height: 0; 
-            overflow: hidden; 
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
-        }
-        .faq-item.active .faq-content { 
-            max-height: 1000px; 
-            opacity: 1;
-            pointer-events: auto;
-            padding-bottom: 1.25rem;
-        }
-        .faq-item.active .faq-icon { transform: rotate(45deg); color: #835500; }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../frontend/assets/styles/index.css"/>
 </head>
+<body>
 
-<body class="bg-[#f8f9fa] font-body text-slate-900 antialiased relative">
-
-<aside id="side-nav" class="floating-nav fixed right-8 top-1/2 -translate-y-1/2 z-[60] hidden lg:flex flex-col gap-4">
-    <div class="bg-white/80 backdrop-blur-lg border border-slate-100 p-3 rounded-3xl ambient-shadow flex flex-col gap-2">
-        <a href="#" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-primary text-white transition-all group relative">
+<!-- Floating Navigation Sidebar -->
+<aside id="side-nav" class="floating-nav">
+    <div class="nav-sidebar-container">
+        <a href="#" class="nav-side-link">
             <span class="material-symbols-outlined">home</span>
-            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">Home</span>
+            <span class="nav-tooltip">Home</span>
         </a>
-        <a href="#about" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-white text-slate-400 hover:text-primary transition-all group relative border border-slate-50">
+        <a href="#about" class="nav-side-link">
             <span class="material-symbols-outlined">info</span>
-            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">About</span>
+            <span class="nav-tooltip">About</span>
         </a>
-        <a href="#services" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-white text-slate-400 hover:text-primary transition-all group relative border border-slate-50">
+        <a href="#services" class="nav-side-link">
             <span class="material-symbols-outlined">design_services</span>
-            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">Services</span>
+            <span class="nav-tooltip">Services</span>
         </a>
-        <a href="#nannies" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-white text-slate-400 hover:text-primary transition-all group relative border border-slate-50">
+        <a href="#nannies" class="nav-side-link">
             <span class="material-symbols-outlined">search</span>
-            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">Find</span>
+            <span class="nav-tooltip">Find</span>
         </a>
-        <a href="#faq" class="side-nav-link w-12 h-12 flex items-center justify-center rounded-2xl bg-white text-slate-400 hover:text-primary transition-all group relative border border-slate-50">
+        <a href="#faq" class="nav-side-link">
             <span class="material-symbols-outlined">quiz</span>
-            <span class="absolute right-14 bg-primary text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-wider">FAQ</span>
+            <span class="nav-tooltip">FAQ</span>
         </a>
     </div>
 </aside>
 
-<div id="mobile-fab" class="floating-nav fixed bottom-6 right-6 z-[60] lg:hidden">
-    <a href="#nannies" class="w-14 h-14 bg-primary text-white rounded-full ambient-shadow flex items-center justify-center shadow-2xl">
+<!-- Mobile Floating Action Button -->
+<div id="mobile-fab" class="mobile-fab">
+    <a href="#nannies">
         <span class="material-symbols-outlined">search</span>
     </a>
 </div>
 
-<header class="w-full sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
-    <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-        <div class="flex items-center gap-3">
-            <img src="./assets/images/logo.png" alt="Logo" class="h-10 w-auto object-contain">
-            <span class="text-xl font-extrabold tracking-tighter text-primary font-headline">NannyLink Kenya</span>
+<!-- Header -->
+<header class="header">
+    <div class="header-container">
+        <div class="logo">
+            <img src="./assets/images/logo.png" alt="Logo">
+            <span>NannyLink Kenya</span>
         </div>
         
-        <nav class="hidden md:flex items-center gap-8">
-            <a href="#" class="text-primary font-bold">Home</a>
-            <a href="#about" class="text-slate-600 hover:text-primary font-semibold transition-colors">About</a>
-            <a href="#services" class="text-slate-600 hover:text-primary font-semibold transition-colors">Services</a>
-            <a href="#nannies" class="text-slate-600 hover:text-primary font-semibold transition-colors">Find Nannies</a>
-            <a href="#faq" class="text-slate-600 hover:text-primary font-semibold transition-colors">FAQ</a>
+        <nav class="desktop-nav">
+            <a href="#" class="active">Home</a>
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#nannies">Find Nannies</a>
+            <a href="#faq">FAQ</a>
         </nav>
 
-        <div class="flex items-center gap-4">
-            <a href="../frontend/src/views/login.html" class="hidden sm:block text-sm font-bold text-primary">Login</a>
-            <a href="../frontend/src/views/login.html" class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-all">Join Platform</a>
+        <div class="auth-buttons">
+            <a href="../frontend/src/views/login.html" class="login-link">Login</a>
+            <a href="../frontend/src/views/login.html" class="join-btn">Join Platform</a>
         </div>
     </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-6">
-    <section class="pt-16 pb-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div class="max-w-2xl">
-            <p class="text-secondary font-bold text-sm tracking-widest mb-3 uppercase">Trusted Childcare</p>
-            <h1 class="text-5xl md:text-7xl font-headline font-extrabold text-primary tracking-tight mb-6 leading-[1.1]">
-                Find your family's <br><span class="text-surface-tint italic">Digital Guardian.</span>
+<!-- Main Content -->
+<main>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-badge">Trusted Childcare</p>
+            <h1 class="hero-title">
+                Find your family's <br><span class="hero-highlight">Digital Guardian.</span>
             </h1>
-            <p class="text-slate-600 text-lg mb-10 leading-relaxed">
+            <p class="hero-description">
                 Connecting Kenyan families with professional, background-checked nannies. Secure payments, digital contracts, and absolute peace of mind.
             </p>
-            <div class="flex flex-wrap gap-4">
-                <a href="#nannies" class="bg-primary text-white font-bold px-8 py-4 rounded-2xl hover:shadow-xl hover:shadow-primary/20 transition-all">Search Nannies</a>
-                <a href="../frontend/src/views/login.html" class="bg-white border-2 border-slate-100 text-primary font-bold px-8 py-4 rounded-2xl hover:bg-slate-50 transition-all">Apply as a Nanny</a>
+            <div class="hero-buttons">
+                <a href="#nannies" class="btn-primary">Search Nannies</a>
+                <a href="../frontend/src/views/login.html" class="btn-outline">Apply as a Nanny</a>
             </div>
         </div>
-        <div class="relative">
-            <div class="rounded-[2.5rem] overflow-hidden ambient-shadow">
-                <img src="./assets/images/cover image.jpg" alt="Childcare Support" class="w-full h-[500px] object-cover">
-            </div>
-        </div>
-    </section>
-
-    <section class="py-12 border-y border-slate-100 my-12">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="text-center md:border-r border-slate-100">
-                <h2 class="text-4xl font-black text-primary font-headline" id="stat-nannies">1,240</h2>
-                <p class="text-slate-500 font-bold text-sm uppercase mt-1">Verified Nannies</p>
-            </div>
-            <div class="text-center md:border-r border-slate-100">
-                <h2 class="text-4xl font-black text-primary font-headline" id="stat-families">850</h2>
-                <p class="text-slate-500 font-bold text-sm uppercase mt-1">Active Families</p>
-            </div>
-            <div class="text-center">
-                <h2 class="text-4xl font-black text-secondary font-headline" id="stat-matches">432</h2>
-                <p class="text-slate-500 font-bold text-sm uppercase mt-1">Successful Matches</p>
+        <div class="hero-image">
+            <div class="image-wrapper">
+                <img src="./assets/images/cover image.jpg" alt="Childcare Support">
             </div>
         </div>
     </section>
 
-    <section id="about" class="py-20">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h2 id="stat-nannies">1,240</h2>
+                <p>Verified Nannies</p>
+            </div>
+            <div class="stat-item">
+                <h2 id="stat-families">850</h2>
+                <p>Active Families</p>
+            </div>
+            <div class="stat-item">
+                <h2 id="stat-matches">432</h2>
+                <p>Successful Matches</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="about-grid">
             <div>
-                <span class="text-secondary font-black text-[10px] tracking-[0.3em] uppercase mb-4 block">Our Commitment</span>
-                <h2 class="text-4xl md:text-5xl font-headline font-extrabold text-primary mb-6">Our Mission for<br><span class="text-surface-tint italic text-4xl">Safe Childcare</span></h2>
-                <p class="text-slate-600 leading-relaxed mb-8 max-w-lg">
+                <span class="section-badge">Our Commitment</span>
+                <h2 class="section-title">Our Mission for<br><span class="section-highlight">Safe Childcare</span></h2>
+                <p class="about-text">
                     At NannyLink, we believe every family deserves peace of mind. Our mission is to connect parents with the most trustworthy, vetted, and compassionate caregivers in Kenya.
                 </p>
-                
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
-                    <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                        <i class="fas fa-id-card text-secondary mb-2"></i>
-                        <span class="text-[10px] font-bold text-primary uppercase text-center">ID Verified</span>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-id-card"></i>
+                        <span>ID Verified</span>
                     </div>
-                    <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                        <i class="fas fa-user-shield text-secondary mb-2"></i>
-                        <span class="text-[10px] font-bold text-primary uppercase text-center">Safe Matches</span>
+                    <div class="feature-item">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Safe Matches</span>
                     </div>
-                    <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                        <i class="fas fa-clipboard-check text-secondary mb-2"></i>
-                        <span class="text-[10px] font-bold text-primary uppercase text-center">References</span>
+                    <div class="feature-item">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>References</span>
                     </div>
-                    <div class="flex flex-col items-center p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                        <i class="fas fa-comments text-secondary mb-2"></i>
-                        <span class="text-[10px] font-bold text-primary uppercase text-center">Interviews</span>
+                    <div class="feature-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Interviews</span>
                     </div>
                 </div>
             </div>
-            <div class="relative">
-                <div class="rounded-[3rem] overflow-hidden rotate-2 hover:rotate-0 transition-transform duration-500">
-                    <img src="./assets/images/cover image.jpg" alt="Childcare Support" class="w-full h-[400px] object-cover">
+            <div class="about-image">
+                <div class="about-image-wrapper">
+                    <img src="./assets/images/cover image.jpg" alt="Childcare Support">
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="faq" class="py-20 border-t border-slate-100">
-        <div class="max-w-3xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-secondary font-black text-[10px] tracking-[0.3em] uppercase mb-4 block">Common Questions</span>
-                <h2 class="text-4xl font-headline font-extrabold text-primary">Frequently Asked Questions</h2>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-                    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-                        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How are the nannies vetted?</span>
-                        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-                    </button>
-                    <div class="faq-content px-6">
-                        <p class="text-sm text-slate-500 leading-relaxed">Every nanny undergoes a rigorous 4-step verification process: National ID verification, Certificate of Good Conduct check, mandatory phone/physical interviews, and direct verification of at least two previous employment references.</p>
-                    </div>
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="services-header">
+            <h2 class="services-title">A Seamless Experience</h2>
+            <p class="services-subtitle">Safe connections for both families and caregivers.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon families">
+                    <i class="fas fa-home"></i>
                 </div>
-                <div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How are the nannies vetted?</span>
-        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-    </button>
-    <div class="faq-content px-6">
-        <p class="text-sm text-slate-500 leading-relaxed">Every nanny undergoes a rigorous 4-step verification process: National ID verification, Certificate of Good Conduct check, mandatory phone/physical interviews, and direct verification of at least two previous employment references.</p>
-    </div>
-</div>
-
-<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How does the M-Pesa payment system work?</span>
-        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-    </button>
-    <div class="faq-content px-6">
-        <p class="text-sm text-slate-500 leading-relaxed">NannyLink uses a secure M-Pesa integration. For short-term bookings, payments are held in a secure escrow system and only released to the nanny once the service is confirmed as complete by the family, ensuring financial safety for everyone.</p>
-    </div>
-</div>
-
-<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Do I need to sign a physical contract?</span>
-        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-    </button>
-    <div class="faq-content px-6">
-        <p class="text-sm text-slate-500 leading-relaxed">No. Our platform generates legally binding digital contracts that define work hours, duties, and salary. Both the family and the nanny sign electronically within the app, and a copy is stored in your dashboard for future reference.</p>
-    </div>
-</div>
-
-<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Are there nannies trained for special needs?</span>
-        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-    </button>
-    <div class="faq-content px-6">
-        <p class="text-sm text-slate-500 leading-relaxed">Yes. You can use our advanced filters to find nannies with specialized training in handling children with autism, physical disabilities, or neurodivergent conditions. These caregivers have verified certifications in their respective fields.</p>
-    </div>
-</div>
-
-<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-        <span class="font-bold text-primary group-hover:text-secondary transition-colors">What if the nanny isn't a good fit?</span>
-        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-    </button>
-    <div class="faq-content px-6">
-        <p class="text-sm text-slate-500 leading-relaxed">We offer a 14-day satisfaction guarantee. If the match doesn't work out within the first two weeks, our team will provide a replacement caregiver at no additional connection fee.</p>
-    </div>
-</div>
-
-<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-        <span class="font-bold text-primary group-hover:text-secondary transition-colors">What are the requirements to join as a nanny?</span>
-        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-    </button>
-    <div class="faq-content px-6">
-        <p class="text-sm text-slate-500 leading-relaxed">Applicants must have a valid Kenyan National ID, a recent Certificate of Good Conduct (less than 6 months old), at least two verifiable references, and a passion for childcare. Training in First Aid is a significant advantage.</p>
-    </div>
-</div>
-
-<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-        <span class="font-bold text-primary group-hover:text-secondary transition-colors">Is there support in case of emergencies?</span>
-        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-    </button>
-    <div class="faq-content px-6">
-        <p class="text-sm text-slate-500 leading-relaxed">Our support team is available to mediate any disputes or handle emergency logistical changes. We also encourage all our caregivers to participate in regular safety and emergency response training sessions.</p>
-    </div>
-</div>
-
-<div class="faq-item bg-white border border-slate-100 rounded-2xl ambient-shadow overflow-hidden transition-all duration-300">
-    <button class="faq-trigger w-full px-6 py-5 flex items-center justify-between text-left group">
-        <span class="font-bold text-primary group-hover:text-secondary transition-colors">How much does it cost to use NannyLink?</span>
-        <span class="faq-icon material-symbols-outlined text-slate-400 transition-transform duration-300">add</span>
-    </button>
-    <div class="faq-content px-6">
-        <p class="text-sm text-slate-500 leading-relaxed">Creating an account and browsing profiles is completely free. We only charge a small one-time connection fee when you successfully hire a nanny, which covers the background checks and administrative costs of the contract.</p>
-    </div>
-</div>
+                <h3 class="service-name">For Families</h3>
+                <p class="service-description">Views vetted nanny profiles and connects with trusted caregivers.</p>
+                <a href="../frontend/src/views/login.html" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <div class="service-icon nannies">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h3 class="service-name">For Nannies</h3>
+                <p class="service-description">Build a professional profile and find high-quality local jobs.</p>
+                <a href="../frontend/src/views/login.html" class="service-link">Join Today <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
 
-    <section id="services" class="py-20 bg-primary text-white rounded-[4rem] px-10">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-5xl font-headline font-extrabold">A Seamless Experience</h2>
-            <p class="text-slate-400 mt-4">Safe connections for both families and caregivers.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            <div class="group p-8 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-                <div class="w-12 h-12 bg-secondary-container rounded-xl flex items-center justify-center mb-6">
-                    <i class="fas fa-home text-primary"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4">For Families</h3>
-                <p class="text-slate-400 text-sm mb-6">Views vetted nanny profiles and connects with trusted caregivers.</p>
-                <a href="../frontend/src/views/login.html" class="text-secondary-container font-bold text-sm flex items-center gap-2">Get Started <i class="fas fa-arrow-right text-[10px]"></i></a>
-            </div>
-            <div class="group p-8 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-                <div class="w-12 h-12 bg-surface-tint rounded-xl flex items-center justify-center mb-6">
-                    <i class="fas fa-user-graduate text-white"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4">For Nannies</h3>
-                <p class="text-slate-400 text-sm mb-6">Build a professional profile and find high-quality local jobs.</p>
-                <a href="../frontend/src/views/login.html" class="text-surface-tint font-bold text-sm flex items-center gap-2">Join Today <i class="fas fa-arrow-right text-[10px]"></i></a>
-            </div>
-        </div>
-    </section>
-
-    <section id="nannies" class="py-12">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+    <!-- Nannies Section -->
+    <section id="nannies" class="nannies">
+        <div class="nannies-header">
             <div>
-                <h2 class="text-3xl font-headline font-extrabold text-primary">Featured Nannies</h2>
-                <p class="text-slate-500">Browse trusted caregivers available near you</p>
+                <h2 class="nannies-title">Featured Nannies</h2>
+                <p class="nannies-subtitle">Browse trusted caregivers available near you</p>
             </div>
-            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <div class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-                    <input type="text" id="skill-search" placeholder="Search by skill..." class="pl-10 pr-4 py-3 bg-white border-slate-200 rounded-xl text-sm focus:ring-secondary focus:border-secondary w-full sm:w-48 lg:w-64">
+            <div class="search-filters">
+                <div class="search-wrapper">
+                    <span class="search-icon material-symbols-outlined">search</span>
+                    <input type="text" id="skill-search" placeholder="Search by skill...">
                 </div>
-                <div class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">location_on</span>
-                    <input type="text" id="location-search" placeholder="Filter by location..." class="pl-10 pr-4 py-3 bg-white border-slate-200 rounded-xl text-sm focus:ring-secondary focus:border-secondary w-full sm:w-48 lg:w-64">
+                <div class="search-wrapper">
+                    <span class="search-icon material-symbols-outlined">location_on</span>
+                    <input type="text" id="location-search" placeholder="Filter by location...">
                 </div>
             </div>
         </div>
-        <div id="caregiverGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-        <div id="pagination-controls" class="mt-12 flex justify-center items-center gap-2"></div>
-        <div class="mt-12 text-center">
-            <a href="../frontend/src/views/login.html" class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-secondary hover:border-secondary transition-all">
-                Sign in to see all nannies
-            </a>
+        <div id="caregiverGrid" class="nannies-grid"></div>
+        <div id="pagination-controls" class="pagination-wrapper"></div>
+        <div class="signin-link">
+            <a href="../frontend/src/views/login.html">Sign in to see all nannies</a>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="faq-header">
+            <span class="section-badge">Common Questions</span>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+        <div class="faq-container">
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How are the nannies vetted?</span>
+                    <span class="faq-icon material-symbols-outlined">add</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Every nanny undergoes a rigorous 4-step verification process: National ID verification, Certificate of Good Conduct check, mandatory phone/physical interviews, and direct verification of at least two previous employment references.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How does the M-Pesa payment system work?</span>
+                    <span class="faq-icon material-symbols-outlined">add</span>
+                </button>
+                <div class="faq-answer">
+                    <p>NannyLink uses a secure M-Pesa integration. For short-term bookings, payments are held in a secure escrow system and only released to the nanny once the service is confirmed as complete by the family, ensuring financial safety for everyone.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Do I need to sign a physical contract?</span>
+                    <span class="faq-icon material-symbols-outlined">add</span>
+                </button>
+                <div class="faq-answer">
+                    <p>No. Our platform generates legally binding digital contracts that define work hours, duties, and salary. Both the family and the nanny sign electronically within the app, and a copy is stored in your dashboard for future reference.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Are there nannies trained for special needs?</span>
+                    <span class="faq-icon material-symbols-outlined">add</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes. You can use our advanced filters to find nannies with specialized training in handling children with autism, physical disabilities, or neurodivergent conditions. These caregivers have verified certifications in their respective fields.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What if the nanny isn't a good fit?</span>
+                    <span class="faq-icon material-symbols-outlined">add</span>
+                </button>
+                <div class="faq-answer">
+                    <p>We offer a 14-day satisfaction guarantee. If the match doesn't work out within the first two weeks, our team will provide a replacement caregiver at no additional connection fee.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What are the requirements to join as a nanny?</span>
+                    <span class="faq-icon material-symbols-outlined">add</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Applicants must have a valid Kenyan National ID, a recent Certificate of Good Conduct (less than 6 months old), at least two verifiable references, and a passion for childcare. Training in First Aid is a significant advantage.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Is there support in case of emergencies?</span>
+                    <span class="faq-icon material-symbols-outlined">add</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Our support team is available to mediate any disputes or handle emergency logistical changes. We also encourage all our caregivers to participate in regular safety and emergency response training sessions.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How much does it cost to use NannyLink?</span>
+                    <span class="faq-icon material-symbols-outlined">add</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Creating an account and browsing profiles is completely free. We only charge a small one-time connection fee when you successfully hire a nanny, which covers the background checks and administrative costs of the contract.</p>
+                </div>
+            </div>
         </div>
     </section>
 </main>
 
-<footer class="bg-white pt-20 pb-10 mt-20 border-t border-slate-100">
-    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-        <div class="space-y-6">
-            <div class="flex items-center gap-3">
-                <img src="./assets/images/logo.png" alt="Logo" class="h-8">
-                <span class="font-headline font-black text-primary">NannyLink Kenya</span>
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="./assets/images/logo.png" alt="Logo">
+                    <span>NannyLink Kenya</span>
+                </div>
+                <p class="footer-description">
+                    The most trusted platform in Kenya connecting families with vetted, background-checked childcare professionals. Safety is our priority.
+                </p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
             </div>
-            <p class="text-slate-500 text-sm leading-relaxed">
-                The most trusted platform in Kenya connecting families with vetted, background-checked childcare professionals. Safety is our priority.
-            </p>
-            <div class="flex gap-4">
-                <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"><i class="fab fa-whatsapp"></i></a>
+            <div class="footer-links">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
             </div>
         </div>
-        <div>
-            <h3 class="font-bold text-primary mb-6">Support</h3>
-            <ul class="space-y-4 text-sm text-slate-500 font-medium">
-                <li><a href="#" class="hover:text-secondary">Help Center</a></li>
-                <li><a href="#" class="hover:text-secondary">Terms of Service</a></li>
-                <li><a href="#" class="hover:text-secondary">Privacy Policy</a></li>
-                <li><a href="#" class="hover:text-secondary">Contact Us</a></li>
-            </ul>
+        <div class="footer-bottom">
+            <p>© 2026 NannyLink Kenya. All rights reserved.</p>
+            <p>Developed by Edwin Giteru</p>
         </div>
-    </div>
-    <div class="max-w-7xl mx-auto px-6 pt-10 mt-10 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-        <p>© 2026 NannyLink Kenya. All rights reserved.</p>
-        <p>Developed by Edwin Giteru</p>
     </div>
 </footer>
 
-<script type="module" src="../frontend/assets/scripts/authController.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Navigation Visibility Fix
-    const sideNav = document.getElementById('side-nav');
-    const mobileFab = document.getElementById('mobile-fab');
-    
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 200) {
-            sideNav.classList.add('visible');
-            mobileFab.classList.add('visible');
-        } else {
-            sideNav.classList.remove('visible');
-            mobileFab.classList.remove('visible');
-        }
-    });
-
-    // 2. FAQ Toggle Logic
-    const faqTriggers = document.querySelectorAll('.faq-trigger');
-    faqTriggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
-            const item = trigger.parentElement;
-            const icon = trigger.querySelector('.faq-icon');
-            const isOpen = item.classList.contains('active');
-            
-            document.querySelectorAll('.faq-item').forEach(other => {
-                other.classList.remove('active');
-                other.querySelector('.faq-icon').innerText = 'add';
-            });
-            
-            if (!isOpen) {
-                item.classList.add('active');
-                icon.innerText = 'remove';
-            }
-        });
-    });
-
-    // 3. Global Pagination Logic
-    const caregiverGrid = document.getElementById('caregiverGrid');
-    const paginationWrapper = document.getElementById('pagination-controls');
-    const itemsPerPage = 6;
-    let currentPage = 1;
-
-    function setupPagination() {
-        const children = Array.from(caregiverGrid.children);
-        const totalPages = Math.ceil(children.length / itemsPerPage);
-        
-        if (children.length === 0) return;
-
-        paginationWrapper.innerHTML = '';
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('button');
-            btn.innerText = i;
-            btn.className = `pagination-btn w-10 h-10 rounded-xl border-2 border-slate-200 font-bold text-sm transition-all hover:border-primary ${i === currentPage ? 'active' : ''}`;
-            btn.onclick = () => {
-                currentPage = i;
-                displayPage(i);
-            };
-            paginationWrapper.appendChild(btn);
-        }
-        displayPage(currentPage);
-    }
-
-    function displayPage(page) {
-        const children = Array.from(caregiverGrid.children);
-        const start = (page - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-
-        children.forEach((child, index) => {
-            child.style.display = (index >= start && index < end) ? 'flex' : 'none';
-        });
-
-        const buttons = paginationWrapper.querySelectorAll('button');
-        buttons.forEach((btn, idx) => {
-            if (idx + 1 === page) btn.classList.add('active');
-            else btn.classList.remove('active');
-        });
-    }
-
-    // Observer to handle dynamic content from renderNannies function
-    const observer = new MutationObserver(() => {
-        if (caregiverGrid.children.length > 0) {
-            setupPagination();
-        }
-    });
-
-    observer.observe(caregiverGrid, { childList: true });
-});
-
-// The Rendering Function for the API
-function renderNannies(nannies) {
-    const container = document.getElementById("caregiverGrid");
-    if (!container) return;
-    container.innerHTML = "";
-
-    if (!nannies || nannies.length === 0) {
-        container.innerHTML = `<div class="col-span-full text-center py-24 text-slate-400">No nannies found.</div>`;
-        return;
-    }
-
-    nannies.forEach(item => {
-        // 1. NORMALIZE DATA: Handle both NannyProfile and MatchResponse structures
-        // If it's a MatchResponse, the nanny data is nested inside item.nanny
-        const data = item.nanny ? item.nanny : item;
-        
-        // 2. FIELD MAPPING (Matches your SQLAlchemy + Pydantic exact names)
-        const nannyName = data.name || "Verified Nanny";
-        
-        // Check both possible photo keys from your Pydantic/SQLAlchemy models
-        const photo = data.profile_photo_url || data.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nannyName)}&background=random`;
-        
-        // Experience only exists on the full Profile, not the Brief schema
-        const exp = parseInt(data.years_experience) || 0;
-        
-        // Location (preferred_location on profile, location on brief)
-        const location = data.preferred_location || data.location || "Nairobi";
-
-        // 💰 Rate Calculation
-        const rate = 250 + (exp * 50);
-
-        const card = document.createElement("div");
-        card.className = "group bg-white rounded-[2rem] overflow-hidden ambient-shadow border-2 border-transparent transition-all duration-300 hover:-translate-y-2 hover:border-secondary flex flex-col";
-        
-        card.innerHTML = `
-            <div class="relative h-64">
-                <img class="w-full h-full object-cover" 
-                     src="${photo}" 
-                     alt="${nannyName}" 
-                     crossOrigin="anonymous"
-                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(nannyName)}&background=f1f5f9&color=64748b'"/>
-                
-                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
-                    <span class="material-symbols-outlined text-yellow-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="text-xs font-black text-primary">4.8</span>
-                </div>
-            </div>
-            <div class="p-6 flex flex-col">
-                <div class="flex justify-between items-start mb-2">
-                    <h3 class="text-lg font-headline font-extrabold text-primary">${nannyName}</h3>
-                    <span class="text-secondary font-black text-xs uppercase">KES ${rate}/day</span>
-                </div>
-                <div class="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">
-                    <span class="material-symbols-outlined text-xs">location_on</span>
-                    <span>${location}</span>
-                </div>
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <span class="bg-slate-50 px-3 py-1 rounded-lg text-[9px] font-black text-slate-500 uppercase border border-slate-100">${exp} Yrs Exp</span>
-                    <span class="bg-emerald-50 px-3 py-1 rounded-lg text-[9px] font-black text-emerald-600 uppercase border border-emerald-100 italic">Vetted</span>
-                </div>
-                <a href="../frontend/src/views/login.html" class="block w-full py-3.5 bg-slate-50 text-primary text-center text-xs font-black rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm">
-                    View Profile
-                </a>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-</script>
+<!-- JavaScript -->
+<script src="../frontend/assets/scripts/index.js"></script>
 </body>
 </html>
