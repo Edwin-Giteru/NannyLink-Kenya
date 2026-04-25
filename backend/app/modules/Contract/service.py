@@ -86,6 +86,7 @@ NannyLink Kenya · Secure. Professional. Reliable.
             return Result.fail(str(e), 500)
 
     async def accept_contract(self, contract_id: UUID, current_user_id: UUID, role: str) -> Result:
+        """"""
         try:
             contract = await self.contract_repository.get_by_id(contract_id)
             if not contract:

@@ -1,133 +1,104 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Nanny Profile Setup | NannyLink</title>
     
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    
+    <!-- Image Compression Library -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-
-    <script id="tailwind-config">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        "secondary": "#835500",
-                        "primary": "#00152f",
-                        "primary-container": "#0f2a4a",
-                        "surface": "#f8f9fa",
-                        "surface-container-low": "#f3f4f5",
-                        "surface-container-lowest": "#ffffff",
-                        "outline-variant": "#c4c6cf"
-                    },
-                    fontFamily: {
-                        "headline": ["Manrope"],
-                        "body": ["Inter"]
-                    }
-                },
-            },
-        }
-    </script>
-
-    <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        body { min-height: 100vh; }
-        .gradient-text { background: linear-gradient(to right, #00152f, #835500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    </style>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../nanny/styles/profilecreation.css" />
 </head>
+<body>
 
-<body class="bg-surface font-body text-primary min-h-screen">
-    <header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-white/80 backdrop-blur-md border-b border-black/5">
-        <div class="flex items-center gap-3">
-            <div class="h-8 flex items-center">
-                <img src="../../assets/images/logo.png" class="h-full w-auto object-contain" alt="NannyLink Logo">
-            </div>
-            <span class="text-xl font-extrabold text-primary font-headline tracking-tight">NannyLink</span>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <img src="../../assets/images/logo.png" alt="NannyLink Logo">
+            <span class="logo-text">NannyLink</span>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-6 pt-28 pb-20">
-        <div class="flex flex-col lg:flex-row gap-12 items-start">
-            
-            <div class="w-full lg:w-2/5 space-y-8 lg:sticky lg:top-28">
-                <div class="space-y-4">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/5 border border-secondary/20">
-                        <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-                        </span>
-                        <p class="text-[10px] font-extrabold tracking-[0.2em] text-secondary uppercase">Initial Setup</p>
-                    </div>
-                    
-                    <h1 class="text-5xl font-extrabold font-headline leading-[1.1] text-primary tracking-tight">
-                        Perfect Your <span class="gradient-text">Presence</span>
-                    </h1>
-                    <p class="text-slate-500 text-sm leading-relaxed max-w-sm">
-                        Welcome to NannyLink! Let's get your profile ready for families to find you.
-                    </p>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="setup-container">
+            <!-- Left Column - Info Section -->
+            <div class="info-section">
+                <div class="info-badge">
+                    <span class="status-dot"></span>
+                    <span>Initial Setup</span>
                 </div>
+                <h1 class="info-title">
+                    Perfect Your <span class="gradient-text">Presence</span>
+                </h1>
+                <p class="info-description">
+                    Welcome to NannyLink! Let's get your profile ready for families to find you.
+                </p>
 
-                <div class="bg-primary p-6 rounded-[2rem] text-white shadow-xl shadow-primary/20 relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-secondary/20 rounded-full blur-2xl group-hover:bg-secondary/40 transition-all"></div>
-                    <div class="relative z-10 space-y-4">
-                        <div class="flex justify-between items-end">
-                            <span class="text-xs font-bold text-secondary tracking-widest uppercase">Profile Strength</span>
-                            <span class="text-2xl font-black font-headline" id="strengthText">0%</span>
-                        </div>
-                        <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                            <div id="strengthBar" class="h-full bg-secondary w-0 transition-all duration-500"></div>
-                        </div>
-                        <p id="strengthTip" class="text-[10px] text-white/60 italic font-medium">Fill in your name to get started!</p>
+                <!-- Profile Strength Card -->
+                <div class="strength-card">
+                    <div class="strength-header">
+                        <span class="strength-label">Profile Strength</span>
+                        <span id="strengthText" class="strength-percent">0%</span>
                     </div>
+                    <div class="strength-bar">
+                        <div id="strengthBar" class="strength-fill"></div>
+                    </div>
+                    <p id="strengthTip" class="strength-tip">Fill in your name to get started!</p>
+                    <div class="strength-bg"></div>
                 </div>
             </div>
 
-            <div class="w-full lg:w-3/5">
-                <form id="nannyForm" class="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-black/5 space-y-12">
-                    
+            <!-- Right Column - Form Section -->
+            <div class="form-section">
+                <form id="nannyForm" class="profile-form">
                     <input type="hidden" id="profile_photo_url" name="profile_photo_url">
                     <input type="hidden" id="national_id_photo_url" name="national_id_photo_url">
 
-                    <div class="space-y-8">
-                        <div class="flex items-center gap-4">
-                            <span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">01</span>
-                            <h2 class="text-xl font-bold font-headline tracking-tight text-primary">Identity & Portrait</h2>
+                    <!-- Identity & Portrait Section -->
+                    <div class="form-group">
+                        <div class="section-header">
+                            <span class="step-number">01</span>
+                            <h2 class="section-title">Identity & Portrait</h2>
                         </div>
                         
-                        <div class="flex flex-col sm:flex-row items-center gap-8 bg-surface p-6 rounded-3xl">
-                            <div class="relative">
-                                <div class="w-32 h-32 rounded-[2.5rem] bg-white overflow-hidden ring-4 ring-white shadow-xl flex items-center justify-center border border-black/5">
-                                    <img id="profile_preview" alt="Preview" class="w-full h-full object-cover" src="https://via.placeholder.com/150" />
+                        <div class="photo-upload-card">
+                            <div class="avatar-container">
+                                <div class="avatar-wrapper">
+                                    <img id="profile_preview" alt="Preview" src="https://via.placeholder.com/150" />
                                 </div>
-                                <label class="absolute -bottom-2 -right-2 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-transform">
-                                    <span class="material-symbols-outlined text-lg">add_a_photo</span>
+                                <label class="upload-btn">
+                                    <span class="material-symbols-outlined">add_a_photo</span>
                                     <input class="hidden" id="profile_photo_input" type="file" accept="image/*" />
                                 </label>
                             </div>
-                            <div class="text-center sm:text-left">
-                                <p class="text-sm font-bold text-primary">Profile Portrait</p>
-                                <p class="text-[11px] text-slate-400 mt-1 max-w-[180px]">Families love to see a friendly face!</p>
+                            <div class="photo-info">
+                                <p class="photo-title">Profile Portrait</p>
+                                <p class="photo-desc">Families love to see a friendly face!</p>
                             </div>
                         </div>
 
-                        <div class="space-y-4">
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">person</span>
-                                <input class="w-full bg-surface border-none rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-secondary/20" id="name" placeholder="Full Name" type="text" required />
+                        <div class="input-group">
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon material-symbols-outlined">person</span>
+                                <input class="form-input" id="name" placeholder="Full Name" type="text" required />
                             </div>
                             
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="relative">
-                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">workspace_premium</span>
-                                    <input class="w-full bg-surface border-none rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-secondary/20" id="years_experience" placeholder="Years of Experience" type="number" min="0" required />
+                            <div class="row-grid">
+                                <div class="input-icon-wrapper">
+                                    <span class="input-icon material-symbols-outlined">workspace_premium</span>
+                                    <input class="form-input" id="years_experience" placeholder="Years of Experience" type="number" min="0" required />
                                 </div>
-                                <div class="relative">
-                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">schedule</span>
-                                    <select class="w-full bg-surface border-none rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-secondary/20 appearance-none" id="availability">
+                                <div class="input-icon-wrapper">
+                                    <span class="input-icon material-symbols-outlined">schedule</span>
+                                    <select class="form-select" id="availability">
                                         <option value="full_time">Full-time</option>
                                         <option value="part_time">Part-time</option>
                                         <option value="evenings">Evenings</option>
@@ -138,52 +109,56 @@
                         </div>
                     </div>
 
-                    <div class="space-y-8">
-                        <div class="flex items-center gap-4">
-                            <span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">02</span>
-                            <h2 class="text-xl font-bold font-headline tracking-tight text-primary">Experience & Skills</h2>
+                    <!-- Experience & Skills Section -->
+                    <div class="form-group">
+                        <div class="section-header">
+                            <span class="step-number">02</span>
+                            <h2 class="section-title">Experience & Skills</h2>
                         </div>
-                        <div class="space-y-4">
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">location_on</span>
-                                <input class="w-full bg-surface border-none rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-secondary/20" id="address" placeholder="Physical Address (e.g. Kilimani, Nairobi)" type="text" required />
+                        
+                        <div class="input-group">
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon material-symbols-outlined">location_on</span>
+                                <input class="form-input" id="address" placeholder="Physical Address (e.g. Kilimani, Nairobi)" type="text" required />
                             </div>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">map</span>
-                                <input class="w-full bg-surface border-none rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-secondary/20" id="preferred_location" placeholder="Preferred Working Area (e.g. Westlands)" type="text" />
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon material-symbols-outlined">map</span>
+                                <input class="form-input" id="preferred_location" placeholder="Preferred Working Area (e.g. Westlands)" type="text" />
                             </div>
-                            <div class="relative">
-                                <span class="absolute left-4 top-6 material-symbols-outlined text-slate-400 text-lg">history_edu</span>
-                                <textarea class="w-full bg-surface border-none rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-secondary/20 min-h-[120px]" id="skills" placeholder="Tell us about your childcare skills..." required></textarea>
+                            <div class="textarea-wrapper">
+                                <span class="textarea-icon material-symbols-outlined">history_edu</span>
+                                <textarea class="form-textarea" id="skills" placeholder="Tell us about your childcare skills..." required></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <div class="space-y-8">
-                        <div class="flex items-center gap-4">
-                            <span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">03</span>
-                            <h2 class="text-xl font-bold font-headline tracking-tight text-primary">Legal Verification</h2>
+                    <!-- Legal Verification Section -->
+                    <div class="form-group">
+                        <div class="section-header">
+                            <span class="step-number">03</span>
+                            <h2 class="section-title">Legal Verification</h2>
                         </div>
                         
-                        <div class="space-y-4">
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">badge</span>
-                                <input class="w-full bg-surface border-none rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-secondary/20" id="national_id_number" placeholder="National ID Number" type="text" required />
+                        <div class="input-group">
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon material-symbols-outlined">badge</span>
+                                <input class="form-input" id="national_id_number" placeholder="National ID Number" type="text" required />
                             </div>
                             
-                            <label class="group relative w-full h-40 rounded-3xl bg-surface border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-6 cursor-pointer hover:border-secondary hover:bg-secondary/5 transition-all">
-                                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                                    <span class="material-symbols-outlined text-2xl text-secondary">file_upload</span>
+                            <label class="upload-id-card">
+                                <div class="upload-id-icon">
+                                    <span class="material-symbols-outlined">file_upload</span>
                                 </div>
-                                <p class="text-xs font-bold mt-3 text-primary" id="id_status_text">Upload National ID Front View</p>
+                                <p id="id_status_text" class="upload-id-text">Upload National ID Front View</p>
                                 <input class="hidden" id="id_photo_input" type="file" accept="image/*" />
                             </label>
                         </div>
                     </div>
 
-                    <div class="pt-6">
-                        <button class="w-full bg-primary text-white py-5 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2" type="submit" id="submitBtn">
-                            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                    <!-- Submit Button -->
+                    <div class="submit-container">
+                        <button class="submit-btn" type="submit" id="submitBtn">
+                            <span class="material-symbols-outlined">rocket_launch</span>
                             Create My Profile
                         </button>
                     </div>
@@ -192,128 +167,10 @@
         </div>
     </main>
 
-    <script>
-        const API_BASE = "http://127.0.0.1:8000/nannies";
-        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dql4taq0c/image/upload";
-        const UPLOAD_PRESET = "Nanny_ids";
-        const token = localStorage.getItem("access_token");
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
 
-        // --- PROGRESS CALCULATION ---
-        const updateProgress = () => {
-            const fields = [
-                document.getElementById('name').value,
-                document.getElementById('years_experience').value,
-                document.getElementById('address').value,
-                document.getElementById('skills').value,
-                document.getElementById('national_id_number').value,
-                document.getElementById('profile_photo_url').value,
-                document.getElementById('national_id_photo_url').value
-            ];
-            const filled = fields.filter(f => f && f.toString().length > 0).length;
-            const percentage = Math.round((filled / fields.length) * 100);
-            
-            document.getElementById('strengthBar').style.width = percentage + '%';
-            document.getElementById('strengthText').innerText = percentage + '%';
-        };
-
-        ['name', 'years_experience', 'address', 'skills', 'national_id_number'].forEach(id => {
-            document.getElementById(id).addEventListener('input', updateProgress);
-        });
-
-        function toggleLoading(show, text = "Saving...") {
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = show;
-            btn.innerHTML = show ? `<span class="animate-pulse flex items-center gap-2"><span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> ${text}</span>` 
-                               : `<span class="material-symbols-outlined text-sm">rocket_launch</span> Create My Profile`;
-        }
-
-        async function uploadToCloudinary(file, typeName) {
-            const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
-            try {
-                const compressedFile = await imageCompression(file, options);
-                const formData = new FormData();
-                formData.append('file', compressedFile);
-                formData.append('upload_preset', UPLOAD_PRESET);
-                const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-                const data = await resp.json();
-                return data.secure_url;
-            } catch (error) {
-                alert(`Upload failed for ${typeName}`);
-                throw error;
-            }
-        }
-
-        document.getElementById('profile_photo_input').onchange = async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            document.getElementById('profile_preview').src = URL.createObjectURL(file);
-            toggleLoading(true, "Uploading...");
-            try {
-                const url = await uploadToCloudinary(file, "Portrait");
-                document.getElementById('profile_photo_url').value = url;
-                updateProgress();
-            } finally { toggleLoading(false); }
-        };
-
-        document.getElementById('id_photo_input').onchange = async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            toggleLoading(true, "Uploading...");
-            try {
-                const url = await uploadToCloudinary(file, "ID Photo");
-                document.getElementById('national_id_photo_url').value = url;
-                document.getElementById('id_status_text').innerHTML = "ID Uploaded <span class='text-green-500'>✅</span>";
-                updateProgress();
-            } finally { toggleLoading(false); }
-        };
-
-       document.getElementById('nannyForm').onsubmit = async (e) => {
-            e.preventDefault();
-            toggleLoading(true, "Creating Profile...");
-
-            const payload = {
-                name: document.getElementById('name').value,
-                years_experience: parseInt(document.getElementById('years_experience').value),
-                address: document.getElementById('address').value,
-                preferred_location: document.getElementById('preferred_location').value || null,
-                skills: document.getElementById('skills').value,
-                availability: document.getElementById('availability').value,
-                national_id_number: document.getElementById('national_id_number').value,
-                profile_photo_url: document.getElementById('profile_photo_url').value || null,
-                national_id_photo_url: document.getElementById('national_id_photo_url').value
-            };
-
-            try {
-                const response = await fetch(`${API_BASE}/profile`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    window.location.href = "nannydashboard.html";
-                } else {
-                    // Check if the error is a Duplicate Key (Unique Constraint) violation
-                    if (data.detail && data.detail.includes("UniqueViolationError")) {
-                        alert("Error: This National ID number is already registered to another profile.");
-                    } else if (data.detail) {
-                        alert("Error: " + data.detail);
-                    } else {
-                        alert("Submission failed. Please check your connection and try again.");
-                    }
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Server connection error. Please try again later.");
-            } finally { 
-                toggleLoading(false); 
-            }
-        };
-    </script>
+    <!-- JavaScript -->
+    <script type="module" src="../nanny/scripts/profilecreation.js"></script>
 </body>
 </html>

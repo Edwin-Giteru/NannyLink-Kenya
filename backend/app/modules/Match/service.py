@@ -1,4 +1,5 @@
 from uuid import UUID
+from app.modules.Nanny.nanny_schema import NannyResponse
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.Match.repository import MatchRepository
@@ -72,6 +73,31 @@ class MatchService:
         if not match:
             return Result.fail("Connection not found.", status_code=404)
         return Result.ok(data=MatchResponse.model_validate(match))
+    
+    async def get_discovery_list(self, user_id: UUID) -> Result:
+            """
+            Retrieves nannies not yet connected to the family AND the current active count.
+            """
+            try:
+                from app.modules.Family.repository import FamilyRepository
+                family_repo = FamilyRepository(self.match_repo.db)
+                profile = await family_repo.get_family_by_user_id(user_id)
+                if not profile:
+                    return Result.fail("Family profile not found", 404)
+
+                # 1. Get nannies available to connect with
+                unconnected = await self.match_repo.get_unconnected_nannies(profile.id)
+                
+                # 2. Get current active connections to enforce the UI limit of 3
+                all_matches = await self.match_repo.get_matches_for_family(profile.id)
+                active_count = sum(1 for m in all_matches if m.status != MatchStatus.CANCELLED)
+
+                return Result.ok(data={
+                    "nannies": [NannyResponse.model_validate(n) for n in unconnected],
+                    "active_connection_count": active_count
+                })
+            except Exception as e:
+                return Result.fail(str(e), 500)
 
     async def update_match_status(self, match_id: UUID, new_status: MatchStatus) -> Result:
         try:

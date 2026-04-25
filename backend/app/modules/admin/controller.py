@@ -190,5 +190,5 @@ async def get_payments(
     service = AdminService(db)
     # The updated service returns pa dict directly containing payments, stats, and total_count
     data = await service.get_payment_logs(page=page, status=status, search=search)
-    print("Controller received payment logs data:", data)  # Debug log to check the structure of the returned data
+    # print("Controller received payment logs data:", data)  # Debug log to check the structure of the returned data
     return data

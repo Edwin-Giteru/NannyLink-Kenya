@@ -25,6 +25,21 @@ async def create_connection(
         
     return result.data
 
+@router.get("/discovery", status_code=200)
+async def get_discovery_nannies(
+    db: SessionDep,
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "family":
+        raise HTTPException(status_code=403, detail="Discovery is for families only.")
+    
+    service = MatchService(db)
+    result = await service.get_discovery_list(current_user.id)
+    if not result.success:
+        raise HTTPException(status_code=result.status_code, detail=result.error)
+    
+    return result.data
+
 @router.get("/", status_code=200)
 async def get_my_connections(
     db: SessionDep,
@@ -35,7 +50,6 @@ async def get_my_connections(
     if not result.success:
         raise HTTPException(status_code=result.status_code, detail=result.error)
     
-    # CRITICAL: If frontend expects a list, return the list directly.
     return result.data
 
 @router.get("/{id}", status_code=200)
@@ -50,3 +64,5 @@ async def get_connection_by_id(
         raise HTTPException(status_code=result.status_code, detail=result.error)
     
     return result.data
+
+

@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from app.db.models.payment import Payment, PaymentMatchLink
+from app.db.models.types import PaymentStatus, MatchStatus
 from uuid import UUID
 from typing import List, Optional
 
@@ -21,7 +22,7 @@ class PaymentRepository:
             user_id=user_id,
             amount=amount,
             phone_number=phone_number,
-            payment_status="pending"
+            payment_status=PaymentStatus.PENDING
         )
         self.db.add(new_payment)
         await self.db.flush() 

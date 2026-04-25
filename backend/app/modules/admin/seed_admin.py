@@ -27,7 +27,7 @@ async def seed_admin():
             email=email,
             phone="+254711223344",
             password=hash_password("admin123!"),
-            role=UserRole.ADMIN # Ensure this is 'admin' per your Enum
+            role=UserRole.ADMIN
         )
 
         try:

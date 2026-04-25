@@ -85,7 +85,7 @@ class PaymentService:
             meta_dict = {item["Name"]: item.get("Value") for item in metadata}
 
             payment.mpesa_transaction_code = meta_dict.get("MpesaReceiptNumber")
-            payment.payment_status = "completed"
+            payment.payment_status = PaymentStatus.COMPLETED
             payment.result_code = result_code
             payment.result_desc = "The service was accepted successfully"
             payment.transaction_date = datetime.datetime.utcnow()
@@ -96,7 +96,7 @@ class PaymentService:
                     match.status = MatchStatus.COMPLETED
                     logger.info(f"Match {match.id} activated via Payment {payment.id}")
         else:
-            payment.payment_status = "failed"
+            payment.payment_status = PaymentStatus.FAILED
             payment.result_code = result_code
             payment.result_desc = stk_payload.get("ResultDesc")
 
