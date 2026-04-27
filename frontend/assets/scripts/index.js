@@ -37,23 +37,88 @@ document.querySelectorAll('.faq-question').forEach(button => {
         const faqItem = button.closest('.faq-item');
         const isActive = faqItem.classList.contains('active');
         
-        // Close all other FAQs
         document.querySelectorAll('.faq-item').forEach(item => {
             item.classList.remove('active');
         });
         
-        // Toggle current
         if (!isActive) {
             faqItem.classList.add('active');
         }
     });
 });
 
-// ========================================
-// Nanny Data Fetching - FIXED
-// ========================================
+async function fetchStats() {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/stats/');
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Fetched stats:", data);
+            
+            const statNannies = document.getElementById('stat-nannies');
+            const statFamilies = document.getElementById('stat-families');
+            const statMatches = document.getElementById('stat-matches');
+            
+            if (statNannies) {
+                const nannyCount = data.nannies || 0;
+                animateNumber(statNannies, nannyCount);
+            }
+            
+            if (statFamilies) {
+                const familyCount = data.families || 0;
+                animateNumber(statFamilies, familyCount);
+            }
+            
+            if (statMatches) {
+                const matchCount = data.matches || 0;
+                animateNumber(statMatches, matchCount);
+            }
+        } else {
+            console.error("Stats API returned:", response.status);
+            // Fallback to static numbers if API fails
+            useFallbackStats();
+        }
+    } catch (error) {
+        console.error("Stats fetch error:", error);
+        // Fallback to static numbers if API fails
+        useFallbackStats();
+    }
+}
+
+function useFallbackStats() {
+    const statNannies = document.getElementById('stat-nannies');
+    const statFamilies = document.getElementById('stat-families');
+    const statMatches = document.getElementById('stat-matches');
+    
+    if (statNannies) animateNumber(statNannies, 1240);
+    if (statFamilies) animateNumber(statFamilies, 850);
+    if (statMatches) animateNumber(statMatches, 432);
+}
+
+function animateNumber(element, target) {
+    if (!element) return;
+    
+    let current = 0;
+    const duration = 1500; // 1.5 seconds
+    const steps = 60;
+    const increment = target / steps;
+    let step = 0;
+    
+    const timer = setInterval(() => {
+        step++;
+        current += increment;
+        if (step >= steps) {
+            element.innerText = target.toLocaleString();
+            clearInterval(timer);
+        } else {
+            element.innerText = Math.floor(current).toLocaleString();
+        }
+    }, duration / steps);
+}
+
 async function fetchNannies() {
     try {
+        // Public endpoint - no authentication required
         const response = await fetch('http://127.0.0.1:8000/nannies/?skip=0&limit=50');
         
         if (response.ok) {
@@ -74,6 +139,8 @@ async function fetchNannies() {
                 applyFilters();
                 return;
             }
+        } else {
+            console.log("Nannies API response not OK:", response.status);
         }
     } catch (error) {
         console.error("Public endpoint error:", error);
@@ -82,7 +149,6 @@ async function fetchNannies() {
     // Fallback to mock data only if API fails completely
     renderMockNannies();
 }
-
 
 function renderMockNannies() {
     allNannies = [
@@ -93,6 +159,7 @@ function renderMockNannies() {
         { id: 5, name: "Elena Rodriguez", years_experience: 8, preferred_location: "Nairobi", profile_photo_url: "", skills: "Bilingual, Early Childhood", vetting_status: "approved" },
         { id: 6, name: "David Chen", years_experience: 6, preferred_location: "Mombasa", profile_photo_url: "", skills: "Cooking, Tutoring", vetting_status: "approved" }
     ];
+    applyFilters();
 }
 
 function applyFilters() {
@@ -200,40 +267,8 @@ function escapeHtml(str) {
     });
 }
 
-// ========================================
-// Event Listeners
-// ========================================
 if (skillSearch) skillSearch.addEventListener('input', applyFilters);
 if (locationSearch) locationSearch.addEventListener('input', applyFilters);
 
-// ========================================
-// Initialize
-// ========================================
+fetchStats();
 fetchNannies();
-
-// Animate stats counter
-function animateStats() {
-    const statNannies = document.getElementById('stat-nannies');
-    const statFamilies = document.getElementById('stat-families');
-    const statMatches = document.getElementById('stat-matches');
-    
-    if (statNannies) animateNumber(statNannies, 1240);
-    if (statFamilies) animateNumber(statFamilies, 850);
-    if (statMatches) animateNumber(statMatches, 432);
-}
-
-function animateNumber(element, target) {
-    let current = 0;
-    const increment = target / 50;
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-            element.innerText = target;
-            clearInterval(timer);
-        } else {
-            element.innerText = Math.floor(current);
-        }
-    }, 30);
-}
-
-setTimeout(animateStats, 500);
