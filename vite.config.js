@@ -21,7 +21,7 @@ export default defineConfig({
   // Development server configuration
   server: {
     port: 5500,
-    open: '/views/login.html',
+    open: "index.html",
     // Proxy API requests to your FastAPI backend
     proxy: {
       '/auth': {

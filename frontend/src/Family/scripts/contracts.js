@@ -205,14 +205,36 @@ function renderContractView(contract, match) {
     const workspace = document.getElementById('workspace');
     let fullText = contract.contract_text || "";
     
+    // Function to clean up extracted text (remove dashes, extra spaces, and formatting)
+    function cleanExtractedText(text) {
+        if (!text) return "";
+        // Remove leading/trailing dashes, underscores, and formatting lines
+        return text
+            .replace(/^[-_=\s]+/gm, '')  // Remove lines that are only dashes/underscores at start
+            .replace(/\s*[-_]+\s*/g, ' ') // Replace inline dashes with space
+            .replace(/\s+/g, ' ')         // Normalize whitespace
+            .trim();
+    }
+    
     let householdExp = "Standard childcare services as per NannyLink guidelines.";
-    if (fullText.includes("HOUSEHOLD EXPECTATIONS") && fullText.includes("SPECIAL JOB REQUIREMENTS")) {
-        householdExp = fullText.split("HOUSEHOLD EXPECTATIONS")[1].split("SPECIAL JOB REQUIREMENTS")[0].trim();
+    if (fullText.includes("HOUSEHOLD DETAILS & EXPECTATIONS") && fullText.includes("SPECIAL JOB REQUIREMENTS")) {
+        let extracted = fullText.split("HOUSEHOLD DETAILS & EXPECTATIONS")[1].split("SPECIAL JOB REQUIREMENTS")[0];
+        householdExp = cleanExtractedText(extracted);
+        // If after cleaning it's empty, use default
+        if (!householdExp) householdExp = "Standard childcare services as per NannyLink guidelines.";
     }
 
     let customRequirements = "Standard employment terms apply.";
     if (fullText.includes("SPECIAL JOB REQUIREMENTS") && fullText.includes("GENERAL PROVISIONS")) {
-        customRequirements = fullText.split("SPECIAL JOB REQUIREMENTS")[1].split("GENERAL PROVISIONS")[0].trim();
+        let extracted = fullText.split("SPECIAL JOB REQUIREMENTS")[1].split("GENERAL PROVISIONS")[0];
+        customRequirements = cleanExtractedText(extracted);
+        // If after cleaning it's empty, use default
+        if (!customRequirements) customRequirements = "Standard employment terms apply.";
+    }
+
+    // Also handle the case where it says "(CUSTOM TERMS)"
+    if (customRequirements.includes("(CUSTOM TERMS)")) {
+        customRequirements = customRequirements.replace(/\(CUSTOM TERMS\)/g, '').trim();
     }
 
     const accurateNannyName = match.nanny?.full_name || match.nanny?.name || 'Caregiver Professional';
@@ -381,11 +403,24 @@ async function signNow(contractId) {
 // ========================================
 function escapeHtml(str) {
     if (!str) return '';
-    return String(str).replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
+    
+    const htmlEscapeMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '`': '&#96;',
+        '/': '&#x2F;',
+        '=': '&#x3D;',
+        '{': '&#123;',
+        '}': '&#125;',
+        '(': '&#40;',
+        ')': '&#41;'
+    };
+    
+    return String(str).replace(/[&<>"'`/={}()]/g, function(char) {
+        return htmlEscapeMap[char];
     });
 }
 

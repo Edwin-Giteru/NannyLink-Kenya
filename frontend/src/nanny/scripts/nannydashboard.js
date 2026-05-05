@@ -25,9 +25,6 @@ function checkAuth(response) {
     return false;
 }
 
-// ========================================
-// Toast Notification
-// ========================================
 function createToastContainer() {
     let container = document.getElementById('toastContainer');
     if (!container) {

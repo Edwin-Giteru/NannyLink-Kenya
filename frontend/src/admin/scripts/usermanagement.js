@@ -1,4 +1,193 @@
 // ========================================
+// Toast Notification System
+// ========================================
+function showToast(message, type = 'success') {
+    // Remove existing toast if any
+    const existingToast = document.querySelector('.custom-toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type}`;
+    
+    // Icon based on type
+    let icon = '✓';
+    if (type === 'error') icon = '✗';
+    if (type === 'warning') icon = '⚠';
+    if (type === 'info') icon = 'ℹ';
+    
+    toast.innerHTML = `
+        <div class="toast-content">
+            <span class="toast-icon">${icon}</span>
+            <span class="toast-message">${escapeHtml(message)}</span>
+        </div>
+        <button class="toast-close">&times;</button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Add close button functionality
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => {
+        toast.classList.add('toast-hide');
+        setTimeout(() => toast.remove(), 300);
+    });
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('toast-hide');
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 4000);
+}
+
+// Add CSS for toast (will be injected dynamically)
+function injectToastStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .custom-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            min-width: 320px;
+            max-width: 450px;
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            z-index: 10000;
+            animation: toastSlideIn 0.3s ease;
+            border-left: 4px solid;
+            font-family: system-ui, -apple-system, 'Inter', sans-serif;
+        }
+        
+        .custom-toast.toast-hide {
+            animation: toastSlideOut 0.3s ease forwards;
+        }
+        
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .toast-icon {
+            font-size: 20px;
+            font-weight: bold;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .toast-message {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #1a1a2e;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+        
+        .toast-close:hover {
+            color: #333;
+        }
+        
+        /* Success Toast */
+        .toast-success {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+        }
+        .toast-success .toast-icon {
+            color: #10b981;
+        }
+        
+        /* Error Toast */
+        .toast-error {
+            border-left-color: #ef4444;
+            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+        }
+        .toast-error .toast-icon {
+            color: #ef4444;
+        }
+        
+        /* Warning Toast */
+        .toast-warning {
+            border-left-color: #f59e0b;
+            background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+        }
+        .toast-warning .toast-icon {
+            color: #f59e0b;
+        }
+        
+        /* Info Toast */
+        .toast-info {
+            border-left-color: #3b82f6;
+            background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+        }
+        .toast-info .toast-icon {
+            color: #3b82f6;
+        }
+        
+        @keyframes toastSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes toastSlideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .custom-toast {
+                left: 16px;
+                right: 16px;
+                min-width: auto;
+                bottom: 16px;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Call this when DOM loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectToastStyles);
+} else {
+    injectToastStyles();
+}
+
+// ========================================
 // Global Variables
 // ========================================
 let currentStatus = 'VETTED';
@@ -53,9 +242,11 @@ async function fetchUsers(page = 1) {
         const data = await response.json();
         renderUsers(data.users);
         updatePagination(data.total_count, page);
+        showToast(`Loaded ${data.users?.length || 0} users`, 'success');
 
     } catch (error) {
         console.error("Failed to fetch users:", error);
+        showToast(`Failed to fetch users: ${error.message}`, 'error');
     }
 }
 
@@ -204,12 +395,13 @@ async function confirmVerification() {
         if (response.ok) {
             closeVerifyModal();
             fetchUsers(1);
+            showToast('User successfully verified!', 'success');
         } else {
             const errorData = await response.json();
-            alert(`Error: ${errorData.detail || 'Failed to verify user'}`);
+            showToast(`Verification failed: ${errorData.detail || 'Unknown error'}`, 'error');
         }
     } catch (error) {
-        alert("Network error. Please try again.");
+        showToast("Network error. Please try again.", 'error');
     } finally {
         btn.innerText = originalText;
         btn.disabled = false;
@@ -247,12 +439,13 @@ async function confirmDeletion() {
         if (response.ok) {
             closeDeleteModal();
             fetchUsers(1);
+            showToast('User account successfully deleted', 'success');
         } else {
             const err = await response.json();
-            alert(`Error: ${err.detail || 'Delete failed'}`);
+            showToast(`Delete failed: ${err.detail || 'Unknown error'}`, 'error');
         }
     } catch (error) {
-        alert("Network error occurred.");
+        showToast("Network error occurred.", 'error');
     } finally {
         btn.disabled = false;
         btn.innerText = "Delete Account";
@@ -300,12 +493,12 @@ async function createUser(formData) {
         if (response.ok) {
             closeCreateModal();
             fetchUsers(1);
-            alert(result.detail || "Account created.");
+            showToast(`Account created successfully for ${payload.name || payload.email}`, 'success');
         } else {
-            alert(`Error: ${result.detail || 'Failed'}`);
+            showToast(`Error: ${result.detail || 'Failed to create account'}`, 'error');
         }
     } catch (error) {
-        alert("Connection failed.");
+        showToast("Connection failed. Please check your network.", 'error');
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = "Create Account";

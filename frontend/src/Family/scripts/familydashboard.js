@@ -1,15 +1,10 @@
-// ========================================
-// API Configuration
-// ========================================
+
 const API_BASE_URL = "http://localhost:8000";
 const LOGIN_PAGE_URL = "../views/login.html";
 const CONNECTION_FEE = 1;
 const GLOBAL_MAX_LIMIT = 3;
 const PAYMENT_TIMEOUT_MS = 60000;
 
-// ========================================
-// Global State
-// ========================================
 let allNanniesRaw = [];
 let allFilteredNannies = [];
 let selectedCity = "All Cities";
@@ -19,9 +14,6 @@ let currentPage = 1;
 const itemsPerPage = 6;
 let searchTimeout;
 
-// ========================================
-// Authentication Helpers
-// ========================================
 function getAuthHeaders() {
     const token = localStorage.getItem('access_token');
     return {
@@ -60,9 +52,6 @@ function logout() {
     window.location.href = LOGIN_PAGE_URL;
 }
 
-// ========================================
-// Toast Notification
-// ========================================
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -85,9 +74,6 @@ function showToast(message, type = 'success') {
     }, 4000);
 }
 
-// ========================================
-// Data Fetching
-// ========================================
 async function fetchDashboardData() {
     try {
         const response = await authenticatedFetch(`${API_BASE_URL}/connections/discovery`);
@@ -111,9 +97,6 @@ async function fetchDashboardData() {
     }
 }
 
-// ========================================
-// Location Dropdown
-// ========================================
 function populateLocationDropdown() {
     const dropdown = document.getElementById('locationDropdown');
     if (!dropdown) return;
@@ -139,9 +122,6 @@ function selectLocation(loc) {
     applyFilters();
 }
 
-// ========================================
-// Filtering Logic
-// ========================================
 function debouncedSearch() {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
@@ -169,9 +149,6 @@ function applyFilters() {
     updatePaginationControls();
 }
 
-// ========================================
-// Grid Rendering
-// ========================================
 function renderGrid() {
     const grid = document.getElementById('caregiverGrid');
     const paginationContainer = document.getElementById('paginationContainer');
@@ -218,10 +195,6 @@ function escapeHtml(str) {
         return m;
     });
 }
-
-// ========================================
-// Selection Logic
-// ========================================
 function toggleNannySelection(id) {
     if (selectedNannyIds.has(id)) {
         selectedNannyIds.delete(id);
@@ -251,12 +224,6 @@ function updateCheckoutBar() {
     }
 }
 
-// ========================================
-// Payment Logic
-// ========================================
-// ========================================
-// Payment Logic - Updated with loading animation
-// ========================================
 async function initiateBatchPayment() {
     const phoneInput = document.getElementById('mpesaPhone');
     let phone = phoneInput.value.trim();
@@ -349,9 +316,6 @@ async function initiateBatchPayment() {
     }
 }
 
-// ========================================
-// Modal Functions
-// ========================================
 function openNannyModal(nanny) {
     document.getElementById('modalImage').src = nanny.profile_photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nanny.name)}`;
     document.getElementById('modalName').textContent = nanny.name;

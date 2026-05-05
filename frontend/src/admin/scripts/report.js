@@ -67,17 +67,7 @@ function showToast(message, type = "error") {
     setTimeout(() => { toast.classList.add("hidden"); }, 3000);
 }
 
-function updateApiStatus(connected, message = "") {
-    const dot = document.getElementById("apiStatusDot");
-    const text = document.getElementById("apiStatusText");
-    if (connected) {
-        dot.style.backgroundColor = "#10b981";
-        text.innerText = "Connected to API";
-    } else {
-        dot.style.backgroundColor = "#ef4444";
-        text.innerText = message || "API Error";
-    }
-}
+// updateApiStatus function REMOVED - no longer needed
 
 function formatDate(dateStr) {
     if (!dateStr) return "N/A";
@@ -158,13 +148,11 @@ async function fetchReportData() {
         }
 
         const data = await response.json();
-        updateApiStatus(true);
         console.log(`Fetched ${data.length} ${currentType} records`);
         return Array.isArray(data) ? data : [];
 
     } catch (error) {
         console.error("API Error:", error);
-        updateApiStatus(false, error.message);
         showToast(`Failed to fetch data: ${error.message}`, "error");
         return [];
     } finally {

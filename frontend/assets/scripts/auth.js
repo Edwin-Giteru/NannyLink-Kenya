@@ -148,6 +148,63 @@ function updatePasswordStrength() {
 }
 
 // ========================================
+// Phone Validation with Immediate Feedback
+// ========================================
+function validatePhone(phone) {
+    if (!phone || phone.trim() === "") {
+        return { valid: false, message: "Phone number is required" };
+    }
+    
+    // Remove any non-digit characters for validation
+    const cleanPhone = phone.replace(/\D/g, '');
+    
+    // Check for Kenya phone numbers (starting with 07, 01, or 254)
+    const kenyaPattern = /^(07|01|2547|2541)\d{8}$/;
+    const cleanWithCountryCode = cleanPhone.startsWith('254') ? cleanPhone : '254' + cleanPhone;
+    
+    if (cleanPhone.length < 10) {
+        return { valid: false, message: "Phone number must be at least 10 digits" };
+    }
+    
+    if (cleanPhone.length > 12) {
+        return { valid: false, message: "Phone number is too long (max 12 digits)" };
+    }
+    
+    // Check if it's a valid Kenyan phone number
+    if (!kenyaPattern.test(cleanPhone) && !kenyaPattern.test(cleanWithCountryCode)) {
+        return { valid: false, message: "Please enter a valid Kenyan phone number (e.g., 0712345678 or 254712345678)" };
+    }
+    
+    return { valid: true, message: "", cleaned: cleanPhone };
+}
+
+function updatePhoneValidation() {
+    const phoneInput = $("signupPhone");
+    const phone = phoneInput?.value || '';
+    const errorMsg = $("errSignupPhone");
+    const wrap = $("wrapSignupPhone");
+    
+    if (!phoneInput || !errorMsg || !wrap) return;
+    
+    if (phone.length === 0) {
+        clearFieldError("wrapSignupPhone", "errSignupPhone");
+        return;
+    }
+    
+    const validation = validatePhone(phone);
+    
+    if (!validation.valid) {
+        markError("wrapSignupPhone", "errSignupPhone", validation.message);
+    } else {
+        clearFieldError("wrapSignupPhone", "errSignupPhone");
+        // Optional: Add a success indicator (you can remove this if you want)
+        // You can uncomment the line below if you want to show a success checkmark
+        // errorMsg.textContent = "✓ Valid phone number";
+        // errorMsg.style.color = "#10b981";
+    }
+}
+
+// ========================================
 // Mode Switching
 // ========================================
 function setMode(mode) {
@@ -215,20 +272,6 @@ function validateEmail(email) {
         return { valid: false, message: "Please enter a valid email address (e.g., name@example.com)" };
     }
     return { valid: true, message: "" };
-}
-
-function validatePhone(phone) {
-    if (!phone || phone.trim() === "") {
-        return { valid: false, message: "Phone number is required" };
-    }
-    const cleanPhone = phone.replace(/\D/g, '');
-    if (cleanPhone.length < 10) {
-        return { valid: false, message: "Phone number must be at least 10 digits" };
-    }
-    if (cleanPhone.length > 12) {
-        return { valid: false, message: "Phone number is too long (max 12 digits)" };
-    }
-    return { valid: true, message: "", cleaned: cleanPhone };
 }
 
 function validatePassword(password) {
@@ -305,7 +348,7 @@ async function signupNanny(userData) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 email: userData.email,
-                phone_number: userData.phone,
+                phone: userData.phone,
                 password: userData.password,
                 role: "nanny"
             })
@@ -335,7 +378,7 @@ async function signupFamily(userData) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 email: userData.email,
-                phone_number: userData.phone,
+                phone: userData.phone,
                 password: userData.password,
                 role: "family"
             })
@@ -565,21 +608,17 @@ function setupRealTimeValidation() {
         });
     }
     
-    // Phone validation on blur
+    // Phone validation with immediate feedback on input AND blur
     const signupPhone = $("signupPhone");
     if (signupPhone) {
-        signupPhone.addEventListener("blur", () => {
-            const phone = signupPhone.value.trim();
-            const validation = validatePhone(phone);
-            if (!validation.valid && phone) {
-                markError("wrapSignupPhone", "errSignupPhone", validation.message);
-            } else {
-                clearFieldError("wrapSignupPhone", "errSignupPhone");
-            }
+        // Real-time validation as user types
+        signupPhone.addEventListener("input", () => {
+            updatePhoneValidation();
         });
         
-        signupPhone.addEventListener("input", () => {
-            clearFieldError("wrapSignupPhone", "errSignupPhone");
+        // Also validate on blur
+        signupPhone.addEventListener("blur", () => {
+            updatePhoneValidation();
         });
     }
     
