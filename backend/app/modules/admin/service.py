@@ -89,27 +89,7 @@ class AdminService:
 
         return Result.ok(data={"total_count": total_count, "users": user_list})
     
-    async def approve_nanny(self, user_id: str) -> Result:
-        """
-        Business logic to approve a nanny.
-        """
-        try:
-            success = await self.repository.update_nanny_vetting_status(
-                user_id=user_id, 
-                status=VettingStatus.APPROVED
-            )
-            
-            if not success:
-                return Result.fail("Nanny profile not found for this user.")
-
-            await self.repository.db.commit()
-            return Result.ok(message="Nanny verified successfully.")
-            
-        except Exception as e:
-            await self.repository.db.rollback()
-            return Result.fail(f"Verification failed: {str(e)}")
-        
-        # app/modules/admin/service.py
+    
 
     async def approve_nanny(self, user_id: str) -> Result:
         """

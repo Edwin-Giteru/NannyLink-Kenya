@@ -11,8 +11,7 @@ class EmailService:
     async def send_password_reset_email(to_email: str, reset_token: str) -> bool:
         """Send password reset email to user"""
         try:
-            reset_link = f"{settings.FRONTEND_URL}/views/reset-password.html?token={reset_token}"
-            
+            reset_link = f"{settings.PASSWORD_RESET_URL}?token={reset_token}"            
             # Create email content
             subject = "Reset Your NannyLink Password"
             

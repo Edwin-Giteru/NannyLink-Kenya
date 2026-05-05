@@ -120,8 +120,9 @@ class AuthService:
                 "expires_at": datetime.utcnow() + timedelta(minutes=30)
             }
             
+            reset_link = f"{settings.PASSWORD_RESET_URL}?token={token}"
+            
             # Print to console for debugging
-            reset_link = f"{settings.FRONTEND_URL}/views/reset-password.html?token={token}"
             print("\n" + "="*60)
             print(f"PASSWORD RESET LINK FOR {email}:")
             print(reset_link)

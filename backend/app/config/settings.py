@@ -3,7 +3,6 @@ import dotenv
 dotenv.load_dotenv()
 
 class Settings:
-
     DATABASE_URL = os.getenv("DATABASE_URL")
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALGORITHM = os.getenv("ALGORITHM", "HS256")
@@ -14,6 +13,18 @@ class Settings:
     EMAIL_USERNAME: str = os.getenv("EMAIL_USERNAME", "egiteru5@gmail.com")
     EMAIL_PASSWORD: str = os.getenv("EMAIL_PASSWORD", "")
     EMAIL_FROM: str = os.getenv("EMAIL_FROM", "nannylink@nannylink.co.ke")
-    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://127.0.0.1:5500/frontend/src")
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://127.0.0.1:5500")
+    
+    # IMPORTANT FIX: Don't use fallback that modifies the URL
+    # Just get the value from environment or use a simple default
+    PASSWORD_RESET_URL: str = os.getenv("PASSWORD_RESET_URL")
+    
+    # If still None, construct it properly (but this shouldn't happen if .env is correct)
+    if PASSWORD_RESET_URL is None:
+        PASSWORD_RESET_URL = f"{FRONTEND_URL}/views/reset-password.html"
+    
+    # Debug print to verify
+    print(f"[SETTINGS] FRONTEND_URL: {FRONTEND_URL}")
+    print(f"[SETTINGS] PASSWORD_RESET_URL: {PASSWORD_RESET_URL}")
 
 settings = Settings()
