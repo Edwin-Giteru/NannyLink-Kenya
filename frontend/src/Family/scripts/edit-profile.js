@@ -6,7 +6,7 @@ const token = localStorage.getItem('access_token');
 
 // Redirect if no token
 if (!token) {
-    window.location.href = '../views/login.html';
+    window.location.href = '/src/views/login.html';
 }
 
 // ========================================
@@ -30,7 +30,7 @@ async function loadCurrentData() {
         
         if (response.status === 401) {
             localStorage.removeItem('access_token');
-            window.location.href = '../views/login.html';
+            window.location.href = '/src/views/login.html';
             return;
         }
         
@@ -107,7 +107,7 @@ async function updateProfile(event) {
         
         if (response.status === 401) {
             localStorage.removeItem('access_token');
-            window.location.href = '../views/login.html';
+            window.location.href = '/src/views/login.html';
             return;
         }
         
@@ -263,7 +263,7 @@ function showSuccess(message) {
 document.addEventListener('DOMContentLoaded', () => {
     // Verify token again on page load
     if (!localStorage.getItem('access_token')) {
-        window.location.href = '../views/login.html';
+        window.location.href = '/src/views/login.html';
         return;
     }
     

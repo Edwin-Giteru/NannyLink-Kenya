@@ -128,7 +128,7 @@ if (signupForm) {
         const result = await signup(userData);
         if (result.success) {
             await showModal("Nanny Link account created!", "success");
-            window.location.href = "login.html";
+            window.location.href = "/src/views/login.html";
         } else {
             showModal(result.message || "Signup failed", "error");
             submitBtn.disabled = false;

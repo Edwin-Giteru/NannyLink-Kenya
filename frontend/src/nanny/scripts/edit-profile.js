@@ -11,7 +11,7 @@ let isUploading = false;
 
 // Redirect if no token
 if (!token) {
-    window.location.href = "../views/login.html";
+    window.location.href = "/src/views/login.html";
 }
 
 // ========================================
@@ -64,7 +64,7 @@ function showToast(message, type = 'success', duration = 4000) {
 // ========================================
 async function loadCurrentProfile() {
     if (!token) { 
-        window.location.href = "login.html"; 
+        window.location.href = "/src/views/login.html"; 
         return; 
     }
     
@@ -75,7 +75,7 @@ async function loadCurrentProfile() {
         
         if (response.status === 401) {
             localStorage.removeItem('access_token');
-            window.location.href = "../views/login.html";
+            window.location.href = "/src/views/login.html";
             return;
         }
         
@@ -244,7 +244,7 @@ if (editForm) {
             
             if (response.status === 401) {
                 localStorage.removeItem('access_token');
-                window.location.href = "../views/login.html";
+                window.location.href = "/src/views/login.html";
                 return;
             }
             

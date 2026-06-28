@@ -37,7 +37,7 @@ const statusOptions = {
 function getAccessToken() {
     const token = localStorage.getItem("access_token");
     if (!token) {
-        window.location.href = "../views/login.html";
+        window.location.href = "/src/views/login.html";
         return null;
     }
     return token;
@@ -56,7 +56,7 @@ function authHeaders() {
 function handleUnauthorized() {
     localStorage.removeItem("access_token");
     showToast("Session expired. Please log in again.", "error");
-    setTimeout(() => { window.location.href = "../views/login.html"; }, 1500);
+    setTimeout(() => { window.location.href = "/src/views/login.html"; }, 1500);
 }
 
 function showToast(message, type = "error") {

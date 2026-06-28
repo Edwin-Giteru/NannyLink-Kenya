@@ -19,7 +19,7 @@ function getAuthHeaders() {
 function checkAuth(response) {
     if (response.status === 401 || response.status === 403) {
         localStorage.removeItem('access_token');
-        window.location.href = '../views/login.html';
+        window.location.href = '/src/views/login.html';
         return true;
     }
     return false;

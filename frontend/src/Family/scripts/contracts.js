@@ -22,7 +22,7 @@ function getAuthHeaders() {
 function checkAuth(response) {
     if (response.status === 401) {
         localStorage.removeItem('access_token');
-        window.location.href = "../views/login.html";
+        window.location.href = "/src/views/login.html";
         return true;
     }
     return false;
@@ -79,7 +79,7 @@ function showToast(message, type = 'success', duration = 4000) {
 async function init() {
     const token = localStorage.getItem('access_token');
     if (!token) { 
-        window.location.href = "../views/login.html"; 
+        window.location.href = "/src/views/login.html"; 
         return; 
     }
     

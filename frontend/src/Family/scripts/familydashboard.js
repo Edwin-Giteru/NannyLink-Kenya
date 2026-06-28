@@ -1,6 +1,6 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
-const LOGIN_PAGE_URL = "../views/login.html";
+const LOGIN_PAGE_URL = "/src/views/login.html";
 const CONNECTION_FEE = 1;
 const GLOBAL_MAX_LIMIT = 3;
 const PAYMENT_TIMEOUT_MS = 60000;

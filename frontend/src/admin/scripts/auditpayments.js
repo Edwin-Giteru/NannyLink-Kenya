@@ -6,7 +6,7 @@ async function authorizedFetch(url, options = {}) {
     const token = localStorage.getItem('access_token');
     
     if (!token) {
-        window.location.href = '../views/login.html';
+        window.location.href = '/src/views/login.html';
         return;
     }
 
@@ -20,7 +20,7 @@ async function authorizedFetch(url, options = {}) {
         const response = await fetch(url, { ...options, headers });
         if (response.status === 401) {
             localStorage.removeItem('access_token');
-            window.location.href = "../views/login.html";
+            window.location.href = "/src/views/login.html";
             return;
         }
         return response;

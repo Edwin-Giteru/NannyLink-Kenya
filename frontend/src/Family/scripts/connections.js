@@ -23,7 +23,7 @@ function getAuthHeaders() {
 function checkAuth(response) {
     if (response.status === 401) {
         localStorage.removeItem('access_token');
-        window.location.href = "../views/login.html";
+        window.location.href = "/src/views/login.html";
         return true;
     }
     return false;
@@ -57,7 +57,7 @@ async function fetchProfile() {
 async function fetchConnections() {
     const token = localStorage.getItem('access_token');
     if (!token) {
-        window.location.href = "../views/login.html";
+        window.location.href = "/src/views/login.html";
         return;
     }
     
@@ -306,7 +306,7 @@ async function submitStkPush() {
 // ========================================
 document.addEventListener('DOMContentLoaded', async () => {
     if (!localStorage.getItem('access_token')) {
-        window.location.href = "../views/login.html";
+        window.location.href = "/src/views/login.html";
         return;
     }
     await fetchProfile();
