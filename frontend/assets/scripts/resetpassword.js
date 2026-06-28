@@ -2,8 +2,7 @@
 // DOM Elements
 // ========================================
 
-// ✅ Use relative path so Vite proxy handles routing correctly
-const API_BASE = "";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 // ... (all your DOM element declarations stay exactly the same) ...
 const step1View = document.getElementById('step1View');
@@ -193,7 +192,7 @@ function validatePasswordStrength(password) {
 async function requestPasswordReset(email) {
     try {
         // ✅ /auth/password-reset/request — matches FastAPI router prefix
-        const response = await fetch(`${API_BASE}/password-reset/request`, {
+        const response = await fetch(`${API_BASE_URL}/password-reset/request`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })
@@ -215,7 +214,7 @@ async function requestPasswordReset(email) {
 async function confirmPasswordReset(token, newPassword) {
     try {
         // ✅ /auth/password-reset/confirm — matches FastAPI router prefix
-        const response = await fetch(`${API_BASE}/password-reset/confirm`, {
+        const response = await fetch(`${API_BASE_URL}/password-reset/confirm`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token, new_password: newPassword })

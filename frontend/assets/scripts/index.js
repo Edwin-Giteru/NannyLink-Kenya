@@ -8,6 +8,8 @@ const locationSearch = document.getElementById('location-search');
 const caregiverGrid = document.getElementById('caregiverGrid');
 const paginationWrapper = document.getElementById('pagination-controls');
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 let allNannies = [];
 let filteredNannies = [];
 let currentPage = 1;
@@ -49,7 +51,7 @@ document.querySelectorAll('.faq-question').forEach(button => {
 
 async function fetchStats() {
     try {
-        const response = await fetch('http://127.0.0.1:8000/stats/');
+        const response = await fetch(`${API_BASE_URL}/stats/`);
         
         if (response.ok) {
             const data = await response.json();
@@ -119,7 +121,7 @@ function animateNumber(element, target) {
 async function fetchNannies() {
     try {
         // Public endpoint - no authentication required
-        const response = await fetch('http://127.0.0.1:8000/nannies/?skip=0&limit=50');
+        const response = await fetch(`${API_BASE_URL}/nannies/?skip=0&limit=50`);
         
         if (response.ok) {
             const data = await response.json();

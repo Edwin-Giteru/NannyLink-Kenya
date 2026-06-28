@@ -4,7 +4,7 @@
 const $ = (id) => document.getElementById(id);
 
 // API Configuration - CORRECT ENDPOINTS (no /auth prefix)
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 // State
 let currentMode = "login";
@@ -312,7 +312,7 @@ function validateConfirmPassword(password, confirmPassword) {
 // LOGIN - POST /login
 async function login(email, password) {
     try {
-        const response = await fetch(`${API_BASE}/login`, {
+        const response = await fetch(`${API_BASE_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -343,7 +343,7 @@ async function login(email, password) {
 // SIGNUP NANNY - POST /nanny
 async function signupNanny(userData) {
     try {
-        const response = await fetch(`${API_BASE}/nanny`, {
+        const response = await fetch(`${API_BASE_URL}/nanny`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -373,7 +373,7 @@ async function signupNanny(userData) {
 // SIGNUP FAMILY - POST /family
 async function signupFamily(userData) {
     try {
-        const response = await fetch(`${API_BASE}/family`, {
+        const response = await fetch(`${API_BASE_URL}/family`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

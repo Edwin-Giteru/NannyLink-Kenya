@@ -137,7 +137,7 @@ if (signupForm) {
     });
 }
 
-const API_BASE = "http://localhost:8000"; 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 let allNannies = [];
 
 /**
@@ -148,11 +148,11 @@ let allNannies = [];
 //     if (!photoPath) {
 //         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`;
 //     }
-//     // If the path is relative (doesn't start with http), prepend the API_BASE
+//     // If the path is relative (doesn't start with http), prepend the API_BASE_URL
 //     if (!photoPath.startsWith('http')) {
-//         // Ensure there is a single slash between API_BASE and the path
+//         // Ensure there is a single slash between API_BASE_URL and the path
 //         const cleanPath = photoPath.startsWith('/') ? photoPath : `/${photoPath}`;
-//         return `${API_BASE}${cleanPath}`;
+//         return `${API_BASE_URL}${cleanPath}`;
 //     }
 //     return photoPath;
 // }
@@ -233,7 +233,7 @@ async function fetchFeaturedNannies() {
     const token = localStorage.getItem('access_token');
     const role = localStorage.getItem('user_role');
     
-    const endpoint = (token && role === 'family') ? `${API_BASE}/connections/` : `${API_BASE}/nannies/`;
+    const endpoint = (token && role === 'family') ? `${API_BASE_URL}/connections/` : `${API_BASE_URL}/nannies/`;
 
     try {
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
@@ -286,7 +286,7 @@ function setupSearch() {
  */
 async function fetchStats() {
     try {
-        const res = await fetch(`${API_BASE}/stats/`);
+        const res = await fetch(`${API_BASE_URL}/stats/`);
         const stats = await res.json();
         if(document.getElementById("stat-nannies")) document.getElementById("stat-nannies").innerText = stats.nannies || 0;
         if(document.getElementById("stat-families")) document.getElementById("stat-families").innerText = stats.families || 0;
