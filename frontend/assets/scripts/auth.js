@@ -5,7 +5,6 @@ const $ = (id) => document.getElementById(id);
 
 // API Configuration - CORRECT ENDPOINTS (no /auth prefix)
 const API_BASE_URL = import.meta.env.VITE_API_URL;
-c
 
 // State
 let currentMode = "login";
