@@ -1,7 +1,7 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 const CONTRACT_PATH = "/contracts/me"; 
 let selectedContractId = null;
 let cachedContracts = [];
@@ -85,7 +85,7 @@ async function loadData() {
     const headers = getAuthHeaders();
 
     try {
-        const contractReq = await fetch(`${API_BASE}${CONTRACT_PATH}`, { headers });
+        const contractReq = await fetch(`${API_BASE_URL}${CONTRACT_PATH}`, { headers });
 
         if (checkAuth(contractReq)) return;
 
@@ -291,7 +291,7 @@ async function signContract() {
     }
     
     try {
-        const res = await fetch(`${API_BASE}/contracts/${selectedContractId}/sign`, {
+        const res = await fetch(`${API_BASE_URL}/contracts/${selectedContractId}/sign`, {
             method: 'POST',
             headers: getAuthHeaders()
         });

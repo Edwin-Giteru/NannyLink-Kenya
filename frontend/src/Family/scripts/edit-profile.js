@@ -1,7 +1,7 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem('access_token');
 
 // Redirect if no token
@@ -24,7 +24,7 @@ function getAuthHeaders() {
 // ========================================
 async function loadCurrentData() {
     try {
-        const response = await fetch(`${API_BASE}/families/profile/me`, {
+        const response = await fetch(`${API_BASE_URL}/families/profile/me`, {
             headers: getAuthHeaders()
         });
         
@@ -99,7 +99,7 @@ async function updateProfile(event) {
     };
     
     try {
-        const response = await fetch(`${API_BASE}/families/profile/me`, {
+        const response = await fetch(`${API_BASE_URL}/families/profile/me`, {
             method: 'PATCH',
             headers: getAuthHeaders(),
             body: JSON.stringify(payload)

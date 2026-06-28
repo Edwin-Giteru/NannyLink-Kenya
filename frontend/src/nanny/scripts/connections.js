@@ -1,7 +1,8 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_BASE_URL = "http://127.0.0.1:8000/connections";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_CONNECTIONS = `${API_BASE_URL}/connections`;
 let allConnections = [];
 
 // ========================================
@@ -107,7 +108,7 @@ async function fetchConnections() {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/`, {
+        const response = await fetch(`${API_CONNECTIONS}/`, {
             headers: getAuthHeaders()
         });
 

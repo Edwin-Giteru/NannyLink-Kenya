@@ -1,7 +1,8 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_BASE = "http://127.0.0.1:8000/nannies";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE = `${API_BASE_URL}/nannies`;
 let cachedConnections = [];
 
 // ========================================

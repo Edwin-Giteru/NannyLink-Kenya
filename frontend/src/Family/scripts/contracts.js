@@ -1,8 +1,9 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_CONTRACTS = "http://localhost:8000/contracts";
-const API_CONNECTIONS = "http://localhost:8000/connections";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_CONTRACTS = `${API_BASE_URL}/contracts`;
+const API_CONNECTIONS = `${API_BASE_URL}/connections`;
 let successfulMatches = [];
 let existingContracts = [];
 

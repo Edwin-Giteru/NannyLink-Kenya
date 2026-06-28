@@ -1,5 +1,5 @@
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 const LOGIN_PAGE_URL = "../views/login.html";
 const CONNECTION_FEE = 1;
 const GLOBAL_MAX_LIMIT = 3;

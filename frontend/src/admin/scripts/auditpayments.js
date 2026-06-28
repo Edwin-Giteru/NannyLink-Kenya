@@ -1,13 +1,7 @@
-// ========================================
-// API Configuration
-// ========================================
-const API_BASE_URL = 'http://127.0.0.1:8000/admin/payments';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 let currentPage = 1;
 let currentPaymentData = [];
 
-// ========================================
-// Authentication Helpers
-// ========================================
 async function authorizedFetch(url, options = {}) {
     const token = localStorage.getItem('access_token');
     
@@ -36,9 +30,6 @@ async function authorizedFetch(url, options = {}) {
     }
 }
 
-// ========================================
-// UI Update Functions
-// ========================================
 function updateStats(stats) {
     if (!stats) return;
     const totalVolumeElem = document.getElementById('totalVolume');

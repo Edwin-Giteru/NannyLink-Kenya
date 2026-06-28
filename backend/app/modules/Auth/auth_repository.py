@@ -38,12 +38,7 @@ class AuthRepository:
         results = await self.db.execute(stmt)
         return results.scalars().first()
 
-    # Add these methods to your AuthRepository class
-
-    async def get_user_by_email(self, email: str) -> Optional[User]:
-        result = await self.db.execute(select(User).where(User.email == email))
-        return result.scalars().first()
-
+   
     async def update_user_password(self, user_id: uuid.UUID, hashed_password: str) -> bool:
         try:
             result = await self.db.execute(select(User).where(User.id == user_id))

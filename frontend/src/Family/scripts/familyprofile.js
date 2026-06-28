@@ -1,7 +1,7 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem('access_token');
 
 // Redirect if no token
@@ -51,7 +51,7 @@ async function apiFetch(url, options = {}) {
 // ========================================
 async function loadProfile() {
     try {
-        const response = await apiFetch(`${API_BASE}/families/profile/me`);
+        const response = await apiFetch(`${API_BASE_URL}/families/profile/me`);
         
         if (!response) return;
         
@@ -95,7 +95,7 @@ async function loadProfile() {
             showToast(`
                 <strong>Connection Error!</strong><br>
                 Unable to connect to the backend server.<br>
-                <small>Please check if the server is running on ${API_BASE}</small>
+                <small>Please check if the server is running on ${API_BASE_URL}</small>
             `, 'error', 5000);
         } else {
             showToast(`Failed to load profile: ${error.message}`, 'error', 4000);
@@ -164,7 +164,7 @@ async function checkBackendConnection() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        const response = await fetch(`${API_BASE}/docs`, {
+        const response = await fetch(`${API_BASE_URL}/docs`, {
             signal: controller.signal,
             mode: 'no-cors'
         });
@@ -176,7 +176,7 @@ async function checkBackendConnection() {
         console.warn("Backend not reachable:", error);
         showToast(`
             <strong>Cannot connect to backend server!</strong><br>
-            Make sure the FastAPI server is running on ${API_BASE}<br>
+            Make sure the FastAPI server is running on ${API_BASE_URL}<br>
             <small>Run: uvicorn main:app --reload --host 127.0.0.1 --port 8000</small>
         `, 'error', 8000);
         return false;

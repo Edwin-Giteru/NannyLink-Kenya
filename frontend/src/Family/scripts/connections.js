@@ -1,9 +1,10 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_BASE = "http://localhost:8000/families/connections";
-const PROFILE_API = "http://localhost:8000/families/profile/me";
-const PAYMENT_API = "http://localhost:8000/payments/initiate-batch";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE = `${API_BASE_URL}/families/connections`;
+const PROFILE_API = `${API_BASE_URL}/families/profile/me`;
+const PAYMENT_API = `${API_BASE_URL}/payments/initiate-batch`;
 
 let allConnections = [];
 let currentFilter = 'all';

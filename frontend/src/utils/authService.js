@@ -1,4 +1,4 @@
-import { API_URL } from "../utils/config.js";
+import { API_BASE_URL } from "../utils/config.js";
 
 /**
  * Log in an existing user.
@@ -10,7 +10,7 @@ import { API_URL } from "../utils/config.js";
  */
 export async function login(emailAddress, password) {
   try {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${API_BASE_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: emailAddress, password }),
@@ -43,7 +43,7 @@ export async function signup(userData) {
   try {
     const roleEndpoint = userData.role?.toLowerCase() === "nanny" ? "nanny" : "family";
 
-    const response = await fetch(`${API_URL}/${roleEndpoint}`, {
+    const response = await fetch(`${API_BASE_URL}/${roleEndpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
@@ -73,7 +73,7 @@ export async function signup(userData) {
  */
 export async function requestPasswordReset(emailAddress) {
   try {
-    const response = await fetch(`${API_URL}/auth/forgot-password`, {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: emailAddress }),
@@ -107,7 +107,7 @@ export async function requestPasswordReset(emailAddress) {
  */
 export async function confirmPasswordReset(resetToken, newPassword) {
   try {
-    const response = await fetch(`${API_URL}/auth/reset-password`, {
+    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: resetToken, new_password: newPassword }),

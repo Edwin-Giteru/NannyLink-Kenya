@@ -219,6 +219,7 @@ function checkAuth(response) {
 // ========================================
 // API Calls
 // ========================================
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 async function fetchUsers(page = 1) {
     const search = document.getElementById('identity-search').value;
     const role = document.getElementById('role-filter').value;
@@ -230,7 +231,7 @@ async function fetchUsers(page = 1) {
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/admin/users?page=${page}&search=${search}&role=${role}&status=${currentStatus}`, {
+        const response = await fetch(`${API_BASE_URL}/admin/users?page=${page}&search=${search}&role=${role}&status=${currentStatus}`, {
             method: 'GET',
             headers: getAuthHeaders()
         });
@@ -387,7 +388,7 @@ async function confirmVerification() {
     btn.disabled = true;
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/admin/users/${userToVerify}/verify`, {
+        const response = await fetch(`${API_BASE_URL}/admin/users/${userToVerify}/verify`, {
             method: 'PATCH',
             headers: getAuthHeaders()
         });
@@ -431,7 +432,7 @@ async function confirmDeletion() {
     btn.innerText = "Purging...";
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/admin/${userToDelete}`, {
+        const response = await fetch(`${API_BASE_URL}/admin/${userToDelete}`, {
             method: 'DELETE',
             headers: getAuthHeaders()
         });
@@ -482,7 +483,7 @@ async function createUser(formData) {
     submitBtn.innerText = "Initializing...";
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/admin/users', {
+        const response = await fetch(`${API_BASE_URL}/admin/users`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(payload)

@@ -1,7 +1,7 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_BASE = 'http://127.0.0.1:8000/admin';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 let latestDashboardData = null;
 let latestTransactions = [];
 
@@ -30,7 +30,7 @@ function checkAuth(response) {
 // ========================================
 async function fetchStats() {
     try {
-        const response = await fetch(`${API_BASE}/stats-overview`, { 
+        const response = await fetch(`${API_BASE_URL}/stats-overview`, { 
             headers: getAuthHeaders() 
         });
         
@@ -48,7 +48,7 @@ async function fetchStats() {
 
 async function fetchTransactions() {
     try {
-        const response = await fetch(`${API_BASE}/recent-transactions`, { 
+        const response = await fetch(`${API_BASE_URL}/recent-transactions`, { 
             headers: getAuthHeaders() 
         });
         

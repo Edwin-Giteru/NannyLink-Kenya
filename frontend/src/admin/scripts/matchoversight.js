@@ -1,7 +1,7 @@
 // ========================================
 // API Configuration
 // ========================================
-const API_BASE = "http://localhost:8000/admin";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 let currentPage = 1;
 let selectedStatus = "";
 let matchIdToProcess = null;
@@ -144,7 +144,7 @@ async function loadMatches() {
             status: selectedStatus
         });
 
-        const response = await fetch(`${API_BASE}/matches?${params}`, {
+        const response = await fetch(`${API_BASE_URL}/matches?${params}`, {
             headers: getAuthHeaders()
         });
         
@@ -183,7 +183,7 @@ async function confirmForceComplete() {
     confirmBtn.classList.add('disabled');
 
     try {
-        const response = await fetch(`${API_BASE}/matches/${matchIdToProcess}/force-complete`, { 
+        const response = await fetch(`${API_BASE_URL}/matches/${matchIdToProcess}/force-complete`, { 
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -223,7 +223,7 @@ async function openManualMatchModal() {
     modal.classList.remove('hidden');
     
     try {
-        const response = await fetch(`${API_BASE}/match-candidates`, {
+        const response = await fetch(`${API_BASE_URL}/match-candidates`, {
             headers: getAuthHeaders()
         });
         
@@ -264,7 +264,7 @@ async function submitManualMatch() {
     btn.innerText = "Creating...";
 
     try {
-        const response = await fetch(`${API_BASE}/matches/manual`, {
+        const response = await fetch(`${API_BASE_URL}/matches/manual`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ family_id, nanny_id })

@@ -16,8 +16,6 @@ class NannyBrief(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
     id: UUID
-    # DB column is 'name', but we expose both 'name' AND 'full_name' so the frontend's
-    # nanny?.full_name check resolves correctly
     name: str
     full_name: Optional[str] = None
     profile_photo_url: Optional[str] = None
@@ -25,7 +23,6 @@ class NannyBrief(BaseModel):
 
     @model_validator(mode="after")
     def populate_full_name(self) -> "NannyBrief":
-        # Mirror 'name' into 'full_name' so frontend gets both fields populated
         if not self.full_name:
             self.full_name = self.name
         return self
