@@ -99,7 +99,7 @@ async function init() {
             successfulMatches = connectionData || [];
         }
         
-        existingContracts = await ctRes.json();
+        const _ctJson = await ctRes.json(); existingContracts = Array.isArray(_ctJson) ? _ctJson : (_ctJson.data || []);
         renderMatches();
     } catch (e) { 
         console.error("Initialization Error:", e); 

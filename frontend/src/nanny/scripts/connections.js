@@ -115,7 +115,7 @@ async function fetchConnections() {
         if (checkAuth(response)) return;
 
         if (response.ok) {
-            allConnections = await response.json();
+            const _json = await response.json(); allConnections = Array.isArray(_json) ? _json : (_json.data || _json.results || []);
             renderConnections(allConnections);
         } else {
             showToast("Failed to load connections", "error");
