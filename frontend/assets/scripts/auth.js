@@ -456,13 +456,13 @@ async function handleLogin(e) {
                 const role = result.role;
                 
                 if (role === "admin") {
-                    window.location.href = "../admin/statsoverview.html";
+                    window.location.href = "src/admin/statsoverview.html";
                 } else if (role === "family") {
-                    window.location.href = "../Family/familydashboard.html";
+                    window.location.href = "src/Family/familydashboard.html";
                 } else if (role === "nanny") {
-                    window.location.href = "../nanny/nannydashboard.html";
+                    window.location.href = "src/nanny/nannydashboard.html";
                 } else {
-                    window.location.href = "../admin/statsoverview.html";
+                    window.location.href = "src/admin/statsoverview.html";
                 }
             }, 1500);
         } else {
@@ -556,9 +556,9 @@ async function handleSignup(e) {
                 
                 setTimeout(() => {
                     if (selectedRole === "nanny") {
-                        window.location.href = "../nanny/profilecreation.html";
+                        window.location.href = "src/nanny/profilecreation.html";
                     } else {
-                        window.location.href = "../Family/createprofile.html";
+                        window.location.href = "src/Family/createprofile.html";
                     }
                 }, 1500);
             } else {
