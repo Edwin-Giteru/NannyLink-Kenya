@@ -226,7 +226,7 @@ function renderNanniesGrid() {
                         <span class="tag">${exp} Yrs Exp</span>
                         <span class="tag tag-emerald">Vetted</span>
                     </div>
-                    <a href="../frontend/src/views/login.html" class="nanny-profile-link">View Profile</a>
+                    <a href="/src/views/login.html" class="nanny-profile-link">View Profile</a>
                 </div>
             </div>
         `;

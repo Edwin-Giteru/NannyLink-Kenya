@@ -64,7 +64,7 @@ async function submitFamilyProfile(formData) {
     if (!token) {
         showError("Session expired. Please sign in again.");
         setTimeout(() => {
-            window.location.href = "../../auth/login.html";
+            window.location.href = "/src/views/login.html";
         }, 2000);
         return false;
     }

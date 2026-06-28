@@ -176,8 +176,7 @@ async function checkBackendConnection() {
         console.warn("Backend not reachable:", error);
         showToast(`
             <strong>Cannot connect to backend server!</strong><br>
-            Make sure the FastAPI server is running on ${API_BASE_URL}<br>
-            <small>Run: uvicorn main:app --reload --host 127.0.0.1 --port 8000</small>
+            Make sure the API server is reachable at ${API_BASE_URL}
         `, 'error', 8000);
         return false;
     }

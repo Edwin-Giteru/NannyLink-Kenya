@@ -9,7 +9,7 @@ const token = localStorage.getItem("access_token");
 
 // Redirect if no token
 if (!token) {
-    window.location.href = "/frontend/src/views/login.html";
+    window.location.href = "/src/views/login.html";
 }
 
 // ========================================

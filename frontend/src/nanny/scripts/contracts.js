@@ -21,7 +21,7 @@ function getAuthHeaders() {
 function checkAuth(response) {
     if (response.status === 401) {
         localStorage.removeItem('access_token');
-        window.location.href = "/frontend/src/views/login.html";
+        window.location.href = "/src/views/login.html";
         return true;
     }
     return false;
@@ -78,7 +78,7 @@ function showToast(message, type = 'success', duration = 4000) {
 async function loadData() {
     const token = localStorage.getItem("access_token");
     if (!token) { 
-        window.location.href = "/frontend/src/views/login.html"; 
+        window.location.href = "/src/views/login.html"; 
         return; 
     }
     
@@ -361,7 +361,7 @@ function escapeHtml(str) {
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('access_token')) {
-        window.location.href = "/frontend/src/views/login.html";
+        window.location.href = "/src/views/login.html";
         return;
     }
     loadData();

@@ -58,9 +58,9 @@ if (loginForm) {
                 
                 const role = result.role.toLowerCase(); 
                 if (role === "nanny") {
-                    window.location.href = "/frontend/src/views/nannydashboard.html"; 
+                    window.location.href = "/src/nanny/nannydashboard.html"; 
                 } else if (role === "family") {
-                    window.location.href = "/frontend/src/family/views/familydashboard.html"; 
+                    window.location.href = "/src/Family/familydashboard.html"; 
                 }
             } else {
                 showModal(result.message || "Invalid email or password", "error");
@@ -216,7 +216,7 @@ function renderNannies(nannies) {
                     <span class="bg-slate-50 px-3 py-1 rounded-lg text-[9px] font-black text-slate-500 uppercase border border-slate-100">${exp} Yrs Exp</span>
                     <span class="bg-emerald-50 px-3 py-1 rounded-lg text-[9px] font-black text-emerald-600 uppercase border border-emerald-100 italic">Vetted</span>
                 </div>
-                <a href="../frontend/src/views/login.html" class="block w-full py-3.5 bg-slate-50 text-primary text-center text-xs font-black rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm">
+                <a href="/src/views/login.html" class="block w-full py-3.5 bg-slate-50 text-primary text-center text-xs font-black rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm">
                     View Profile
                 </a>
             </div>
@@ -301,11 +301,11 @@ function handleView(nannyId) {
     const role = localStorage.getItem('user_role');
 
     if (!token) {
-        window.location.href = "../frontend/src/views/login.html";
+        window.location.href = "/src/views/login.html";
     } else if (role === 'family') {
-        window.location.href = "/frontend/src/family/views/familydashboard.html";
+        window.location.href = "/src/Family/familydashboard.html";
     } else {
-        window.location.href = "../frontend/src/views/login.html";
+        window.location.href = "/src/views/login.html";
     }
 }
 
