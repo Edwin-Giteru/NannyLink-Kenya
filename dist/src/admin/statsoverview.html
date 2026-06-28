@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>NannyLink Kenya | Admin Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <!-- XLSX Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/adminStatsOverview-CdSgdtbq.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/adminStatsOverview-6KKlc-2Y.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">NannyLink Kenya</h1>
+            <p class="logo-subtitle">Admin Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="statsoverview.html" class="nav-item active">
+                <span class="material-symbols-outlined material-symbols-fill">dashboard</span>
+                <span>Stats Overview</span>
+            </a>
+            <a href="usermanagement.html" class="nav-item">
+                <span class="material-symbols-outlined">group</span>
+                <span>User Management</span>
+            </a>
+            <a href="matchoversight.html" class="nav-item">
+                <span class="material-symbols-outlined">handshake</span>
+                <span>Match Oversight</span>
+            </a>
+            <a href="auditpayments.html" class="nav-item">
+                <span class="material-symbols-outlined">payments</span>
+                <span>Payment Logs</span>
+            </a>
+            <a href="reports.html" class="nav-item">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Reports Dashboard</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=00152f&color=fff" alt="Admin">
+                </div>
+                <div>
+                    <p class="user-name">System Admin</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </div>
+            <div class="mobile-logo">
+                <span class="material-symbols-outlined material-symbols-fill">shield_with_heart</span>
+                <span>NannyLink</span>
+            </div>
+            <div class="header-actions">
+                <button onclick="refreshDashboard()" class="icon-btn" title="Refresh">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+                <button class="mobile-menu-btn icon-btn" onclick="toggleMobileMenu()">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <p class="page-subtitle">Internal Management</p>
+                    <h2 class="page-title">Stats Overview</h2>
+                </div>
+                <div class="action-buttons">
+                    <button onclick="exportDashboardToExcel()" class="btn-outline">
+                        <span class="material-symbols-outlined">download</span>
+                        Export
+                    </button>
+                    <button onclick="refreshDashboard()" class="btn-secondary">
+                        Manual Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <!-- Revenue Card -->
+                <div class="bento-card revenue-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined material-symbols-fill">account_balance_wallet</span>
+                        </div>
+                        <span id="revenue-growth" class="growth-badge">--% MoM</span>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-label">Total Revenue</p>
+                        <h3 id="total-revenue" class="card-value-large">KES 0</h3>
+                        <div class="revenue-breakdown">
+                            <div>
+                                <p class="breakdown-label">Completed</p>
+                                <p id="completed-revenue" class="breakdown-value">KES 0</p>
+                            </div>
+                            <div>
+                                <p class="breakdown-label">Pending</p>
+                                <p id="pending-revenue" class="breakdown-value pending">KES 0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-bg-shape"></div>
+                </div>
+
+                <!-- User Base Card -->
+                <div class="bento-card">
+                    <div class="card-icon orange">
+                        <span class="material-symbols-outlined material-symbols-fill">groups</span>
+                    </div>
+                    <p class="card-label">User Base</p>
+                    <h3 class="card-value"><span id="total-users">0</span> <span class="value-unit">Total</span></h3>
+                    <div class="progress-bars">
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span>Families</span>
+                                <span id="family-count" class="progress-value">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="family-progress" class="progress-fill primary" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span>Nannies</span>
+                                <span id="nanny-count" class="progress-value">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="nanny-progress" class="progress-fill secondary" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Health Card -->
+                <div class="bento-card health-card">
+                    <div>
+                        <div class="health-header">
+                            <span class="health-dot"></span>
+                            <p class="health-label">System Health</p>
+                        </div>
+                        <h4 class="health-title">M-Pesa Gateway</h4>
+                        <p class="health-subtitle">Callback Success Rate</p>
+                    </div>
+                    <div>
+                        <p id="mpesa-health" class="health-value">0%</p>
+                        <div class="health-status">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            Optimized
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placement Performance Card -->
+                <div class="bento-card wide placement-card">
+                    <div class="placement-content">
+                        <div class="placement-info">
+                            <p class="placement-label">Placement Performance</p>
+                            <h3 class="placement-title">Match Oversight</h3>
+                            <p class="placement-description">Tracking conversion metrics from family requests to successful nanny placements across Nairobi.</p>
+                            <div class="placement-stats">
+                                <div class="stat-box">
+                                    <div class="stat-icon pending-icon">
+                                        <span class="material-symbols-outlined">pending_actions</span>
+                                    </div>
+                                    <div>
+                                        <p id="awaiting-payment" class="stat-number">0</p>
+                                        <p class="stat-label">Awaiting</p>
+                                    </div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon completed-icon">
+                                        <span class="material-symbols-outlined material-symbols-fill">verified</span>
+                                    </div>
+                                    <div>
+                                        <p id="completed-placements" class="stat-number">0</p>
+                                        <p class="stat-label">Completed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="placement-chart">
+                            <div class="circular-chart">
+                                <svg class="progress-ring" viewBox="0 0 160 160">
+                                    <circle class="progress-ring-bg" cx="80" cy="80" r="70" fill="transparent" stroke="#f1f5f9" stroke-width="12"></circle>
+                                    <circle id="success-ring" class="progress-ring-fill" cx="80" cy="80" r="70" fill="transparent" stroke="#835500" stroke-width="12" stroke-dasharray="439.8" stroke-dashoffset="439.8" stroke-linecap="round"></circle>
+                                </svg>
+                                <div class="chart-center">
+                                    <span id="match-success-rate" class="chart-percent">0%</span>
+                                    <span class="chart-label">Success</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Lookup Card -->
+                <div class="bento-card quick-lookup">
+                    <h4 class="quick-title">Quick Lookup</h4>
+                    <div class="quick-links">
+                        <a href="usermanagement.html" class="quick-link">
+                            <span class="quick-link-text">Manage Users</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </a>
+                        <a href="matchoversight.html" class="quick-link">
+                            <span class="quick-link-text">Review Matches</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </a>
+                        <a href="auditpayments.html" class="quick-link">
+                            <span class="quick-link-text">Audit Payments</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions Section -->
+            <section class="transactions-section">
+                <div class="transactions-header">
+                    <h3 class="transactions-title">Recent Transactions</h3>
+                    <button class="view-all-btn">View All Logs</button>
+                </div>
+                <div class="transactions-table-wrapper">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 NannyLink Kenya. All rights reserved.</p>
+        </footer>
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav">
+        <a href="statsoverview.html" class="mobile-nav-item active">
+            <span class="material-symbols-outlined material-symbols-fill">analytics</span>
+            <span>Stats</span>
+        </a>
+        <a href="usermanagement.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">person_search</span>
+            <span>Users</span>
+        </a>
+        <a href="matchoversight.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">handshake</span>
+            <span>Matches</span>
+        </a>
+        <a href="auditpayments.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Payments</span>
+        </a>
+    </nav>
+
+    <!-- JavaScript -->
+</body>
+</html>

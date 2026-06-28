@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>NannyLink | Contract Workspace</title>
+    
+    <!-- html2pdf Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/familyContracts-Dx0DxJS-.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/familyContracts-VUmKsxPE.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <img src="/assets/logo-Dmj9sdKV.png" alt="NannyLink Logo">
+            <span class="logo-text">NannyLink Kenya</span>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="contracts-grid">
+            <!-- Connections Sidebar -->
+            <div class="connections-sidebar">
+                <h3 class="sidebar-title">Connections</h3>
+                <div id="matchList" class="connections-list"></div>
+            </div>
+
+            <!-- Workspace Area -->
+            <div id="workspace" class="workspace">
+                <div class="workspace-empty">
+                    <span class="material-symbols-outlined">description</span>
+                    <p>Select a connection to view or generate an agreement.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="contracts.html" class="nav-item active">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">description</span>
+            <span>Contracts</span>
+            <div class="active-indicator"></div>
+        </a>
+        <a href="connections.html" class="nav-item">
+            <span class="material-symbols-outlined">payments</span>
+            <span>Payments</span>
+        </a>
+        <a href="familydashboard.html" class="nav-item">
+            <span class="material-symbols-outlined">group</span>
+            <span>Connect</span>
+        </a>
+    </nav>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JavaScript -->
+</body>
+</html>

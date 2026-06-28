@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>NannyLink | Edit Family Profile</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/familyEditProfile-DUHlbBkt.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/familyEditProfile-BxMdvef7.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <button onclick="window.history.back()" class="back-btn">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="logo-divider"></div>
+            <div class="logo">
+                <img src="/assets/logo-Dmj9sdKV.png" alt="Logo">
+                <span class="logo-text">NannyLink Kenya</span>
+            </div>
+        </div>
+        <div class="header-right"></div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <form id="edit_family_form" class="edit-form">
+            <!-- Profile Picture Section -->
+            <section class="profile-section">
+                <div class="avatar-container">
+                    <div class="avatar-wrapper">
+                        <img id="profile_preview" src="" class="avatar-image hidden" alt="Profile" />
+                        <span id="initials_placeholder" class="avatar-initials">--</span>
+                    </div>
+                </div>
+                <p class="avatar-label">Family Profile Picture</p>
+            </section>
+
+            <!-- Form Fields Section -->
+            <div class="form-section">
+                <div class="form-row">
+                    <label class="form-label">Family Name:</label>
+                    <input type="text" id="name" required 
+                        class="form-input" 
+                        placeholder="Johnarto Family" />
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label">Household Location:</label>
+                    <input type="text" id="household_location" required 
+                        class="form-input" 
+                        placeholder="Nyali, Mombasa" />
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label">Household Details:</label>
+                    <textarea id="household_details" rows="5" 
+                        class="form-textarea" 
+                        placeholder="Mention number of kids, bedrooms, specific nanny roles..."></textarea>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="submit-section">
+                <button type="submit" id="save_btn" class="submit-btn">
+                    <span id="btn_text">Save Profile Changes</span>
+                    <span id="spinner" class="spinner hidden">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                    </span>
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="contracts.html" class="nav-item">
+            <span class="material-symbols-outlined">description</span>
+            <span>Contracts</span>
+        </a>
+        <a href="connections.html" class="nav-item">
+            <span class="material-symbols-outlined">payments</span>
+            <span>Payments</span>
+        </a>
+        <a href="familyprofile.html" class="nav-item active">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+            <span>Profile</span>
+            <div class="active-indicator"></div>
+        </a>
+    </nav>
+
+    <!-- JavaScript -->
+</body>
+</html>

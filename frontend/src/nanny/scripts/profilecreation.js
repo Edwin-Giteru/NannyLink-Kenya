@@ -236,7 +236,7 @@ if (nannyForm) {
             if (response.ok) {
                 showToast("Profile created successfully! Redirecting...", "success");
                 setTimeout(() => {
-                    window.location.href = "nannydashboard.html";
+                    window.location.href = "/src/nanny/nannydashboard.html";
                 }, 1500);
             } else {
                 if (data.detail && data.detail.includes("UniqueViolationError")) {

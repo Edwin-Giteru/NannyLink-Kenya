@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Payment Logs | NannyLink Kenya</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <!-- XLSX Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/adminAuditPayments-Ddz2vX7h.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/adminAuditPayments--bMgzAsp.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">NannyLink Kenya</h1>
+            <p class="logo-subtitle">Admin Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="statsoverview.html" class="nav-item">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Stats Overview</span>
+            </a>
+            <a href="usermanagement.html" class="nav-item">
+                <span class="material-symbols-outlined">group</span>
+                <span>User Management</span>
+            </a>
+            <a href="matchoversight.html" class="nav-item">
+                <span class="material-symbols-outlined">handshake</span>
+                <span>Match Oversight</span>
+            </a>
+            <a href="auditpayments.html" class="nav-item active">
+                <span class="material-symbols-outlined material-symbols-fill">payments</span>
+                <span>Payment Logs</span>
+            </a>
+            <a href="reports.html" class="nav-item">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Reports Dashboard</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=00152f&color=fff" alt="Admin">
+                </div>
+                <div>
+                    <p class="user-name">System Admin</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </div>
+            <div class="mobile-logo">
+                <span class="material-symbols-outlined">shield_with_heart</span>
+                <span>NannyLink</span>
+            </div>
+            <button id="exportBtn" class="btn-export">
+                <span class="material-symbols-outlined">download</span>
+                Export Excel
+            </button>
+        </header>
+
+        <!-- MAIN SECTION -->
+        <div class="content-container">
+            <!-- Header Stats -->
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Payment Logs</h2>
+                    <p class="page-description">Audit M-Pesa transaction flows and agency commission settlement.</p>
+                </div>
+                <div class="stats-chip">
+                    <div class="stats-chip-content">
+                        <p class="stats-chip-label">Total Volume</p>
+                        <p class="stats-chip-value" id="totalVolume">KES 0</p>
+                    </div>
+                    <div class="stats-chip-icon">
+                        <span class="material-symbols-outlined material-symbols-fill">trending_up</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon success">
+                        <span class="material-symbols-outlined">check_circle</span>
+                    </div>
+                    <div>
+                        <p class="metric-label">Success Rate</p>
+                        <p class="metric-value" id="successRate">0%</p>
+                    </div>
+                </div>
+                <div class="metric-card-primary">
+                    <div class="metric-primary-content">
+                        <p class="metric-primary-label">Compliance Status</p>
+                        <p class="metric-primary-title">Audit Transparency Report</p>
+                    </div>
+                    <button class="btn-audit" onclick="generateAuditLog()">
+                        Generate Audit Log
+                    </button>
+                    <span class="metric-primary-icon">verified_user</span>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <span class="search-icon material-symbols-outlined">search</span>
+                    <input type="text" id="searchInput" placeholder="Filter by M-Pesa Code or Parties..." class="search-input">
+                </div>
+            </div>
+
+            <!-- Payment Table -->
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Parties (Family &amp; Nanny)</th>
+                                <th>M-Pesa Code</th>
+                                <th class="text-center">Amount</th>
+                                <th>Status</th>
+                                <!-- <th class="text-right">Actions</th> -->
+                            </tr>
+                        </thead>
+                        <tbody id="paymentTableBody">
+                            <!-- Dynamic content will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table Footer with Pagination -->
+                <div class="table-footer">
+                    <p id="showingText" class="pagination-info">Showing 0 transactions</p>
+                    <div class="pagination-controls">
+                        <button id="prevBtn" class="page-btn">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button id="pageNumber" class="page-btn active">1</button>
+                        <button id="nextBtn" class="page-btn">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 NannyLink Kenya. All rights reserved.</p>
+        </footer>
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav">
+        <a href="statsoverview.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">analytics</span>
+            <span>Stats</span>
+        </a>
+        <a href="usermanagement.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">person_search</span>
+            <span>Users</span>
+        </a>
+        <a href="matchoversight.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">handshake</span>
+            <span>Matches</span>
+        </a>
+        <a href="auditpayments.html" class="mobile-nav-item active">
+            <span class="material-symbols-outlined material-symbols-fill">receipt_long</span>
+            <span>Payments</span>
+        </a>
+    </nav>
+
+    <!-- Custom JavaScript -->
+</body>
+</html>

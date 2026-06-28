@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Edit Profile | NannyLink</title>
+    
+    <!-- Image Compression Library -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/nannyEditProfile-DJJiTuwC.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/nannyEditProfile-BlHCLyl_.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <button onclick="window.history.back()" class="back-btn">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="logo-divider"></div>
+            <div class="logo">
+                <img src="/assets/logo-Dmj9sdKV.png" alt="NannyLink Logo">
+                <span class="logo-text">NannyLink</span>
+            </div>
+        </div>
+        <h1 class="header-title">Edit Profile</h1>
+        <div class="header-right"></div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <form id="edit_profile_form" class="edit-form">
+            <!-- Profile Photo Section -->
+            <section class="photo-section">
+                <div class="avatar-container">
+                    <div class="avatar-wrapper">
+                        <img id="profile_preview" src="https://via.placeholder.com/150" alt="Profile" />
+                    </div>
+                    <input type="file" id="profile_file_input" accept="image/*" class="hidden" />
+                    <button id="trigger_upload" type="button" class="camera-btn">
+                        <span class="material-symbols-outlined">photo_camera</span>
+                    </button>
+                </div>
+                <h3 id="display_name" class="profile-name">Loading name...</h3>
+                <p id="upload_status" class="upload-status">Nanny Profile Photo</p>
+                <input type="hidden" id="profile_photo_url" />
+            </section>
+
+            <!-- Form Fields Section -->
+            <div class="form-card">
+                <div class="card-header">
+                    <h4 class="card-title">General Information</h4>
+                    <p class="card-subtitle">Basic identification and location</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="name" required class="form-input" placeholder="Enter full name" />
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Residential Address</label>
+                        <input type="text" id="address" required class="form-input" placeholder="e.g. Njoro, Nakuru" />
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Years of Experience</label>
+                        <input type="number" id="years_experience" required class="form-input" placeholder="0" min="0" />
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Preferred Working Location</label>
+                        <input type="text" id="preferred_location" required class="form-input" placeholder="e.g. Nairobi" />
+                    </div>
+                </div>
+
+                <div class="form-field full-width">
+                    <label class="form-label">Skills (Comma separated)</label>
+                    <textarea id="skills" rows="3" required class="form-textarea" placeholder="e.g. Cooking, First Aid, Tutoring"></textarea>
+                </div>
+
+                <div class="form-field full-width">
+                    <label class="form-label text-secondary">Availability Status</label>
+                    <div class="select-wrapper">
+                        <select id="availability" class="form-select">
+                            <option value="full_time">Full Time</option>
+                            <option value="part_time">Part Time</option>
+                            <option value="weekends">Weekends</option>
+                            <option value="evenings">Evenings</option>
+                        </select>
+                        <span class="select-icon material-symbols-outlined">expand_more</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="submit-container">
+                <button type="submit" id="save_btn" class="submit-btn">
+                    Save Profile Changes
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JavaScript -->
+</body>
+</html>

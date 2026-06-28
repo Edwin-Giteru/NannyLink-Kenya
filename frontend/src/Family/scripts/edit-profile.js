@@ -113,7 +113,7 @@ async function updateProfile(event) {
         
         if (response.ok) {
             // Success - redirect to dashboard
-            window.location.href = 'familydashboard.html';
+            window.location.href = '/src/Family/familydashboard.html';
         } else {
             const error = await response.json();
             showError(`Update failed: ${error.detail || 'Unknown error'}`);

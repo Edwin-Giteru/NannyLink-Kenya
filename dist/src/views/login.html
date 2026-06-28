@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Welcome to NannyLink</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/login-Cs58x5V8.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/auth-CDgoWMMN.css">
+</head>
+<body>
+    <main class="auth-container">
+        <div class="auth-card">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <span class="logo-text">NannyLink</span>
+                <p class="logo-subtitle">Kenya's Premium Care Network</p>
+            </div>
+
+            <!-- Mode Toggle -->
+            <div class="mode-toggle" id="modeToggle">
+                <div class="mode-track" id="modeTrack"></div>
+                <button class="mode-btn active" id="btnLogin">Sign In</button>
+                <button class="mode-btn" id="btnSignup">Sign Up</button>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="bannerError" class="banner error hidden">
+                <i class="fas fa-circle-exclamation"></i>
+                <span id="bannerErrorText"></span>
+            </div>
+
+            <!-- Success Banner -->
+            <div id="bannerSuccess" class="banner success hidden">
+                <i class="fas fa-circle-check"></i>
+                <span id="bannerSuccessText"></span>
+            </div>
+
+            <!-- Login Form -->
+            <div id="viewLogin" class="form-view active">
+                <div class="form-header">
+                    <h1 class="form-title">Welcome Back</h1>
+                    <p class="form-subtitle">Enter your details to access your dashboard</p>
+                </div>
+
+                <form id="formLogin" class="auth-form" novalidate>
+                    <div class="input-field">
+                        <label class="input-label">Email Address</label>
+                        <div class="input-wrapper" id="wrapLoginEmail">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="loginEmail" class="auth-input" placeholder="name@example.com" required>
+                        </div>
+                        <span class="error-message" id="errLoginEmail"></span>
+                    </div>
+
+                    <div class="input-field">
+                            <div class="label-row">
+                                <label class="input-label">Password</label>
+                                <a href="/src/views/reset-password.html" class="forgot-link">Forgot password?</a>
+                            </div>
+                                                    <div class="input-wrapper" id="wrapLoginPw">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="loginPw" class="auth-input" placeholder="••••••••" required>
+                            <button type="button" class="password-toggle" data-target="loginPw">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" id="errLoginPw"></span>
+                    </div>
+
+                    <button type="submit" class="auth-submit" id="btnLoginSubmit">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="viewSignup" class="form-view">
+                <div class="form-header">
+                    <h1 class="form-title">Create Account</h1>
+                    <p class="form-subtitle">Join the network for free today</p>
+                </div>
+
+                <!-- Role Selection -->
+                <div class="role-grid" id="signupRoleGrid">
+                    <button type="button" class="role-card active" data-role="nanny">
+                        <span>Joining as Nanny</span>
+                    </button>
+                    <button type="button" class="role-card" data-role="family">
+                        <span>Joining as Family</span>
+                    </button>
+                </div>
+
+                <form id="formSignup" class="auth-form" novalidate>
+                    <div class="input-field">
+                        <label class="input-label">Phone Number</label>
+                        <div class="input-wrapper" id="wrapSignupPhone">
+                            <i class="fas fa-phone input-icon"></i>
+                            <input type="tel" id="signupPhone" class="auth-input" placeholder="0712345678" required>
+                        </div>
+                        <span class="error-message" id="errSignupPhone"></span>
+                    </div>
+
+                    <div class="input-field">
+                        <label class="input-label">Email Address</label>
+                        <div class="input-wrapper" id="wrapSignupEmail">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="signupEmail" class="auth-input" placeholder="your@email.com" required>
+                        </div>
+                        <span class="error-message" id="errSignupEmail"></span>
+                    </div>
+
+                    <div class="row-grid">
+                        <div class="input-field">
+                            <label class="input-label">Password</label>
+                            <div class="input-wrapper" id="wrapSignupPw">
+                                <input type="password" id="signupPw" class="auth-input" placeholder="Create password" required>
+                                <button type="button" class="password-toggle" data-target="signupPw">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div id="passwordStrength" class="password-strength hidden">
+                                <div class="strength-bar" id="strengthBar"></div>
+                                <span class="strength-text" id="strengthText">Weak</span>
+                            </div>
+                            <span class="error-message" id="errSignupPw"></span>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="input-label">Confirm Password</label>
+                            <div class="input-wrapper" id="wrapSignupConfirm">
+                                <input type="password" id="signupConfirm" class="auth-input" placeholder="Repeat password" required>
+                                <button type="button" class="password-toggle" data-target="signupConfirm">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <span class="error-message" id="errSignupConfirm"></span>
+                        </div>
+                    </div>
+
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="signupTerms">
+                        <label for="signupTerms">
+                            I agree to the <a href="/src/views/terms.html" class="terms-link">Terms of Service</a>.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="auth-submit" id="btnSignupSubmit">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="auth-footer" id="footerContainer">
+                <p id="footerText">
+                    Don't have an account? <button type="button" class="footer-link" id="footerAction">Sign up now</button>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+</body>
+</html>

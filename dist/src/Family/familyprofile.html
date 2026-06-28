@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>NannyLink | Family Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/familyProfile-CkVAIEFC.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/familyProfile-CuNjOHNX.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <img src="/assets/logo-Dmj9sdKV.png" alt="Logo">
+            <span class="logo-text">NannyLink Kenya</span>
+        </div>
+        <button onclick="logout()" class="logout-btn">Sign Out</button>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Profile Section -->
+        <section class="profile-card">
+            <div class="profile-avatar">
+                <img id="avatar" src="https://ui-avatars.com/api/?name=Family&background=00152f&color=fff" alt="Profile">
+            </div>
+            <div class="profile-info">
+                <h1 id="family_name" class="profile-name">Loading profile...</h1>
+                <p id="family_location" class="profile-location">Please wait...</p>
+            </div>
+            <button onclick="window.location.href='edit-profile.html'" class="edit-btn">
+                Edit Profile
+            </button>
+        </section>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div onclick="window.location.href='connections.html'" class="stat-card">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined">diversity_3</span>
+                </div>
+                <p class="stat-label">Nanny Connections</p>
+                <h2 id="stat_connections" class="stat-value">0</h2>
+            </div>
+
+            <div onclick="window.location.href='contracts.html'" class="stat-card">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined">history_edu</span>
+                </div>
+                <p class="stat-label">Active Contracts</p>
+                <h2 id="stat_contracts" class="stat-value">0</h2>
+            </div>
+
+            <div class="stat-card payment-card">
+                <div class="stat-icon payment">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                </div>
+                <p class="stat-label">Total Paid Out</p>
+                <h2 id="stat_payments" class="stat-value payment">KES 0</h2>
+            </div>
+        </div>
+
+        <!-- Household Overview -->
+        <div class="household-card">
+            <h3 class="household-title">Household Overview</h3>
+            <div class="household-content">
+                <div class="household-details">
+                    <span class="details-label">Details</span>
+                    <p id="household_details" class="details-text">No details provided yet.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="contracts.html" class="nav-item">
+            <span class="material-symbols-outlined">description</span>
+            <span>Contracts</span>
+        </a>
+        <a href="connections.html" class="nav-item">
+            <span class="material-symbols-outlined">payments</span>
+            <span>Payments</span>
+        </a>
+        <a href="familydashboard.html" class="nav-item active">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+            <span>Profile</span>
+            <div class="active-indicator"></div>
+        </a>
+    </nav>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JavaScript -->
+</body>
+</html>

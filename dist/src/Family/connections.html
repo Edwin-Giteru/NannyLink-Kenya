@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>NannyLink | My Connections</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/familyConnections-ukCBdGkF.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/familyConnections-Dq0dEIj2.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img">
+                <img src="/assets/logo-Dmj9sdKV.png" alt="NannyLink Logo">
+            </div>
+            <span class="logo-text">NannyLink Kenya</span>
+        </div>
+        <div class="header-actions">
+            <span id="headerFamilyName" class="family-name hidden">Loading...</span>
+            <div class="user-avatar">
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=0F2A4A&color=fff" alt="Profile">
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <section class="page-header">
+            <span class="page-badge">Family Portal</span>
+            <h1 class="page-title">
+                My <span class="highlight">Nanny</span> Connections
+            </h1>
+        </section>
+
+        <!-- Stats & Filters -->
+        <section class="stats-filters">
+            <div class="stats-card">
+                <div class="stats-icon">
+                    <span class="material-symbols-outlined">handshake</span>
+                </div>
+                <div>
+                    <p class="stats-label">Account</p>
+                    <p class="stats-value">Verified</p>
+                </div>
+            </div>
+
+            <nav class="filter-nav">
+                <button onclick="filterContent('all')" id="filter-all" class="filter-btn active">
+                    All <span id="count-all" class="filter-count">0</span>
+                </button>
+                <button onclick="filterContent('pending')" id="filter-pending" class="filter-btn">
+                    Awaiting <span id="count-pending" class="filter-count">0</span>
+                </button>
+            </nav>
+        </section>
+
+        <!-- Connections Section -->
+        <section class="connections-section">
+            <div class="section-header">
+                <h2 class="section-title">Verified Professionals</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div id="connectionsGrid" class="connections-grid">
+                <p class="loading-state">Loading your connections...</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal('profileModal')"></div>
+        <div class="modal-container profile-modal">
+            <button onclick="closeModal('profileModal')" class="modal-close">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="profile-modal-header">
+                <div id="modalAvatar" class="profile-avatar"></div>
+                <div>
+                    <h2 id="modalName" class="profile-name"></h2>
+                    <p id="modalLocation" class="profile-location"></p>
+                </div>
+            </div>
+            <div class="profile-modal-body">
+                <div>
+                    <h4 class="section-label">Professional Bio</h4>
+                    <p id="modalBio" class="profile-bio"></p>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat-card">
+                        <p class="stat-label-sm">Experience</p>
+                        <p id="modalExp" class="stat-value-sm"></p>
+                    </div>
+                    <div class="profile-stat-card">
+                        <p class="stat-label-sm">Status</p>
+                        <p class="stat-value-sm">Verified</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('profileModal')" class="btn-primary w-100">Close Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT MODAL -->
+    <div id="paymentModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal('paymentModal')"></div>
+        <div class="modal-container payment-modal">
+            <div class="payment-modal-header">
+                <div class="payment-icon">
+                    <span class="material-symbols-outlined">payments</span>
+                </div>
+                <button onclick="closeModal('paymentModal')" class="modal-close small">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div id="paymentFormContent" class="payment-form">
+                <h3 class="payment-title">M-Pesa Payment</h3>
+                <p class="payment-subtitle">Enter your phone number to receive the STK push notification.</p>
+                
+                <input type="hidden" id="pendingConnectionId">
+                
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" id="mpesaPhone" placeholder="2547XXXXXXXX" class="form-input">
+                </div>
+                
+                <button id="confirmPayBtn" onclick="submitStkPush()" class="btn-payment">
+                    Send STK Push
+                </button>
+            </div>
+
+            <div id="paymentSuccessContent" class="payment-success hidden">
+                <div class="success-icon">
+                    <span class="material-symbols-outlined">check_circle</span>
+                </div>
+                <h3 class="success-title">Push Sent!</h3>
+                <p class="success-message">Please check your phone and enter your M-Pesa PIN to complete the transaction.</p>
+                <button onclick="closeModal('paymentModal')" class="btn-secondary">I've Paid</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="contracts.html" class="nav-item">
+            <span class="material-symbols-outlined">description</span>
+            <span>Contracts</span>
+        </a>
+        <a href="connections.html" class="nav-item active">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+            <span>Connections</span>
+            <div class="active-indicator"></div>
+        </a>
+        <a href="familydashboard.html" class="nav-item">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+        </a>
+    </nav>
+
+    <!-- JavaScript -->
+</body>
+</html>

@@ -251,7 +251,7 @@ if (editForm) {
             if (response.ok) {
                 showToast("Profile updated successfully!", "success");
                 setTimeout(() => {
-                    window.location.href = "nannydashboard.html";
+                    window.location.href = "/src/nanny/nannydashboard.html";
                 }, 1500);
             } else { 
                 const errRes = await response.json();

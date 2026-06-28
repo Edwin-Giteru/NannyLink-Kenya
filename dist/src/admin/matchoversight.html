@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Match Oversight | NannyLink Kenya</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/adminMatchOversight-dAK9aV1i.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/adminMatchOversight-DhUsIJy9.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">NannyLink Kenya</h1>
+            <p class="logo-subtitle">Admin Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="statsoverview.html" class="nav-item">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Stats Overview</span>
+            </a>
+            <a href="usermanagement.html" class="nav-item">
+                <span class="material-symbols-outlined">group</span>
+                <span>User Management</span>
+            </a>
+            <a href="matchoversight.html" class="nav-item active">
+                <span class="material-symbols-outlined material-symbols-fill">handshake</span>
+                <span>Match Oversight</span>
+            </a>
+            <a href="auditpayments.html" class="nav-item">
+                <span class="material-symbols-outlined">payments</span>
+                <span>Payment Logs</span>
+            </a>
+            <a href="reports.html" class="nav-item">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Reports Dashboard</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=00152f&color=fff" alt="Admin">
+                </div>
+                <div>
+                    <p class="user-name">System Admin</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </div>
+            <div class="mobile-logo">
+                <span class="material-symbols-outlined">shield_with_heart</span>
+                <span>NannyLink</span>
+            </div>
+            <button id="manualMatchBtn" class="btn-primary">
+                <span class="material-symbols-outlined">add</span>
+                Manual Match
+            </button>
+        </header>
+
+        <!-- MAIN SECTION -->
+        <div class="content-container">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Match Oversight</h2>
+                    <p class="page-description">Manage placements and contractual overrides for the worker network.</p>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-card-content">
+                        <p class="stats-card-label">Completed Matches</p>
+                        <p id="totalMatchCount" class="stats-card-value">0</p>
+                    </div>
+                    <div class="stats-card-icon">
+                        <span class="material-symbols-outlined material-symbols-fill">handshake</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="filters-bar">
+                <div class="status-filters" id="statusFilters">
+                    <button data-status="" class="status-btn active">All</button>
+                    <button data-status="awaiting_payment" class="status-btn">Awaiting Payment</button>
+                    <button data-status="completed" class="status-btn">Completed</button>
+                    <button data-status="cancelled" class="status-btn">Cancelled</button>
+                </div>
+                <div class="sort-wrapper">
+                    <select id="sortSelect" class="sort-select">
+                        <option value="newest">Sort: Newest</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Matches Table -->
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Match Details</th>
+                                <th>Client Family</th>
+                                <th>Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matchTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <p id="paginationLabel" class="pagination-info">Showing 0 of 0 matches</p>
+                    <div class="pagination-controls">
+                        <button id="prevBtn" class="page-btn">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button id="nextBtn" class="page-btn">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 NannyLink Kenya. All rights reserved.</p>
+        </footer>
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav">
+        <a href="statsoverview.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">analytics</span>
+            <span>Stats</span>
+        </a>
+        <a href="usermanagement.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">person_search</span>
+            <span>Users</span>
+        </a>
+        <a href="matchoversight.html" class="mobile-nav-item active">
+            <span class="material-symbols-outlined material-symbols-fill">handshake</span>
+            <span>Matches</span>
+        </a>
+        <a href="auditpayments.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Payments</span>
+        </a>
+    </nav>
+
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <div class="modal-icon warning">
+                <span class="material-symbols-outlined">priority_high</span>
+            </div>
+            <h3 class="modal-title">Administrative Override</h3>
+            <p class="modal-text">
+                You are about to manually activate this match. This bypasses the standard payment verification. Do you wish to proceed?
+            </p>
+            <div class="modal-buttons">
+                <button id="cancelModalBtn" class="modal-btn cancel">Cancel</button>
+                <button id="confirmModalBtn" class="modal-btn confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANUAL MATCH MODAL -->
+    <div id="manualMatchModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <h3 class="modal-title">Manual Connection</h3>
+            <p class="modal-subtitle">Select available participants from the database.</p>
+            
+            <div class="form-group">
+                <label class="form-label">Available Family</label>
+                <select id="manualFamilySelect" class="form-select">
+                    <option value="">Loading families...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Available Nanny</label>
+                <select id="manualNannySelect" class="form-select">
+                    <option value="">Loading nannies...</option>
+                </select>
+            </div>
+
+            <div class="modal-buttons">
+                <button id="closeManualModalBtn" class="modal-btn cancel">Cancel</button>
+                <button id="submitManualMatch" class="modal-btn create">Create Match</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+</body>
+</html>

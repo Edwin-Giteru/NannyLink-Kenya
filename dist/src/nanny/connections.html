@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>NannyLink - My Connections</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/nannyConnections-F9yAxT-r.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/nannyConnections-BgKABVX9.css">
+</head>
+<body>
+
+    <!-- FAMILY MODAL -->
+    <div id="family-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Family Details</h2>
+                <button onclick="closeModal()" class="modal-close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="modal-content" class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <img src="/assets/logo-Dmj9sdKV.png" alt="NannyLink Logo">
+            <span class="logo-text">NannyLink</span>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">Hello there, Ready to help?</h1>
+            <p id="catchy-phrase" class="hero-subtitle">Your next great family connection is just one click away.</p>
+        </section>
+
+        <!-- Connections Grid -->
+        <div class="connections-grid">
+            <!-- Pending Connections Column -->
+            <div class="pending-column">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="status-indicator pending"></span>
+                        NEW OPPORTUNITIES
+                    </h2>
+                    <span id="pending-count" class="count-badge">0</span>
+                </div>
+                <div id="pending-list" class="pending-list"></div>
+            </div>
+
+            <!-- Completed Connections Column -->
+            <div class="completed-column">
+                <!-- Profile Promotion Card -->
+                <div class="promo-card">
+                    <div class="promo-content">
+                        <h3 class="promo-title">Stand out from the crowd</h3>
+                        <p class="promo-text">Keeping your bio and gallery updated increases your visibility to premium families by 40%.</p>
+                    </div>
+                    <button onclick="window.location.href='edit-profile.html'" class="promo-btn">
+                        Refine My Profile
+                    </button>
+                    <div class="promo-bg-blur"></div>
+                </div>
+
+                <!-- Verified Placements Section -->
+                <div class="verified-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="status-indicator verified"></span>
+                            VERIFIED PLACEMENTS
+                        </h2>
+                        <span class="section-badge">Lifetime Success</span>
+                    </div>
+                    <div id="paid-list" class="verified-list"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="nannydashboard.html" class="nav-item">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span>Profile</span>
+        </a>
+        <a href="connections.html" class="nav-item active">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+            <span>Connections</span>
+            <div class="active-indicator"></div>
+        </a>
+        <a href="contracts.html" class="nav-item">
+            <span class="material-symbols-outlined">description</span>
+            <span>Contracts</span>
+        </a>
+    </nav>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JavaScript -->
+</body>
+</html>

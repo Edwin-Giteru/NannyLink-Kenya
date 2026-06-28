@@ -83,7 +83,7 @@ async function submitFamilyProfile(formData) {
 
         if (response.ok) {
             // Success - redirect to dashboard
-            window.location.href = "./familydashboard.html";
+            window.location.href = "/src/Family/familydashboard.html";
             return true;
         } else {
             showError(data.detail || "Failed to create profile. Please check your information.");

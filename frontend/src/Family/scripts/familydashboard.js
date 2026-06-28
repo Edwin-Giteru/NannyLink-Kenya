@@ -296,7 +296,7 @@ async function initiateBatchPayment() {
             closePaymentModal();
             updateCheckoutBar();
             setTimeout(() => {
-                window.location.href = 'connections.html';
+                window.location.href = '/src/Family/connections.html';
             }, 3000);
         } else if (payRes) {
             const errorData = await payRes.json();

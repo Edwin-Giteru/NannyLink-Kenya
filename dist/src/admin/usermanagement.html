@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>User Management | NannyLink Kenya</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/adminUserManagement-CHmqkvT6.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/adminUserManagement-DEXuMIKc.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">NannyLink Kenya</h1>
+            <p class="logo-subtitle">Admin Portal</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="statsoverview.html" class="nav-item">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Stats Overview</span>
+            </a>
+            <a href="usermanagement.html" class="nav-item active">
+                <span class="material-symbols-outlined material-symbols-fill">group</span>
+                <span>User Management</span>
+            </a>
+            <a href="matchoversight.html" class="nav-item">
+                <span class="material-symbols-outlined">handshake</span>
+                <span>Match Oversight</span>
+            </a>
+            <a href="auditpayments.html" class="nav-item">
+                <span class="material-symbols-outlined">payments</span>
+                <span>Payment Logs</span>
+            </a>
+            <a href="reports.html" class="nav-item">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Reports Dashboard</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">
+                    <img id="admin-avatar" src="https://ui-avatars.com/api/?name=Admin&background=00152f&color=fff" alt="Admin">
+                </div>
+                <div>
+                    <p class="user-name">System Admin</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </div>
+            <div class="mobile-logo">
+                <span class="material-symbols-outlined material-symbols-fill">shield_with_heart</span>
+                <span>NannyLink</span>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="showNotifications()">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="mobile-menu-btn icon-btn" onclick="toggleMobileMenu()">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <p class="page-subtitle">Community Oversight</p>
+                    <h2 class="page-title">User Management</h2>
+                </div>
+                <button onclick="openCreateModal()" class="btn-primary">
+                    <span class="material-symbols-outlined">person_add</span>
+                    Add New User
+                </button>
+            </div>
+
+            <!-- Filters Card -->
+            <div class="filters-card">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Identity Search</label>
+                        <div class="search-wrapper">
+                            <span class="search-icon material-symbols-outlined">search</span>
+                            <input id="identity-search" class="search-input" placeholder="Name, phone, or email..." type="text">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Account Role</label>
+                        <select id="role-filter" class="filter-select">
+                            <option value="">All Roles</option>
+                            <option value="NANNY">Nanny</option>
+                            <option value="FAMILY">Family</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Vetting Progress</label>
+                        <div class="status-toggle">
+                            <button id="btn-vetted" class="status-btn active" data-status="VETTED">Vetted</button>
+                            <button id="btn-pending" class="status-btn" data-status="PENDING">Pending</button>
+                        </div>
+                    </div>
+                    <div class="filter-group filter-action">
+                        <button onclick="fetchUsers(1)" class="filter-btn">
+                            <span class="material-symbols-outlined">filter_list</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Container -->
+            <div id="user-container" class="users-container"></div>
+
+            <!-- Pagination -->
+            <div class="pagination-footer">
+                <p class="pagination-info">
+                    Showing <span id="record-range" class="pagination-highlight">0-0</span> 
+                    of <span id="total-records" class="pagination-highlight">0</span> Records
+                </p>
+                <div id="pagination-controls" class="pagination-controls"></div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 NannyLink Kenya. All rights reserved.</p>
+        </footer>
+    </main>
+
+    <!-- DELETE MODAL -->
+    <div id="delete-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeDeleteModal()"></div>
+        <div class="modal-container">
+            <div class="modal-icon error">
+                <span class="material-symbols-outlined material-symbols-fill">delete_forever</span>
+            </div>
+            <h3 class="modal-title">Delete User?</h3>
+            <p class="modal-text">
+                This action is <strong class="text-error">irreversible</strong>. All profiles, matching history, and account data associated with this user will be purged.
+            </p>
+            <div class="modal-buttons">
+                <button onclick="closeDeleteModal()" class="modal-btn cancel">Cancel</button>
+                <button id="confirm-delete-btn" class="modal-btn delete">Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CREATE USER MODAL -->
+    <div id="create-user-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeCreateModal()"></div>
+        <div class="modal-container large">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title">New User Account</h3>
+                    <p class="modal-subtitle">Initialize Member Profile</p>
+                </div>
+                <button type="button" onclick="closeCreateModal()" class="close-btn">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form id="create-user-form">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" required class="form-input">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Account Role</label>
+                        <select name="role" required class="form-select">
+                            <option value="nanny">Nanny Profile</option>
+                            <option value="family">Family Profile</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" required class="form-input">
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" name="phone" placeholder="+254..." class="form-input">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Initial Password</label>
+                        <input type="password" name="password" required class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" onclick="closeCreateModal()" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- VERIFY MODAL -->
+    <div id="verify-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeVerifyModal()"></div>
+        <div class="modal-container">
+            <div class="modal-icon success">
+                <span class="material-symbols-outlined material-symbols-fill">verified_user</span>
+            </div>
+            <h3 class="modal-title">Verify Nanny?</h3>
+            <p class="modal-text">
+                Confirming this will update the nanny's status to <strong class="text-success">Vetted</strong>.
+            </p>
+            <div class="modal-buttons">
+                <button onclick="closeVerifyModal()" class="modal-btn cancel">Cancel</button>
+                <button id="confirm-verify-btn" class="modal-btn confirm">Confirm Verification</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav">
+        <a href="statsoverview.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">analytics</span>
+            <span>Stats</span>
+        </a>
+        <a href="usermanagement.html" class="mobile-nav-item active">
+            <span class="material-symbols-outlined material-symbols-fill">group</span>
+            <span>Users</span>
+        </a>
+        <a href="matchoversight.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">handshake</span>
+            <span>Matches</span>
+        </a>
+        <a href="auditpayments.html" class="mobile-nav-item">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Payments</span>
+        </a>
+    </nav>
+
+    <!-- JavaScript -->
+</body>
+</html>

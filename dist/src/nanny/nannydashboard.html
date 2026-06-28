@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nanny Dashboard | NannyLink</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/nannyDashboard-uGdmjxvz.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/nannyDashboard-BWzFBdBD.css">
+</head>
+<body>
+
+    <!-- CONNECTION MODAL -->
+    <div id="connection-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Match Details</h2>
+                <button onclick="closeModal()" class="modal-close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="modal-content" class="modal-body"></div>
+            <button onclick="closeModal()" class="modal-footer-btn">Close</button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <img src="/assets/logo-Dmj9sdKV.png" alt="NannyLink Logo">
+            <span class="logo-text">NannyLink Kenya</span>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-avatar">
+                <img id="hero_profile_img" src="https://via.placeholder.com/400" alt="Profile" />
+            </div>
+            <div>
+                <h2 class="hero-greeting">
+                    Karibu, <span id="nanny_name" class="hero-name">...</span>
+                </h2>
+                <p class="hero-quote">"Making a difference, one family at a time."</p>
+            </div>
+        </section>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined">verified_user</span>
+                </div>
+                <div class="stat-badge">
+                    <span id="vetting_badge" class="badge badge-loading">LOADING</span>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-label">Vetting Status</h3>
+                    <p id="vetting_text" class="stat-value">...</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined">group</span>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-label">Total Connections</h3>
+                    <p id="connection_count" class="stat-value large">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined">description</span>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-label">Active Contracts</h3>
+                    <p id="contract_count" class="stat-value large">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="dashboard-grid">
+            <!-- Activity Section -->
+            <div class="activity-section">
+                <div class="section-card">
+                    <h3 class="section-title">
+                        <span class="material-symbols-outlined">history</span>
+                        Recent Family Interactions
+                    </h3>
+                    <div id="activity_list" class="activity-list">
+                        <p class="empty-message">Waiting for your first match...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Availability Section -->
+            <div class="availability-section">
+                <div class="section-card">
+                    <h4 class="availability-title">Your Availability</h4>
+                    <div id="schedule_display" class="availability-display">
+                        <div class="availability-item">
+                            <span class="material-symbols-outlined">calendar_today</span>
+                            <p id="availability_text" class="availability-text">...</p>
+                        </div>
+                    </div>
+                    <button onclick="window.location.href='./edit-profile.html'" class="edit-profile-btn">
+                        Refine My Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="nannydashboard.html" class="nav-item active">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span>Profile</span>
+            <div class="active-indicator"></div>
+        </a>
+        <a href="connections.html" class="nav-item">
+            <span class="material-symbols-outlined">group</span>
+            <span>Matches</span>
+        </a>
+        <a href="contracts.html" class="nav-item">
+            <span class="material-symbols-outlined">description</span>
+            <span>Contracts</span>
+        </a>
+    </nav>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JavaScript -->
+</body>
+</html>

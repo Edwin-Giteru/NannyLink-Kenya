@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nanny Profile Setup | NannyLink</title>
+    
+    <!-- Image Compression Library -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+  <script type="module" crossorigin src="/assets/nannyProfileCreation-CjXVEWyI.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/nannyProfileCreation-ZKNeBzSb.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <img src="/assets/logo-Dmj9sdKV.png" alt="NannyLink Logo">
+            <span class="logo-text">NannyLink</span>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="setup-container">
+            <!-- Left Column - Info Section -->
+            <div class="info-section">
+                <div class="info-badge">
+                    <span class="status-dot"></span>
+                    <span>Initial Setup</span>
+                </div>
+                <h1 class="info-title">
+                    Perfect Your <span class="gradient-text">Presence</span>
+                </h1>
+                <p class="info-description">
+                    Welcome to NannyLink! Let's get your profile ready for families to find you.
+                </p>
+
+                <!-- Profile Strength Card -->
+                <div class="strength-card">
+                    <div class="strength-header">
+                        <span class="strength-label">Profile Strength</span>
+                        <span id="strengthText" class="strength-percent">0%</span>
+                    </div>
+                    <div class="strength-bar">
+                        <div id="strengthBar" class="strength-fill"></div>
+                    </div>
+                    <p id="strengthTip" class="strength-tip">Fill in your name to get started!</p>
+                    <div class="strength-bg"></div>
+                </div>
+            </div>
+
+            <!-- Right Column - Form Section -->
+            <div class="form-section">
+                <form id="nannyForm" class="profile-form">
+                    <input type="hidden" id="profile_photo_url" name="profile_photo_url">
+                    <input type="hidden" id="national_id_photo_url" name="national_id_photo_url">
+
+                    <!-- Identity & Portrait Section -->
+                    <div class="form-group">
+                        <div class="section-header">
+                            <span class="step-number">01</span>
+                            <h2 class="section-title">Identity & Portrait</h2>
+                        </div>
+                        
+                        <div class="photo-upload-card">
+                            <div class="avatar-container">
+                                <div class="avatar-wrapper">
+                                    <img id="profile_preview" alt="Preview" src="https://via.placeholder.com/150" />
+                                </div>
+                                <label class="upload-btn">
+                                    <span class="material-symbols-outlined">add_a_photo</span>
+                                    <input class="hidden" id="profile_photo_input" type="file" accept="image/*" />
+                                </label>
+                            </div>
+                            <div class="photo-info">
+                                <p class="photo-title">Profile Portrait</p>
+                                <p class="photo-desc">Families love to see a friendly face!</p>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon material-symbols-outlined">person</span>
+                                <input class="form-input" id="name" placeholder="Full Name" type="text" required />
+                            </div>
+                            
+                            <div class="row-grid">
+                                <div class="input-icon-wrapper">
+                                    <span class="input-icon material-symbols-outlined">workspace_premium</span>
+                                    <input class="form-input" id="years_experience" placeholder="Years of Experience" type="number" min="0" required />
+                                </div>
+                                <div class="input-icon-wrapper">
+                                    <span class="input-icon material-symbols-outlined">schedule</span>
+                                    <select class="form-select" id="availability">
+                                        <option value="full_time">Full-time</option>
+                                        <option value="part_time">Part-time</option>
+                                        <option value="evenings">Evenings</option>
+                                        <option value="weekends">Weekends</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Experience & Skills Section -->
+                    <div class="form-group">
+                        <div class="section-header">
+                            <span class="step-number">02</span>
+                            <h2 class="section-title">Experience & Skills</h2>
+                        </div>
+                        
+                        <div class="input-group">
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon material-symbols-outlined">location_on</span>
+                                <input class="form-input" id="address" placeholder="Physical Address (e.g. Kilimani, Nairobi)" type="text" required />
+                            </div>
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon material-symbols-outlined">map</span>
+                                <input class="form-input" id="preferred_location" placeholder="Preferred Working Area (e.g. Westlands)" type="text" />
+                            </div>
+                            <div class="textarea-wrapper">
+                                <span class="textarea-icon material-symbols-outlined">history_edu</span>
+                                <textarea class="form-textarea" id="skills" placeholder="Tell us about your childcare skills..." required></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legal Verification Section -->
+                    <div class="form-group">
+                        <div class="section-header">
+                            <span class="step-number">03</span>
+                            <h2 class="section-title">Legal Verification</h2>
+                        </div>
+                        
+                        <div class="input-group">
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon material-symbols-outlined">badge</span>
+                                <input class="form-input" id="national_id_number" placeholder="National ID Number" type="text" required />
+                            </div>
+                            
+                            <label class="upload-id-card">
+                                <div class="upload-id-icon">
+                                    <span class="material-symbols-outlined">file_upload</span>
+                                </div>
+                                <p id="id_status_text" class="upload-id-text">Upload National ID Front View</p>
+                                <input class="hidden" id="id_photo_input" type="file" accept="image/*" />
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="submit-container">
+                        <button class="submit-btn" type="submit" id="submitBtn">
+                            <span class="material-symbols-outlined">rocket_launch</span>
+                            Create My Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JavaScript -->
+</body>
+</html>
