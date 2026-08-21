@@ -36,7 +36,6 @@ mdurl==0.1.2
 passlib==1.7.4
 psycopg==3.2.12
 psycopg-binary==3.2.12
-psycopg2==2.9.11
 pyasn1==0.6.1
 pycparser==2.23
 pydantic==2.12.4
@@ -44,6 +43,7 @@ pydantic-core==2.41.5
 pygments==2.19.2
 python-dotenv==1.2.1
 python-jose==3.5.0
+pandas==2.0.3
 python-multipart==0.0.20
 pyyaml==6.0.3
 requests==2.32.5

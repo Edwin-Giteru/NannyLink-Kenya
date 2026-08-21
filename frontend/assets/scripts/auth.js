@@ -1,6 +1,4 @@
-// ========================================
-// DOM Elements
-// ========================================
+
 const $ = (id) => document.getElementById(id);
 
 // API Configuration - CORRECT ENDPOINTS (no /auth prefix)
@@ -10,9 +8,6 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 let currentMode = "login";
 let selectedRole = "nanny";
 
-// ========================================
-// Helper Functions
-// ========================================
 function clearErrors() {
     document.querySelectorAll('.input-wrapper').forEach(w => w.classList.remove('error'));
     document.querySelectorAll('.error-message').forEach(e => e.textContent = "");
@@ -58,9 +53,6 @@ function hideBanners() {
     if (bannerSuccess) bannerSuccess.classList.add("hidden");
 }
 
-// ========================================
-// Password Strength Checker
-// ========================================
 function checkPasswordStrength(password) {
     if (!password || password.length === 0) {
         return { score: 0, label: '', className: '', width: 0 };
@@ -147,9 +139,6 @@ function updatePasswordStrength() {
     }
 }
 
-// ========================================
-// Phone Validation with Immediate Feedback
-// ========================================
 function validatePhone(phone) {
     if (!phone || phone.trim() === "") {
         return { valid: false, message: "Phone number is required" };
@@ -203,10 +192,6 @@ function updatePhoneValidation() {
         // errorMsg.style.color = "#10b981";
     }
 }
-
-// ========================================
-// Mode Switching
-// ========================================
 function setMode(mode) {
     currentMode = mode;
     clearErrors();
@@ -237,9 +222,6 @@ function setMode(mode) {
     }
 }
 
-// ========================================
-// Role Selection
-// ========================================
 function initRoleSelection() {
     const grid = $("signupRoleGrid");
     if (!grid) return;
@@ -260,9 +242,6 @@ function initRoleSelection() {
     });
 }
 
-// ========================================
-// Validation Functions
-// ========================================
 function validateEmail(email) {
     if (!email || email.trim() === "") {
         return { valid: false, message: "Email is required" };
@@ -305,9 +284,6 @@ function validateConfirmPassword(password, confirmPassword) {
     return { valid: true, message: "" };
 }
 
-// ========================================
-// API Calls - CORRECT ENDPOINTS (no /auth prefix)
-// ========================================
 
 // LOGIN - POST /login
 async function login(email, password) {
@@ -409,9 +385,6 @@ async function signup(userData) {
     }
 }
 
-// ========================================
-// Form Handlers
-// ========================================
 async function handleLogin(e) {
     e.preventDefault();
     clearErrors();
@@ -586,9 +559,6 @@ async function handleSignup(e) {
     }
 }
 
-// ========================================
-// Real-time Validation Functions
-// ========================================
 function setupRealTimeValidation() {
     // Email validation on blur
     const signupEmail = $("signupEmail");
@@ -641,9 +611,6 @@ function setupRealTimeValidation() {
     }
 }
 
-// ========================================
-// Event Listeners
-// ========================================
 document.addEventListener("DOMContentLoaded", () => {
     // Mode toggles
     const btnLogin = $("btnLogin");
@@ -710,3 +677,4 @@ window.debugAuth = {
     validateEmail,
     validatePhone
 };
+
