@@ -30,7 +30,7 @@ function checkAuth(response) {
 // ========================================
 async function fetchStats() {
     try {
-        const response = await fetch(`${API_BASE_URL}/stats-overview`, { 
+        const response = await fetch(`${API_BASE_URL}/admin/stats-overview`, { 
             headers: getAuthHeaders() 
         });
         
@@ -48,7 +48,7 @@ async function fetchStats() {
 
 async function fetchTransactions() {
     try {
-        const response = await fetch(`${API_BASE_URL}/recent-transactions`, { 
+        const response = await fetch(`${API_BASE_URL}/admin/recent-transactions`, { 
             headers: getAuthHeaders() 
         });
         
