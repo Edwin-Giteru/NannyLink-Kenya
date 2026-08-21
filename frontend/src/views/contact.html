@@ -604,7 +604,7 @@
             toastMessage.textContent = message;
             toast.style.background = isError ? '#ef4444' : '#10b981';
             toast.classList.add('show');
-            
+            // time out to hide the toast after 3 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
