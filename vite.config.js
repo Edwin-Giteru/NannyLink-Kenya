@@ -16,53 +16,8 @@ export default defineConfig({
     },
   },
 
-  server: {
-    port: 5500,
-    open: 'index.html',
-
-    // Development-only proxy
-    proxy: {
-      '/auth': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-      '/password-reset': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-      '/admin': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-      '/families': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-      '/nannies': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-      '/connections': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-      '/contracts': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-      '/payments': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-      '/stats': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-      },
-    },
-  },
-
   build: {
-    outDir: '../dist',
+    outDir: 'dist', // Output to frontend/dist
     emptyOutDir: true,
     rollupOptions: {
       input: {
