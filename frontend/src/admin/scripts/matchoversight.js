@@ -144,7 +144,7 @@ async function loadMatches() {
             status: selectedStatus
         });
 
-        const response = await fetch(`${API_BASE_URL}/matches?${params}`, {
+        const response = await fetch(`${API_BASE_URL}/admin/matches?${params}`, {
             headers: getAuthHeaders()
         });
         
@@ -183,7 +183,7 @@ async function confirmForceComplete() {
     confirmBtn.classList.add('disabled');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/matches/${matchIdToProcess}/force-complete`, { 
+        const response = await fetch(`${API_BASE_URL}/admin/matches/${matchIdToProcess}/force-complete`, { 
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -264,7 +264,7 @@ async function submitManualMatch() {
     btn.innerText = "Creating...";
 
     try {
-        const response = await fetch(`${API_BASE_URL}/matches/manual`, {
+        const response = await fetch(`${API_BASE_URL}/admin/matches/manual`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ family_id, nanny_id })
