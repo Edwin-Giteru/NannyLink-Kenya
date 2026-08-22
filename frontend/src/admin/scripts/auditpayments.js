@@ -134,7 +134,7 @@ function renderTable(payments) {
 async function loadPaymentLogs() {
     const searchInput = document.getElementById('searchInput');
     const searchValue = searchInput ? searchInput.value : '';
-    const url = `${API_BASE_URL}/?page=${currentPage}&search=${encodeURIComponent(searchValue)}`;
+    const url = `${API_BASE_URL}/admin/?page=${currentPage}&search=${encodeURIComponent(searchValue)}`;
     
     try {
         const response = await authorizedFetch(url);
