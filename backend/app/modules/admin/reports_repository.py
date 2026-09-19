@@ -119,10 +119,6 @@ class ReportsRepository:
         """
         Fetch payments with date range and status filters.
         Eager loads matches and associated profiles.
-        
-        NOTE: Database stores payment_status in UPPERCASE: "COMPLETED", "PENDING", "FAILED"
-        The status parameter from frontend comes in lowercase: "completed", "pending", "failed"
-        We convert to UPPERCASE to match database values.
         """
         query = (
             select(Payment)
