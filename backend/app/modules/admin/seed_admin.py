@@ -13,7 +13,6 @@ async def seed_admin():
     async with async_session_maker() as session:
         email = "admin@gmail.com"
         
-        # 1. Check if admin already exists
         result = await session.execute(select(User).where(User.email == email))
         existing_user = result.scalars().first()
 
@@ -21,7 +20,6 @@ async def seed_admin():
             print(f"User {email} already exists. Skipping...")
             return
 
-        # 2. Create the Admin record
         new_admin = User(
             id=uuid4(),
             email=email,

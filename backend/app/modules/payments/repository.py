@@ -17,7 +17,6 @@ class PaymentRepository:
         amount: float,
         phone_number: str,
     ) -> Payment:
-        # Create the payment record
         new_payment = Payment(
             user_id=user_id,
             amount=amount,
@@ -26,9 +25,6 @@ class PaymentRepository:
         )
         self.db.add(new_payment)
         await self.db.flush() 
-
-        # Link matches via the helper table manually as you did 
-        # (or append to new_payment.matches if preferred)
         for m_id in match_ids:
             link = PaymentMatchLink(
                 payment_id=new_payment.id,

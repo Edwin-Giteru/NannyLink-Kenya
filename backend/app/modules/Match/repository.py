@@ -53,7 +53,6 @@ class MatchRepository:
         Use SELECT ... FOR UPDATE to lock the row.
         This prevents concurrent transactions from reading stale data.
         """
-        # Use WITH FOR UPDATE to lock the potential row
         stmt = (
             select(Match)
             .where(and_(Match.family_id == family_id, Match.nanny_id == nanny_id))
@@ -107,11 +106,8 @@ class MatchRepository:
             return await self.get_match_by_id(new_match.id)
             
         except IntegrityError as e:
-            # This is a database-level unique constraint violation
             await self.db.rollback()
-            # Check if it's the unique constraint we care about
             if "uix_family_nanny_match" in str(e):
-                # Duplicate detected - return None so caller can fetch existing
                 return None
             raise e
 

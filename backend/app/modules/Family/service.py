@@ -70,7 +70,6 @@ class FamilyService:
             return Result.fail(f"Error fetching connections: {str(e)}", status_code=500)
 
     
-    # Inside FamilyService class:
     async def get_family_dashboard_data(self, user_id: uuid.UUID):
         result = await self.db.execute(
             select(FamilyProfile).where(FamilyProfile.user_id == user_id)
@@ -92,7 +91,6 @@ class FamilyService:
         )
         contract_count = contract_result.scalar()
 
-        # 🔥 PaymentStatus.COMPLETED is used here correctly now
         payment_result = await self.db.execute(
             select(func.sum(Payment.amount))
             .where(Payment.user_id == user_id)

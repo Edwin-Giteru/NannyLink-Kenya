@@ -8,8 +8,6 @@ from uuid import UUID
 
 router = APIRouter(tags=["Nanny"], prefix="/nannies")
 
-# --- PUBLIC ENDPOINTS ---
-
 @router.get("/", response_model=list[dict])
 async def get_all_nannies(
     db: SessionDep,
@@ -110,9 +108,6 @@ async def get_nanny_public_profile(id: UUID, db: SessionDep):
         raise HTTPException(status_code=result.status_code, detail=result.error)
     return result.data
 
-# --- PROTECTED / PRIVATE ENDPOINTS ---
-
-
 
 @router.get("/{id}/full")
 async def get_nanny_full_details(id: UUID, db: SessionDep, current_user: User = Depends(get_current_user)):
@@ -126,5 +121,4 @@ async def get_nanny_full_details(id: UUID, db: SessionDep, current_user: User = 
         raise HTTPException(status_code=result.status_code, detail=result.error)
     return result.data
 
-# app/modules/Nanny/router.py
 

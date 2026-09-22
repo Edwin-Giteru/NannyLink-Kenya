@@ -136,7 +136,6 @@ class ReportsRepository:
         if end_date:
             query = query.filter(Payment.created_at <= end_date)
         
-        # Apply status filter - Convert to UPPERCASE to match database values
         if status and status.strip() != "":
             status_upper = status.upper()
             query = query.filter(Payment.payment_status == status_upper)

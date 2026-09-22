@@ -120,15 +120,8 @@ class AuthService:
                 "expires_at": datetime.utcnow() + timedelta(minutes=30)
             }
             
-            reset_link = f"{settings.PASSWORD_RESET_URL}?token={token}"
-            
-            # Print to console for debugging
-            print("\n" + "="*60)
-            print(f"PASSWORD RESET LINK FOR {email}:")
-            print(reset_link)
-            print("="*60 + "\n")
-            
-            # Try to send email
+            reset_link = f"{settings.PASSWORD_RESET_URL}?token={token}"            
+           
             try:
                 email_sent = await EmailService.send_password_reset_email(email, token)
                 if email_sent:

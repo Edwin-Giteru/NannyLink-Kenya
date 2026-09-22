@@ -43,8 +43,6 @@ class NannyService:
 
             new_nanny = await self.nanny_repository.create_nanny(nanny_create, user_id)
 
-            # FIX: Always stamp vetting_status as PENDING on creation
-            # This guards against the repo not setting it
             new_nanny.vetting_status = VettingStatus.PENDING
 
             await self.db.commit()

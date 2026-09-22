@@ -51,7 +51,7 @@ class AdminCreateUserRequest(BaseModel):
     email: EmailStr
     phone: Optional[str] = None
     password: str = Field(..., min_length=6)
-    role: UserRole  # UserRole.NANNY or UserRole.FAMILY
+    role: UserRole  
 
 class MatchClientSchema(BaseModel):
     name: str
@@ -60,7 +60,7 @@ class MatchClientSchema(BaseModel):
 
 class MatchNannySchema(BaseModel):
     name: str
-    id_code: str # e.g., #MLK-94021
+    id_code: str 
 
 class MatchManagementSchema(BaseModel):
     id: UUID

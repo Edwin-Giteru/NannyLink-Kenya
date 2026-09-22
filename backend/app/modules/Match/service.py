@@ -48,7 +48,7 @@ class MatchService:
                     status_code=400
                 )
 
-            # CRITICAL FIX: Use atomic create with uniqueness check
+            # Use atomic create with uniqueness check
             # This prevents duplicate entries even if two requests pass the existence check simultaneously
             match = await self.match_repo.create_connection_atomic(family.id, nanny_id)
             
@@ -58,17 +58,14 @@ class MatchService:
                 existing_match = await self.match_repo.get_existing_match(family.id, nanny_id)
                 if existing_match:
                     return Result.ok(data=MatchResponse.model_validate(existing_match), status_code=200)
-                return Result.fail("Failed to create connection due to duplicate request.", status_code=409)
+                return Result.fail("Failed to create connection since there is an active connection already.", status_code=409)
 
             full_match = await self.match_repo.get_match_by_id(match.id)
             return Result.ok(data=MatchResponse.model_validate(full_match), status_code=201)
 
         except IntegrityError as e:
-            # Handle database-level unique constraint violation
             await self.match_repo.db.rollback()
-            # Check if it's a duplicate key violation
             if "duplicate key" in str(e).lower() or "unique constraint" in str(e).lower():
-                # Fetch the existing match that caused the conflict
                 existing_match = await self.match_repo.get_existing_match(family.id, nanny_id)
                 if existing_match:
                     return Result.ok(data=MatchResponse.model_validate(existing_match), status_code=200)

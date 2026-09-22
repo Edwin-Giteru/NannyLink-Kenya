@@ -34,7 +34,7 @@ class PaymentService:
 
             total_amount = len(match_ids) * amount_per_nanny
 
-            # 1. Create the Payment Record
+            # Create the Payment Record
             payment_record = await self.payment_repository.create_batch_payment(
                 user_id=payer_user.id,
                 match_ids=match_ids,
@@ -42,8 +42,7 @@ class PaymentService:
                 phone_number=phone_number
             )
 
-            # 2. Trigger STK Push
-            # We pass str(payment_record.id) to track this specific payment
+            # Trigger STK Push
             stk_response = await sendStkPush(
                 phone_number=phone_number,
                 amount=total_amount,
@@ -51,7 +50,7 @@ class PaymentService:
                 base_url=os.getenv("BASE_URL", "http://localhost:8000")
             )
 
-            # 3. Handle M-Pesa Response
+            #  Handle M-Pesa Response
             if "CheckoutRequestID" not in stk_response:
                 error_msg = stk_response.get("errorMessage", "Daraja Gateway Error")
                 return Result.fail(error_msg, 400)
@@ -65,7 +64,6 @@ class PaymentService:
 
         except Exception as e:
             await self.db.rollback()
-            # This logger will now show exactly where it failed in your console
             logger.exception("STK Initiation Critical Failure") 
             return Result.fail(f"Payment initiation failed: {str(e)}", 500)
         
@@ -77,7 +75,7 @@ class PaymentService:
         # This will now include the .matches list thanks to the model fix
         payment = await self.payment_repository.get_by_checkout_id(checkout_id)
         if not payment:
-            logger.error(f"Callback received for unknown checkout_id: {checkout_id}")
+            logger.error(f"Callback not received for this checkout_id: {checkout_id}")
             return Result.fail("Payment record not found", 404)
 
         if result_code == 0:

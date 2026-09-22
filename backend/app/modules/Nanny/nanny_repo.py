@@ -10,14 +10,6 @@ from sqlalchemy import select, func, or_, not_
 from app.db.models.types import MatchStatus, VettingStatus
 from app.db.models.match import Match
 
-class NannyRepository:
-    def __init__(self, db: AsyncSession):
-        self.db = db
-
-    # app/modules/Nanny/nanny_repo.py
-
-from sqlalchemy import select, func, or_
-# Ensure you have these imported at the top
 
 class NannyRepository:
     def __init__(self, db: AsyncSession):
@@ -34,7 +26,6 @@ class NannyRepository:
     ) -> list[NannyProfile]:
         """Fetch nannies WITHOUT active connections (available for hire)."""
         
-        # Subquery: nannies that have active matches
         active_match_subquery = (
             select(Match.nanny_id)
             .where(
@@ -44,7 +35,6 @@ class NannyRepository:
             .subquery()
         )
         
-        # Main query: exclude nannies with active matches
         stmt = select(NannyProfile).where(
             NannyProfile.vetting_status == VettingStatus.APPROVED,
             not_(NannyProfile.id.in_(select(active_match_subquery.c.nanny_id)))

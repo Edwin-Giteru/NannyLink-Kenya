@@ -59,22 +59,18 @@ NannyLink Kenya · Secure. Professional. Reliable.
 
     async def generate_contract(self, match_id: UUID, current_user_id: UUID, custom_terms: str = "") -> Result:
         try:
-            # 1. Fetch match with related profiles loaded
             match = await self.match_repository.get_match_by_id(match_id)
             if not match:
                 return Result.fail("Match not found", 404)
 
-            # 2. Security Check: Does this user own the family profile in the match?
             family_profile = await self.family_repository.get_family_by_user_id(current_user_id)
             if not family_profile or family_profile.id != match.family_id:
                 return Result.fail("Access Denied: Match ownership verification failed.", 403)
 
-            # 3. Handle existing contract
             existing = await self.contract_repository.get_by_match_id(match_id)
             if existing:
                 return Result.ok(data=existing, status_code=200)
 
-            # 4. Generate and persist
             contract_text = self._generate_template_text(match, custom_terms)
             new_contract = await self.contract_repository.create_contract(match_id, contract_text)
             await self.db.commit()

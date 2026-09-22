@@ -14,10 +14,8 @@ class AuthRepository:
         await self.db.flush()
         return user
 
-    # app/modules/Auth/auth_repository.py
 
     async def create_user(self, user_schema: UserCreate) -> User:
-        # Convert Pydantic model to dict
         user_data = user_schema.model_dump()       
         new_user = User(**user_data) 
         
