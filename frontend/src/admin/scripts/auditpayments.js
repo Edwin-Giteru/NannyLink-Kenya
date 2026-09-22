@@ -128,9 +128,6 @@ function renderTable(payments) {
     tbody.innerHTML = htmlRows;
 }
 
-// ========================================
-// API Calls
-// ========================================
 async function loadPaymentLogs() {
     const searchInput = document.getElementById('searchInput');
     const searchValue = searchInput ? searchInput.value : '';
@@ -205,9 +202,6 @@ function toggleMobileMenu() {
     }
 }
 
-// ========================================
-// Event Listeners & Initialization
-// ========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadPaymentLogs();
     
